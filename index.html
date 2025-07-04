@@ -211,8 +211,8 @@
 
             // --- Gemini API Call via Secure Worker ---
             async function callGemini(prompt) {
-                // IMPORTANT: Replace this with your actual Cloudflare Worker URL
-                const apiUrl = 'https://dubbc-ai-proxy.wcornelius.workers.dev/';
+                // IMPORTANT: This URL points to your secure Cloudflare Worker
+                const apiUrl = 'https://encrypt.dubc.io/';
                 
                 const payload = {
                     prompt: prompt 
