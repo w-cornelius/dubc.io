@@ -179,7 +179,6 @@
             // --- Modal Control Functions ---
             const showModal = () => {
                 aiModal.classList.remove('hidden');
-                // This timeout ensures the browser renders the modal container before starting the transition
                 setTimeout(() => {
                     modalContent.classList.remove('opacity-0', 'scale-95');
                     modalContent.classList.add('modal-enter');
@@ -191,7 +190,6 @@
                 modalContent.classList.add('opacity-0', 'scale-95');
                 setTimeout(() => {
                     aiModal.classList.add('hidden');
-                    // Reset modal state on close
                     modalResultContainer.classList.add('hidden');
                     modalLoader.classList.add('hidden');
                     aiQuestionInput.value = '';
@@ -211,15 +209,13 @@
                 modalFooter.classList.remove('hidden');
             };
 
-            // --- Gemini API Call ---
+            // --- Gemini API Call via Secure Worker ---
             async function callGemini(prompt) {
-                const apiKey = ""; // API key is not needed for gemini-2.0-flash
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                // IMPORTANT: Replace this with your actual Cloudflare Worker URL
+                const apiUrl = 'https://dubbc-ai-proxy.wcornelius.workers.dev/';
+                
                 const payload = {
-                    contents: [{
-                        role: "user",
-                        parts: [{ text: prompt }]
-                    }]
+                    prompt: prompt 
                 };
 
                 try {
@@ -238,10 +234,14 @@
                     if (result.candidates && result.candidates.length > 0 && result.candidates[0].content.parts.length > 0) {
                         return result.candidates[0].content.parts[0].text.trim();
                     } else {
-                        return "Sorry, I couldn't generate a response. Please try again.";
+                         if (result.error) {
+                            console.error("Gemini API Error:", result.error.message);
+                            return `An AI error occurred: ${result.error.message}`;
+                        }
+                        return "Sorry, I couldn't generate a response. The format was unexpected.";
                     }
                 } catch (error) {
-                    console.error('Error calling Gemini API:', error);
+                    console.error('Error calling the proxy worker:', error);
                     return `An error occurred: ${error.message}. Please try again later.`;
                 }
             }
@@ -252,14 +252,14 @@
             submitAiQuestionBtn.addEventListener('click', async () => {
                 const question = aiQuestionInput.value;
                 if (!question.trim()) {
-                    // Using a custom-styled alert is better, but for simplicity:
                     modalText.innerText = 'Please enter a question.';
                     modalResultContainer.classList.remove('hidden');
                     return;
                 }
                 
                 showLoader();
-                const fullPrompt = `You are a helpful AI assistant for the streamer and content creator 'dubbb_c'. Based on publicly available information about them, answer the following question from a fan: "${question}"`;
+                // This detailed prompt gives the AI context about you.
+                const fullPrompt = `You are a helpful, friendly AI assistant for the streamer and content creator 'dubbb_c'. Your persona is upbeat and engaging. Your knowledge base includes: dubbb_c streams on Twitch (dubbb_c and djdubc_), Kick (dubbb_c), and uploads content to YouTube, TikTok, and Instagram. He also co-hosts the podcast 'The Punchline & The Pause'. Based on this, answer the following fan's question concisely: "${question}"`;
                 const resultText = await callGemini(fullPrompt);
                 showResult(resultText);
             });
