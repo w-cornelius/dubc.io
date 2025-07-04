@@ -40,7 +40,7 @@
 <body class="bg-gray-900 text-white antialiased">
 
     <!-- Main Container -->
-    <div class="main-container relative min-h-screen flex flex-col items-center justify-center p-4 overflow-hidden">
+    <div class="main-container relative min-h-screen flex flex-col items-center justify-center p-4 pb-20 overflow-hidden">
         
         <div class="relative z-10 w-full max-w-md mx-auto">
             
@@ -58,6 +58,13 @@
 
             <!-- Social Links Section -->
             <main class="space-y-4">
+                <!-- Ask Gemini AI -->
+                <button id="ask-ai-btn" class="group flex items-center p-4 bg-teal-600/20 border border-teal-500 rounded-lg w-full transition-all duration-300 hover:bg-teal-500 hover:scale-105 shadow-md text-teal-300 hover:text-white">
+                    <svg class="w-6 h-6 mr-4 transition-colors duration-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5a.75.75 0 01.75.75v.31a10.493 10.493 0 015.484 2.836.75.75 0 01-.976 1.138 9.001 9.001 0 00-10.517 0 .75.75 0 01-.976-1.138A10.493 10.493 0 0111.25 3.56V3.25a.75.75 0 01.75-.75zM7.757 8.243a.75.75 0 011.06 0l1.158 1.158a.75.75 0 010 1.06l-1.158 1.159a.75.75 0 01-1.06-1.061l.628-.629-.628-.628a.75.75 0 010-1.06zM12 8.25a.75.75 0 01.75.75v3a.75.75 0 01-1.5 0v-3a.75.75 0 01.75-.75zm4.183.993a.75.75 0 010 1.06l-.628.628.628.629a.75.75 0 11-1.06 1.06l-1.159-1.158a.75.75 0 010-1.061l1.159-1.158a.75.75 0 011.06 0zM12 15.75a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM5.75 18a.75.75 0 00-.75.75v.31a10.493 10.493 0 005.484 2.836.75.75 0 10.582-1.322 9 9 0 01-4.823-2.574V18.75a.75.75 0 00-.5-.75zm12.5 0a.75.75 0 00-.5.75v.25a9 9 0 01-4.823 2.574.75.75 0 10.582 1.322A10.493 10.493 0 0018.25 19.06v-.31a.75.75 0 00-.75-.75z"></path></svg>
+                    <span class="font-semibold text-lg flex-grow text-left">Ask Gemini AI</span>
+                    <span class="text-gray-400 group-hover:text-white transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
+                </button>
+                
                  <!-- Twitch | Main -->
                  <a href="https://twitch.tv/dubbb_c" target="_blank" rel="noopener noreferrer" class="group flex items-center p-4 bg-gray-800 rounded-lg w-full transition-all duration-300 hover:bg-[#6441a5] hover:scale-105 shadow-md">
                     <svg class="w-6 h-6 mr-4 text-[#9146ff] group-hover:text-white transition-colors duration-300" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Twitch</title><path d="M11.571 4.714h1.715v5.143H11.57zm4.714 0h1.714v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0H6zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714v9.429z" fill="currentColor"/></svg>
@@ -113,20 +120,13 @@
                     <span class="font-semibold text-lg flex-grow text-left">Instagram</span>
                     <span class="text-gray-400 group-hover:text-white transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
                 </a>
-
-                <!-- Ask Gemini AI -->
-                <button id="ask-ai-btn" class="group flex items-center p-4 bg-teal-600/20 border border-teal-500 rounded-lg w-full transition-all duration-300 hover:bg-teal-500 hover:scale-105 shadow-md text-teal-300 hover:text-white">
-                    <svg class="w-6 h-6 mr-4 transition-colors duration-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5a.75.75 0 01.75.75v.31a10.493 10.493 0 015.484 2.836.75.75 0 01-.976 1.138 9.001 9.001 0 00-10.517 0 .75.75 0 01-.976-1.138A10.493 10.493 0 0111.25 3.56V3.25a.75.75 0 01.75-.75zM7.757 8.243a.75.75 0 011.06 0l1.158 1.158a.75.75 0 010 1.06l-1.158 1.159a.75.75 0 01-1.06-1.061l.628-.629-.628-.628a.75.75 0 010-1.06zM12 8.25a.75.75 0 01.75.75v3a.75.75 0 01-1.5 0v-3a.75.75 0 01.75-.75zm4.183.993a.75.75 0 010 1.06l-.628.628.628.629a.75.75 0 11-1.06 1.06l-1.159-1.158a.75.75 0 010-1.061l1.159-1.158a.75.75 0 011.06 0zM12 15.75a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM5.75 18a.75.75 0 00-.75.75v.31a10.493 10.493 0 005.484 2.836.75.75 0 10.582-1.322 9 9 0 01-4.823-2.574V18.75a.75.75 0 00-.5-.75zm12.5 0a.75.75 0 00-.5.75v.25a9 9 0 01-4.823 2.574.75.75 0 10.582 1.322A10.493 10.493 0 0018.25 19.06v-.31a.75.75 0 00-.75-.75z"></path></svg>
-                    <span class="font-semibold text-lg flex-grow text-left">Ask Gemini AI</span>
-                    <span class="text-gray-400 group-hover:text-white transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
-                </button>
             </main>
 
         </div>
 
         <!-- Footer -->
         <footer class="absolute bottom-4 text-center text-gray-600 text-sm">
-            <p>&copy; 2024 dubbb_c. All Rights Reserved.</p>
+            <p>&copy; 2025 dubbb_c. All Rights Reserved.</p>
         </footer>
     </div>
     
@@ -179,11 +179,16 @@
             // --- Modal Control Functions ---
             const showModal = () => {
                 aiModal.classList.remove('hidden');
-                setTimeout(() => modalContent.classList.add('modal-enter'), 10);
+                // This timeout ensures the browser renders the modal container before starting the transition
+                setTimeout(() => {
+                    modalContent.classList.remove('opacity-0', 'scale-95');
+                    modalContent.classList.add('modal-enter');
+                }, 10);
             };
 
             const hideModal = () => {
                 modalContent.classList.remove('modal-enter');
+                modalContent.classList.add('opacity-0', 'scale-95');
                 setTimeout(() => {
                     aiModal.classList.add('hidden');
                     // Reset modal state on close
@@ -247,7 +252,9 @@
             submitAiQuestionBtn.addEventListener('click', async () => {
                 const question = aiQuestionInput.value;
                 if (!question.trim()) {
-                    alert('Please enter a question.');
+                    // Using a custom-styled alert is better, but for simplicity:
+                    modalText.innerText = 'Please enter a question.';
+                    modalResultContainer.classList.remove('hidden');
                     return;
                 }
                 
