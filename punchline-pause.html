@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Punchline & The Pause</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Applying the Inter font to the body */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom styles for a subtle background gradient and glow effect */
+        .main-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 0%, rgba(147, 51, 234, 0.15), transparent 40%);
+            z-index: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white antialiased">
+
+    <!-- Main Container -->
+    <div class="main-container relative min-h-screen flex flex-col items-center justify-center p-4 overflow-hidden">
+        
+        <div class="relative z-10 w-full max-w-md mx-auto">
+            
+            <!-- Profile Section -->
+            <header class="text-center mb-8">
+                <!-- Logo Image -->
+                <img 
+                    src="punchline.png" 
+                    alt="The Punchline & The Pause Logo" 
+                    class="w-full max-w-xs mx-auto mb-4 rounded-lg"
+                    onerror="this.onerror=null;this.src='https://placehold.co/400x400/1a202c/9ca3af?text=Logo+Not+Found';"
+                >
+                <p id="streamer-bio" class="text-gray-400 mt-2 text-sm md:text-base">Listen on your favorite platform</p>
+            </header>
+
+            <!-- Podcast Platform Links Section -->
+            <main class="space-y-4">
+                 <!-- Apple Podcasts -->
+                 <a href="https://podcasts.apple.com/us/podcast/the-punchline-the-pause/id1824063281" target="_blank" rel="noopener noreferrer" class="group flex items-center p-4 bg-gray-800 rounded-lg w-full transition-all duration-300 hover:bg-purple-600 hover:scale-105 shadow-md">
+                    <svg class="w-6 h-6 mr-4 text-purple-400 group-hover:text-white transition-colors duration-300" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Apple Podcasts</title><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 21.6c-5.302 0-9.6-4.298-9.6-9.6S6.698 2.4 12 2.4s9.6 4.298 9.6 9.6-4.298 9.6-9.6 9.6zM8.4 9.6c0-.994.806-1.8 1.8-1.8s1.8.806 1.8 1.8v6c0 .994-.806 1.8-1.8 1.8s-1.8-.806-1.8-1.8V9.6zm5.4 0c0-.994.806-1.8 1.8-1.8s1.8.806 1.8 1.8v6c0 .994-.806 1.8-1.8 1.8s-1.8-.806-1.8-1.8V9.6z" fill="currentColor"/></svg>
+                    <span class="font-semibold text-lg flex-grow text-left">Apple Podcasts</span>
+                    <span class="text-gray-400 group-hover:text-white transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
+                </a>
+
+                <!-- Spotify -->
+                <a href="#" target="_blank" rel="noopener noreferrer" class="group flex items-center p-4 bg-gray-800 rounded-lg w-full transition-all duration-300 hover:bg-green-600 hover:scale-105 shadow-md">
+                    <svg class="w-6 h-6 mr-4 text-green-400 group-hover:text-white transition-colors duration-300" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Spotify</title><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm6.214 17.506c-.202.31-.58.423-.88.22-2.43-1.48-5.48-1.82-9.04-.99-.34.08-.68-.14-.76-.48s.14-.68.48-.76c3.84-.91 7.2- .52 9.92 1.1.31.2.42.58.22.88zm.88-2.16c-.25.38-.72.5-1.1.25-2.76-1.7-6.8-2.15-9.95-1.18-.42.13-.88-.1-.99-.52s.1-.88.52-.99c3.6-1.08 8.04-.57 11.18 1.35.38.25.5.72.25 1.1zm.13-2.33c-3.24-1.98-8.5-2.5-11.63-1.38-.5.18-1.04-.15-1.22-.65s.15-1.04.65-1.22c3.6-1.28 9.4-.65 13.13 1.6.48.28.65.9.37 1.38-.28.48-.9.65-1.38.37z" fill="currentColor"/></svg>
+                    <span class="font-semibold text-lg flex-grow text-left">Spotify (Coming Soon)</span>
+                    <span class="text-gray-400 group-hover:text-white transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
+                </a>
+                
+                <!-- Back to Podcast Hub -->
+                 <a href="podcasts.html" class="group flex items-center justify-center p-4 bg-gray-800/50 border border-gray-700 rounded-lg w-full transition-all duration-300 hover:bg-gray-700 hover:scale-105 shadow-md mt-8">
+                    <span class="font-semibold text-lg text-gray-400 group-hover:text-white">&larr; Back to Podcast Hub</span>
+                </a>
+
+            </main>
+        </div>
+
+        <!-- Footer -->
+        <footer class="absolute bottom-4 text-center text-gray-600 text-sm">
+            <p>&copy; 2024 dubbb_c. All Rights Reserved.</p>
+        </footer>
+    </div>
+
+</body>
+</html>
