@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dubbb_c's Podcasts</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Applying the Inter font to the body */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom styles for a subtle background gradient and glow effect */
+        .main-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 0%, rgba(147, 51, 234, 0.15), transparent 40%);
+            z-index: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white antialiased">
+
+    <!-- Main Container -->
+    <div class="main-container relative min-h-screen flex flex-col items-center justify-center p-4 overflow-hidden">
+        
+        <div class="relative z-10 w-full max-w-md mx-auto">
+            
+            <!-- Profile Section -->
+            <header class="text-center mb-8">
+                <div class="w-24 h-24 md:w-32 md:h-32 rounded-full mx-auto mb-4 border-4 border-gray-700 shadow-lg flex items-center justify-center bg-gray-800">
+                    <svg class="w-12 h-12 md:w-16 md:h-16 text-purple-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 016 0v8.25a3 3 0 01-3 3z" />
+                    </svg>
+                </div>
+                <h1 class="text-2xl md:text-3xl font-bold text-white">Podcasts</h1>
+                <p id="streamer-bio" class="text-gray-400 mt-2 text-sm md:text-base">All my shows in one place</p>
+            </header>
+
+            <!-- Podcast List Section -->
+            <main class="space-y-4">
+                 <!-- The Punchline & The Pause -->
+                 <a href="punchline-pause.html" class="group flex items-center p-4 bg-gray-800 rounded-lg w-full transition-all duration-300 hover:bg-purple-600 hover:scale-105 shadow-md">
+                    <svg class="w-6 h-6 mr-4 text-purple-400 group-hover:text-white transition-colors duration-300" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Podcasts</title><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 21.6c-5.302 0-9.6-4.298-9.6-9.6S6.698 2.4 12 2.4s9.6 4.298 9.6 9.6-4.298 9.6-9.6 9.6zM8.4 9.6c0-.994.806-1.8 1.8-1.8s1.8.806 1.8 1.8v6c0 .994-.806 1.8-1.8 1.8s-1.8-.806-1.8-1.8V9.6zm5.4 0c0-.994.806-1.8 1.8-1.8s1.8.806 1.8 1.8v6c0 .994-.806 1.8-1.8 1.8s-1.8-.806-1.8-1.8V9.6z" fill="currentColor"/></svg>
+                    <span class="font-semibold text-lg flex-grow text-left">The Punchline & The Pause</span>
+                    <span class="text-gray-400 group-hover:text-white transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
+                </a>
+                
+                <!-- Back to Main Hub -->
+                 <a href="index.html" class="group flex items-center justify-center p-4 bg-gray-800/50 border border-gray-700 rounded-lg w-full transition-all duration-300 hover:bg-gray-700 hover:scale-105 shadow-md mt-8">
+                    <span class="font-semibold text-lg text-gray-400 group-hover:text-white">&larr; Back to Main Hub</span>
+                </a>
+            </main>
+        </div>
+
+        <!-- Footer -->
+        <footer class="absolute bottom-4 text-center text-gray-600 text-sm">
+            <p>&copy; 2024 dubbb_c. All Rights Reserved.</p>
+        </footer>
+    </div>
+
+</body>
+</html>
