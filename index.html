@@ -58,7 +58,7 @@
 
             <!-- Social Links Section -->
             <main class="space-y-4">
-                <!-- Ask Gemini AI -->
+                <!-- Ask Dub (AI) -->
                 <button id="ask-ai-btn" class="group flex items-center p-4 bg-teal-600/20 border border-teal-500 rounded-lg w-full transition-all duration-300 hover:bg-teal-500 hover:scale-105 shadow-md text-teal-300 hover:text-white">
                     <svg class="w-6 h-6 mr-4 transition-colors duration-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5a.75.75 0 01.75.75v.31a10.493 10.493 0 015.484 2.836.75.75 0 01-.976 1.138 9.001 9.001 0 00-10.517 0 .75.75 0 01-.976-1.138A10.493 10.493 0 0111.25 3.56V3.25a.75.75 0 01.75-.75zM7.757 8.243a.75.75 0 011.06 0l1.158 1.158a.75.75 0 010 1.06l-1.158 1.159a.75.75 0 01-1.06-1.061l.628-.629-.628-.628a.75.75 0 010-1.06zM12 8.25a.75.75 0 01.75.75v3a.75.75 0 01-1.5 0v-3a.75.75 0 01.75-.75zm4.183.993a.75.75 0 010 1.06l-.628.628.628.629a.75.75 0 11-1.06 1.06l-1.159-1.158a.75.75 0 010-1.061l1.159-1.158a.75.75 0 011.06 0zM12 15.75a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM5.75 18a.75.75 0 00-.75.75v.31a10.493 10.493 0 005.484 2.836.75.75 0 10.582-1.322 9 9 0 01-4.823-2.574V18.75a.75.75 0 00-.5-.75zm12.5 0a.75.75 0 00-.5.75v.25a9 9 0 01-4.823 2.574.75.75 0 10.582 1.322A10.493 10.493 0 0018.25 19.06v-.31a.75.75 0 00-.75-.75z"></path></svg>
                     <span class="font-semibold text-lg flex-grow text-left">Ask Dub (AI)</span>
@@ -120,6 +120,13 @@
                     <span class="font-semibold text-lg flex-grow text-left">Instagram</span>
                     <span class="text-gray-400 group-hover:text-white transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
                 </a>
+
+                <!-- SoundCloud -->
+                <a href="https://soundcloud.com/callmemikey" target="_blank" rel="noopener noreferrer" class="group flex items-center p-4 bg-gray-800 rounded-lg w-full transition-all duration-300 hover:bg-orange-500 hover:scale-105 shadow-md">
+                    <svg class="w-6 h-6 mr-4 text-orange-500 group-hover:text-white transition-colors duration-300" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>SoundCloud</title><path d="M12.189.031C5.466.031 0 5.497 0 12.22c0 6.722 5.466 12.188 12.189 12.188 6.723 0 11.811-5.466 11.811-12.188V.031H12.19zM8.88 18.068c-1.584 0-2.868-1.284-2.868-2.868s1.284-2.868 2.868-2.868 2.868 1.284 2.868 2.868-1.284 2.868-2.868 2.868zm4.32-3.6c-1.584 0-2.868-1.284-2.868-2.868s1.284-2.868 2.868-2.868 2.868 1.284 2.868 2.868-1.284 2.868-2.868 2.868zm4.32-3.6c-1.584 0-2.868-1.284-2.868-2.868s1.284-2.868 2.868-2.868 2.868 1.284 2.868 2.868-1.284 2.868-2.868 2.868z" fill="currentColor"/></svg>
+                    <span class="font-semibold text-lg flex-grow text-left">SoundCloud</span>
+                    <span class="text-gray-400 group-hover:text-white transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
+                </a>
             </main>
 
         </div>
@@ -135,7 +142,7 @@
         <div class="bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg border border-gray-700 transform transition-all duration-300 scale-95 opacity-0" id="modal-content">
             <!-- Modal Header -->
             <div class="flex items-center justify-between p-4 border-b border-gray-700">
-                <h3 class="text-xl font-bold text-white" id="modal-title">✨ Ask Gemini AI</h3>
+                <h3 class="text-xl font-bold text-white" id="modal-title">✨ Ask Dub (AI)</h3>
                 <button id="close-modal-btn" class="text-gray-400 hover:text-white text-3xl leading-none">&times;</button>
             </div>
             <!-- Modal Body -->
@@ -211,7 +218,7 @@
 
             // --- Gemini API Call via Secure Worker ---
             async function callGemini(prompt) {
-                // IMPORTANT: This URL points to your secure Cloudflare Worker
+                // This URL points to your secure Cloudflare Worker
                 const apiUrl = 'https://dubbc-ai-proxy.wcornelius.workers.dev/';
                 
                 const payload = {
