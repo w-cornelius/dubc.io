@@ -35,6 +35,16 @@
             opacity: 1;
             transform: scale(1);
         }
+        /* Smooth transition for the widget container */
+        #discord-widget-container {
+            transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out;
+            max-height: 0;
+            opacity: 0;
+        }
+        #discord-widget-container.expanded {
+            max-height: 500px; /* Should match iframe height */
+            opacity: 1;
+        }
     </style>
 </head>
 <body class="bg-gray-900 text-white antialiased">
@@ -59,75 +69,98 @@
             <!-- Social Links Section -->
             <main class="space-y-4">
                 <!-- Ask Dub (AI) -->
-                <button id="ask-ai-btn" class="group flex items-center p-4 bg-teal-600/20 border border-teal-500 rounded-lg w-full transition-all duration-300 hover:bg-teal-500 hover:scale-105 shadow-md text-teal-300 hover:text-white">
+                <button id="ask-ai-btn" data-link-id="ask-ai" class="group flex items-center p-4 bg-teal-600/20 border border-teal-500 rounded-lg w-full transition-all duration-300 hover:bg-teal-500 hover:scale-105 shadow-md text-teal-300 hover:text-white">
                     <svg class="w-6 h-6 mr-4 transition-colors duration-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5a.75.75 0 01.75.75v.31a10.493 10.493 0 015.484 2.836.75.75 0 01-.976 1.138 9.001 9.001 0 00-10.517 0 .75.75 0 01-.976-1.138A10.493 10.493 0 0111.25 3.56V3.25a.75.75 0 01.75-.75zM7.757 8.243a.75.75 0 011.06 0l1.158 1.158a.75.75 0 010 1.06l-1.158 1.159a.75.75 0 01-1.06-1.061l.628-.629-.628-.628a.75.75 0 010-1.06zM12 8.25a.75.75 0 01.75.75v3a.75.75 0 01-1.5 0v-3a.75.75 0 01.75-.75zm4.183.993a.75.75 0 010 1.06l-.628.628.628.629a.75.75 0 11-1.06 1.06l-1.159-1.158a.75.75 0 010-1.061l1.159-1.158a.75.75 0 011.06 0zM12 15.75a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM5.75 18a.75.75 0 00-.75.75v.31a10.493 10.493 0 005.484 2.836.75.75 0 10.582-1.322 9 9 0 01-4.823-2.574V18.75a.75.75 0 00-.5-.75zm12.5 0a.75.75 0 00-.5.75v.25a9 9 0 01-4.823 2.574.75.75 0 10.582 1.322A10.493 10.493 0 0018.25 19.06v-.31a.75.75 0 00-.75-.75z"></path></svg>
                     <span class="font-semibold text-lg flex-grow text-left">Ask Dub (AI)</span>
-                    <span class="text-gray-400 group-hover:text-white transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
+                    <span class="completion-mark ml-auto hidden">&#10003;</span>
                 </button>
                 
                  <!-- Twitch | Main -->
-                 <a href="https://twitch.tv/dubbb_c" target="_blank" rel="noopener noreferrer" class="group flex items-center p-4 bg-gray-800 rounded-lg w-full transition-all duration-300 hover:bg-[#6441a5] hover:scale-105 shadow-md">
+                 <a href="https://twitch.tv/dubbb_c" data-link-id="twitch-main" target="_blank" rel="noopener noreferrer" class="group flex items-center p-4 bg-gray-800 rounded-lg w-full transition-all duration-300 hover:bg-[#6441a5] hover:scale-105 shadow-md">
                     <svg class="w-6 h-6 mr-4 text-[#9146ff] group-hover:text-white transition-colors duration-300" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Twitch</title><path d="M11.571 4.714h1.715v5.143H11.57zm4.714 0h1.714v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0H6zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714v9.429z" fill="currentColor"/></svg>
                     <span class="font-semibold text-lg flex-grow text-left">Twitch | Main</span>
-                    <span class="text-gray-400 group-hover:text-white transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
+                    <span class="completion-mark ml-auto hidden">&#10003;</span>
                 </a>
                 
                 <!-- Twitch | DJ -->
-                <a href="https://twitch.tv/djdubc_" target="_blank" rel="noopener noreferrer" class="group flex items-center p-4 bg-gray-800 rounded-lg w-full transition-all duration-300 hover:bg-[#6441a5] hover:scale-105 shadow-md">
+                <a href="https://twitch.tv/djdubc_" data-link-id="twitch-dj" target="_blank" rel="noopener noreferrer" class="group flex items-center p-4 bg-gray-800 rounded-lg w-full transition-all duration-300 hover:bg-[#6441a5] hover:scale-105 shadow-md">
                     <svg class="w-6 h-6 mr-4 text-[#9146ff] group-hover:text-white transition-colors duration-300" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Twitch</title><path d="M11.571 4.714h1.715v5.143H11.57zm4.714 0h1.714v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0H6zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714v9.429z" fill="currentColor"/></svg>
                     <span class="font-semibold text-lg flex-grow text-left">Twitch | DJ</span>
-                    <span class="text-gray-400 group-hover:text-white transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
+                    <span class="completion-mark ml-auto hidden">&#10003;</span>
                 </a>
 
                 <!-- Kick -->
-                <a href="https://kick.com/dubbb_c" target="_blank" rel="noopener noreferrer" class="group flex items-center p-4 bg-gray-800 rounded-lg w-full transition-all duration-300 hover:bg-[#53fc18] hover:scale-105 shadow-md">
+                <a href="https://kick.com/dubbb_c" data-link-id="kick" target="_blank" rel="noopener noreferrer" class="group flex items-center p-4 bg-gray-800 rounded-lg w-full transition-all duration-300 hover:bg-[#53fc18] hover:scale-105 shadow-md">
                     <svg class="w-6 h-6 mr-4 text-[#53fc18] group-hover:text-gray-900 transition-colors duration-300" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Kick</title><path d="M19.462 3.82L12.5 11.24v12.26l-3.32-3.32-3.32 3.32V11.24L-.001 3.82h6.24l2.94 2.94 2.94-2.94zm0-3.32h-6.24L10.282 3.44 7.342 6.38H1.102L10.282 16v7.5l4.14-4.14 4.14 4.14V16l9.18-9.62h-6.24L14.422 3.44l2.94-2.94z" fill="currentColor"/></svg>
                     <span class="font-semibold text-lg flex-grow text-left text-white group-hover:text-gray-900">Kick</span>
-                    <span class="text-gray-400 group-hover:text-gray-900 transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
+                    <span class="completion-mark ml-auto hidden">&#10003;</span>
                 </a>
 
                 <!-- Podcasts -->
-                <a href="podcasts.html" class="group flex items-center p-4 bg-gray-800 rounded-lg w-full transition-all duration-300 hover:bg-purple-600 hover:scale-105 shadow-md">
+                <a href="podcasts.html" data-link-id="podcasts" class="group flex items-center p-4 bg-gray-800 rounded-lg w-full transition-all duration-300 hover:bg-purple-600 hover:scale-105 shadow-md">
                     <svg class="w-6 h-6 mr-4 text-purple-400 group-hover:text-white transition-colors duration-300" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Apple Podcasts</title><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 21.6c-5.302 0-9.6-4.298-9.6-9.6S6.698 2.4 12 2.4s9.6 4.298 9.6 9.6-4.298 9.6-9.6 9.6zM8.4 9.6c0-.994.806-1.8 1.8-1.8s1.8.806 1.8 1.8v6c0 .994-.806 1.8-1.8 1.8s-1.8-.806-1.8-1.8V9.6zm5.4 0c0-.994.806-1.8 1.8-1.8s1.8.806 1.8 1.8v6c0 .994-.806 1.8-1.8 1.8s-1.8-.806-1.8-1.8V9.6z" fill="currentColor"/></svg>
                     <span class="font-semibold text-lg flex-grow text-left">Podcasts</span>
-                    <span class="text-gray-400 group-hover:text-white transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
+                    <span class="completion-mark ml-auto hidden">&#10003;</span>
                 </a>
 
                 <!-- YouTube -->
-                <a href="https://www.youtube.com/@dubbb_c" target="_blank" rel="noopener noreferrer" class="group flex items-center p-4 bg-gray-800 rounded-lg w-full transition-all duration-300 hover:bg-[#FF0000] hover:scale-105 shadow-md">
+                <a href="https://www.youtube.com/@dubbb_c" data-link-id="youtube" target="_blank" rel="noopener noreferrer" class="group flex items-center p-4 bg-gray-800 rounded-lg w-full transition-all duration-300 hover:bg-[#FF0000] hover:scale-105 shadow-md">
                     <svg class="w-6 h-6 mr-4 text-[#FF0000] group-hover:text-white transition-colors duration-300" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>YouTube</title><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" fill="currentColor"/></svg>
                     <span class="font-semibold text-lg flex-grow text-left">YouTube</span>
-                    <span class="text-gray-400 group-hover:text-white transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
+                    <span class="completion-mark ml-auto hidden">&#10003;</span>
                 </a>
                 
-                <!-- Discord -->
-                <a href="https://discord.gg/hHzJp9zH9W" target="_blank" rel="noopener noreferrer" class="group flex items-center p-4 bg-gray-800 rounded-lg w-full transition-all duration-300 hover:bg-[#5865F2] hover:scale-105 shadow-md">
+                <!-- Discord Link -->
+                <a href="https://discord.gg/hHzJp9zH9W" data-link-id="discord" target="_blank" rel="noopener noreferrer" class="group flex items-center p-4 bg-gray-800 rounded-lg w-full transition-all duration-300 hover:bg-[#5865F2] hover:scale-105 shadow-md">
                     <svg class="w-6 h-6 mr-4 text-[#5865F2] group-hover:text-white transition-colors duration-300" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Discord</title><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4464.8254-.6182 1.2529a17.2966 17.2966 0 00-5.2734 0 11.2978 11.2978 0 00-.6182-1.2529.0741.0741 0 00-.0785-.0371 19.7363 19.7363 0 00-4.8851 1.5152.069.069 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0825.0825 0 00.0321.0524c.8021.4218 1.5735.7641 2.3254 1.0142a.0741.0741 0 00.086-.0215c.4218-.4463.7854-.9141.109-1.3818a12.6439 12.6439 0 01-1.566-2.5424.0741.0741 0 01.016-.0785c.1282-.0962.2564-.1923.3846-.2885a.0741.0741 0 01.0524-.008c4.5529 1.53 9.5332 1.53 14.0861 0a.0741.0741 0 01.0524.008c.1282.0962.2564.1923.3846.2885a.0741.0741 0 01.016.0785 12.0217 12.0217 0 01-1.566 2.5424.0741.0741 0 00.086.0215c.7519-.2501 1.5233-.5924 2.3254-1.0142a.0825.0825 0 00.0321-.0524c.5-4.3897-.5227-8.9236-2.6441-13.6603a.069.069 0 00-.0321-.0277zM8.02 15.3312c-.8934 0-1.6195-1.0675-1.6195-2.3852s.7261-2.3852 1.6195-2.3852c.8934 0 1.6195.995 1.6195 2.3852s-.7261 2.3852-1.6195 2.3852zm7.9648 0c-.8934 0-1.6195-1.0675-1.6195-2.3852s.7261-2.3852 1.6195-2.3852c.8934 0 1.6195.995 1.6195 2.3852s-.7261 2.3852-1.6195 2.3852z" fill="currentColor"/></svg>
                     <span class="font-semibold text-lg flex-grow text-left">Discord</span>
-                    <span class="text-gray-400 group-hover:text-white transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
+                    <span class="completion-mark ml-auto hidden">&#10003;</span>
                 </a>
                 
                 <!-- TikTok -->
-                <a href="https://www.tiktok.com/@dubbb_c" target="_blank" rel="noopener noreferrer" class="group flex items-center p-4 bg-gray-800 rounded-lg w-full transition-all duration-300 hover:bg-[#000000] hover:scale-105 shadow-md">
+                <a href="https://www.tiktok.com/@dubbb_c" data-link-id="tiktok" target="_blank" rel="noopener noreferrer" class="group flex items-center p-4 bg-gray-800 rounded-lg w-full transition-all duration-300 hover:bg-[#000000] hover:scale-105 shadow-md">
                     <svg class="w-6 h-6 mr-4 text-[#ff0050] group-hover:text-[#ff0050] transition-colors duration-300" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>TikTok</title><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-2.43.05-4.84-.95-6.43-2.8-1.59-1.87-2.16-4.2-1.8-6.51.36-2.31 1.73-4.18 3.6-5.71 1.85-1.52 4.06-2.38 6.38-2.38.39-.01.79-.01 1.18-.01v4.03c-1.11 0-2.22.02-3.33-.01-1.36-.05-2.65.43-3.53 1.36-.88.93-1.33 2.14-1.27 3.41.07 1.27.53 2.46 1.38 3.44.85.98 1.99 1.52 3.24 1.52.85 0 1.7-.24 2.42-.72.72-.48 1.24-1.19 1.48-2.04.24-.85.28-1.78.28-2.64V.02z" fill="currentColor"/></svg>
                     <span class="font-semibold text-lg flex-grow text-left">TikTok</span>
-                    <span class="text-gray-400 group-hover:text-white transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
+                    <span class="completion-mark ml-auto hidden">&#10003;</span>
                 </a>
                 
                 <!-- Instagram -->
-                <a href="https://www.instagram.com/callmemikey_/" target="_blank" rel="noopener noreferrer" class="group flex items-center p-4 bg-gray-800 rounded-lg w-full transition-all duration-300 hover:bg-gradient-to-r hover:from-purple-500 hover:via-pink-500 hover:to-orange-500 hover:scale-105 shadow-md">
+                <a href="https://www.instagram.com/callmemikey_/" data-link-id="instagram" target="_blank" rel="noopener noreferrer" class="group flex items-center p-4 bg-gray-800 rounded-lg w-full transition-all duration-300 hover:bg-gradient-to-r hover:from-purple-500 hover:via-pink-500 hover:to-orange-500 hover:scale-105 shadow-md">
                     <svg class="w-6 h-6 mr-4 text-pink-500 group-hover:text-white transition-colors duration-300" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Instagram</title><path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.784.305-1.455.717-2.126 1.387C1.333 2.705.92 3.377.612 4.14c-.3.765-.5 1.635-.56 2.913-.058 1.28-.072 1.687-.072 4.947s.015 3.667.072 4.947c.06 1.278.26 2.148.56 2.913.305.784.717 1.455 1.387 2.126.67.67 1.342 1.082 2.126 1.387.765.3 1.635.5 2.913.56 1.28.058 1.687.072 4.947.072s3.667-.015 4.947-.072c1.278-.06 2.148-.26 2.913-.56.784-.305 1.455-.717 2.126-1.387.67-.67 1.082-1.342 1.387-2.126.3-.765.5-1.635.56-2.913.058-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.278-.26-2.148-.56-2.913-.305-.784-.717-1.455-1.387-2.126C21.314 1.333 20.643.92 19.86.612c-.765-.3-1.635-.5-2.913-.56C15.667.015 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.07 1.17.055 1.805.248 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.168.422.36 1.057.413 2.227.056 1.265.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.056 1.17-.245 1.805-.413 2.227-.217.562-.477.96-.896 1.382-.42.419-.82.679-1.38.896-.423.168-1.057.36-2.227.413-1.265.056-1.646.07-4.85.07s-3.585-.015-4.85-.07c-1.17-.056-1.805-.245-2.227-.413-.562-.217-.96-.477-1.382-.896-.419-.42-.679-.82-1.381-.896-.168-.423-.36-1.057-.413-2.227-.056-1.265-.07-1.646-.07-4.85s.015-3.585.07-4.85c.055-1.17.248-1.805.415-2.227.217-.562.477-.96.896-1.382.42-.419.819-.679 1.381-.896.422-.168 1.057-.36 2.227-.413C8.415 2.176 8.797 2.16 12 2.16zm0 5.48c-3.405 0-6.162 2.757-6.162 6.162s2.757 6.162 6.162 6.162 6.162-2.757 6.162-6.162-2.757-6.162-6.162-6.162zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm6.406-11.845c-.796 0-1.44.645-1.44 1.44s.645 1.44 1.44 1.44c.795 0 1.44-.645 1.44-1.44s-.645-1.44-1.44-1.44z" fill="currentColor"/></svg>
                     <span class="font-semibold text-lg flex-grow text-left">Instagram</span>
-                    <span class="text-gray-400 group-hover:text-white transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
+                    <span class="completion-mark ml-auto hidden">&#10003;</span>
                 </a>
 
                 <!-- SoundCloud -->
-                <a href="https://soundcloud.com/callmemikey" target="_blank" rel="noopener noreferrer" class="group flex items-center p-4 bg-gray-800 rounded-lg w-full transition-all duration-300 hover:bg-orange-500 hover:scale-105 shadow-md">
+                <a href="https://soundcloud.com/callmemikey" data-link-id="soundcloud" target="_blank" rel="noopener noreferrer" class="group flex items-center p-4 bg-gray-800 rounded-lg w-full transition-all duration-300 hover:bg-orange-500 hover:scale-105 shadow-md">
                     <svg class="w-6 h-6 mr-4 text-orange-500 group-hover:text-white transition-colors duration-300" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>SoundCloud</title><path d="M12.189.031C5.466.031 0 5.497 0 12.22c0 6.722 5.466 12.188 12.189 12.188 6.723 0 11.811-5.466 11.811-12.188V.031H12.19zM8.88 18.068c-1.584 0-2.868-1.284-2.868-2.868s1.284-2.868 2.868-2.868 2.868 1.284 2.868 2.868-1.284 2.868-2.868 2.868zm4.32-3.6c-1.584 0-2.868-1.284-2.868-2.868s1.284-2.868 2.868-2.868 2.868 1.284 2.868 2.868-1.284 2.868-2.868 2.868zm4.32-3.6c-1.584 0-2.868-1.284-2.868-2.868s1.284-2.868 2.868-2.868 2.868 1.284 2.868 2.868-1.284 2.868-2.868 2.868z" fill="currentColor"/></svg>
                     <span class="font-semibold text-lg flex-grow text-left">SoundCloud</span>
-                    <span class="text-gray-400 group-hover:text-white transition-transform duration-300 group-hover:translate-x-1">&rarr;</span>
+                    <span class="completion-mark ml-auto hidden">&#10003;</span>
                 </a>
             </main>
+
+            <!-- Collapsible Discord Widget Section -->
+            <section class="mt-8">
+                <button id="toggle-discord-widget" data-link-id="discord-widget" class="group flex items-center justify-between w-full text-left p-4 bg-gray-800 rounded-lg transition-all duration-300 hover:bg-gray-700 focus:outline-none shadow-md">
+                    <h2 class="text-xl font-bold text-white">Join the Community</h2>
+                    <div class="flex items-center">
+                        <span class="completion-mark mr-2 hidden">&#10003;</span>
+                        <svg id="discord-chevron" class="w-6 h-6 text-white transform transition-transform duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </div>
+                </button>
+                <div id="discord-widget-container" class="mt-2 rounded-lg overflow-hidden shadow-lg mx-auto" style="max-width: 350px;">
+                    <iframe 
+                        src="https://discord.com/widget?id=1207044666613305394&theme=dark" 
+                        class="w-full" 
+                        height="500" 
+                        allowtransparency="true" 
+                        frameborder="0" 
+                        sandbox="allow-popups allow-popups-to-escape-sandbox allow-same-origin allow-scripts">
+                    </iframe>
+                </div>
+            </section>
 
         </div>
 
@@ -170,6 +203,32 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const visitedLinksKey = 'dubbcVisitedLinks';
+            let visitedLinks = JSON.parse(localStorage.getItem(visitedLinksKey)) || {};
+
+            const markAsVisited = (id) => {
+                const element = document.querySelector(`[data-link-id="${id}"]`);
+                if (element) {
+                    const checkmark = element.querySelector('.completion-mark');
+                    if (checkmark) {
+                        checkmark.classList.remove('hidden');
+                    }
+                }
+                visitedLinks[id] = true;
+                localStorage.setItem(visitedLinksKey, JSON.stringify(visitedLinks));
+            };
+
+            const allLinks = document.querySelectorAll('[data-link-id]');
+            allLinks.forEach(link => {
+                const linkId = link.dataset.linkId;
+                if (visitedLinks[linkId]) {
+                    markAsVisited(linkId);
+                }
+                link.addEventListener('click', () => {
+                    markAsVisited(linkId);
+                });
+            });
+
             // --- DOM Element Selectors ---
             const askAiBtn = document.getElementById('ask-ai-btn');
             const aiModal = document.getElementById('ai-modal');
@@ -182,6 +241,9 @@
             const modalText = document.getElementById('modal-text');
             const modalFooter = document.getElementById('modal-footer');
             const copyBtn = document.getElementById('copy-btn');
+            const toggleDiscordBtn = document.getElementById('toggle-discord-widget');
+            const discordWidgetContainer = document.getElementById('discord-widget-container');
+            const discordChevron = document.getElementById('discord-chevron');
 
             // --- Modal Control Functions ---
             const showModal = () => {
@@ -218,12 +280,8 @@
 
             // --- Gemini API Call via Secure Worker ---
             async function callGemini(prompt) {
-                // This URL points to your secure Cloudflare Worker
                 const apiUrl = 'https://dubbc-ai-proxy.wcornelius.workers.dev/';
-                
-                const payload = {
-                    prompt: prompt 
-                };
+                const payload = { prompt: prompt };
 
                 try {
                     const response = await fetch(apiUrl, {
@@ -231,21 +289,12 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
                     });
-
-                    if (!response.ok) {
-                        throw new Error(`API call failed with status: ${response.status}`);
-                    }
-
+                    if (!response.ok) throw new Error(`API call failed with status: ${response.status}`);
                     const result = await response.json();
-                    
-                    if (result.candidates && result.candidates.length > 0 && result.candidates[0].content.parts.length > 0) {
+                    if (result.candidates && result.candidates.length > 0) {
                         return result.candidates[0].content.parts[0].text.trim();
                     } else {
-                         if (result.error) {
-                            console.error("Gemini API Error:", result.error.message);
-                            return `An AI error occurred: ${result.error.message}`;
-                        }
-                        return "Sorry, I couldn't generate a response. The format was unexpected.";
+                        throw new Error('Unexpected API response format');
                     }
                 } catch (error) {
                     console.error('Error calling the proxy worker:', error);
@@ -259,29 +308,28 @@
             submitAiQuestionBtn.addEventListener('click', async () => {
                 const question = aiQuestionInput.value;
                 if (!question.trim()) {
-                    modalText.innerText = 'Please enter a question.';
-                    modalResultContainer.classList.remove('hidden');
+                    showResult('Please enter a question.');
                     return;
                 }
-                
                 showLoader();
-                // This detailed prompt gives the AI context about you.
-                const fullPrompt = `You are a helpful, friendly AI assistant for the streamer and content creator 'dubbb_c'. Your persona is upbeat and engaging. Your knowledge base includes: dubbb_c streams on Twitch (dubbb_c and djdubc_), Kick (dubbb_c), and uploads content to YouTube, TikTok, and Instagram. He also co-hosts the podcast 'The Punchline & The Pause'. Based on this, answer the following fan's question concisely: "${question}"`;
+                const fullPrompt = `You are a helpful, friendly AI assistant for the streamer 'dubbb_c'. Your knowledge base includes: he streams on Twitch (dubbb_c and djdubc_), Kick (dubbb_c), and has content on YouTube, TikTok, Instagram, and SoundCloud. He co-hosts 'The Punchline & The Pause' podcast. Answer the fan's question concisely: "${question}"`;
                 const resultText = await callGemini(fullPrompt);
                 showResult(resultText);
             });
             
             aiQuestionInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    submitAiQuestionBtn.click();
-                }
+                if (e.key === 'Enter') submitAiQuestionBtn.click();
             });
 
             closeModalBtn.addEventListener('click', hideModal);
             aiModal.addEventListener('click', (e) => {
-                if (e.target === aiModal) {
-                    hideModal();
-                }
+                if (e.target === aiModal) hideModal();
+            });
+
+            // --- Discord Widget Toggle ---
+            toggleDiscordBtn.addEventListener('click', () => {
+                const isExpanded = discordWidgetContainer.classList.toggle('expanded');
+                discordChevron.classList.toggle('rotate-180', isExpanded);
             });
 
             // --- Utility Functions ---
