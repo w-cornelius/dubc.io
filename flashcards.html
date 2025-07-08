@@ -1,0 +1,1260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real Estate Glossary Flashcards with Gemini AI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .flashcard-container {
+            perspective: 1000px;
+        }
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s;
+        }
+        .flashcard.is-flipped {
+            transform: rotateY(180deg);
+        }
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 1.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            text-align: center;
+        }
+        .card-front {
+            background-color: #fff;
+            color: #1f2937;
+        }
+        .card-back {
+            background-color: #f3f4f6;
+            color: #1f2937;
+            transform: rotateY(180deg);
+            overflow-y: auto;
+        }
+        /* Custom scrollbar for the back of the card */
+        .card-back::-webkit-scrollbar {
+            width: 8px;
+        }
+        .card-back::-webkit-scrollbar-track {
+            background: #e5e7eb;
+            border-radius: 10px;
+        }
+        .card-back::-webkit-scrollbar-thumb {
+            background: #9ca3af;
+            border-radius: 10px;
+        }
+        .card-back::-webkit-scrollbar-thumb:hover {
+            background: #6b7280;
+        }
+        #geminiResponse {
+            white-space: pre-wrap; /* Allows line breaks to be displayed */
+        }
+    </style>
+</head>
+<body class="bg-gray-100 flex flex-col items-center justify-center min-h-screen p-4">
+
+    <div class="w-full max-w-2xl mx-auto">
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-800 text-center mb-2">Real Estate Flashcards</h1>
+        <p class="text-gray-600 text-center mb-6">Click the card for the definition, or ask Gemini for more info.</p>
+
+        <!-- Flashcard Section -->
+        <div class="flashcard-container w-full h-80 md:h-96 mb-6">
+            <div id="flashcard" class="flashcard cursor-pointer">
+                <div class="card-face card-front">
+                    <h2 id="term" class="text-2xl md:text-3xl font-semibold"></h2>
+                </div>
+                <div class="card-face card-back">
+                    <p id="definition" class="text-base md:text-lg"></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="flex items-center justify-between w-full">
+            <button id="prevBtn" class="px-6 py-3 bg-white text-gray-700 font-semibold rounded-lg shadow-md hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                Previous
+            </button>
+            <div id="cardCounter" class="text-lg font-medium text-gray-700"></div>
+            <button id="nextBtn" class="px-6 py-3 bg-white text-gray-700 font-semibold rounded-lg shadow-md hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                Next
+            </button>
+        </div>
+        <div class="flex justify-center mt-4">
+            <button id="shuffleBtn" class="px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition-colors">
+                Shuffle Deck
+            </button>
+        </div>
+
+        <!-- Gemini AI Section -->
+        <div class="mt-8 pt-6 border-t border-gray-300">
+            <h3 class="text-2xl font-bold text-gray-800 text-center mb-4">Ask Gemini</h3>
+            <div class="flex flex-col sm:flex-row gap-2 mb-4">
+                <input type="text" id="userQuestion" placeholder="Ask a question about this term..." class="flex-grow p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:outline-none">
+                <button id="askGeminiBtn" class="px-6 py-3 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 transition-colors">
+                    Ask
+                </button>
+            </div>
+            <div id="geminiResponseContainer" class="bg-white p-4 rounded-lg shadow-inner min-h-[100px]">
+                <div id="geminiLoader" class="hidden text-center text-gray-500">
+                    <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600 mx-auto mb-2"></div>
+                    Thinking...
+                </div>
+                <p id="geminiResponse" class="text-gray-700"></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const flashcardData = [
+            { term: '1031 tax-deferred exchange', definition: 'Section 1031 of the Internal Revenue Code allows the owner of real property to sell that property and then reinvest in a "like-kind" property and defer paying any capital gains taxes; strict IRS rules regulate this type of exchange' },
+            { term: '15-year loan', definition: 'A nontraditional mortgage product that shortens the standard mortgage term from 30 years to 15 years' },
+            { term: 'abutting', definition: 'Land parcels that share a common border' },
+            { term: 'acceleration clause', definition: 'Allows a lender to demand immediate and full payment of all debt owed if a buyer defaults or fails to meet certain conditions that apply to the loan' },
+            { term: 'accession', definition: 'The addition of value to property through labor or the addition of new materials, including an increase in land through natural processes' },
+            { term: 'accessory use', definition: 'An incidental or subordinate use to the primary use of the property' },
+            { term: 'accounting', definition: 'One of the fiduciary duties, accounting means an agent is accountable for any funds or properties entrusted to the agent. This is a duty that survives termination of an agency agreement' },
+            { term: 'Accredited Investor', definition: 'An investor that meets one of the following: An individual with net worth of $1 million; An individual with annual income of $200k for the past 2 years (or a couple with joint income of $300k) with income expected to remain level; Individual holding S7, S65, or S82 license; Any bank, investment company, insurance company; Officer or director of issuer, or non-profit institution, trust, partnership, ERISA plan, or corporation with assets over $5 million; Employee of private fund if deemed knowledgeable; Investment advisers, RBICs' },
+            { term: 'accretion', definition: 'The gradual growth in the size of a land parcel due to water-deposited sand, silt, or gravel' },
+            { term: 'accrued items', definition: 'Expenses that have been incurred but aren\'t due yet, e.g. property taxes' },
+            { term: 'acknowledgment', definition: 'A requirement for deed transfer; a public official must acknowledge, usually by a notary public, the grantor\'s signature' },
+            { term: 'acre', definition: 'A unit of land that is equal to 43,560 square feet' },
+            { term: 'active fraud', definition: 'Intentional misstatement of a material fact; action taken by one party to deceive a second party in an attempt to consummate a contract or transaction' },
+            { term: 'act of waste', definition: 'Abuse of a property by a person who holds possession through a life estate' },
+            { term: 'actual notice', definition: 'Express notice given directly to a person or actual knowledge that is known' },
+            { term: 'added assessment', definition: 'The difference between the property assessment before the property improvement and the property\'s value after the improvement.' },
+            { term: 'adjustable-rate mortgage (ARM)', definition: 'A mortgage with a rate that adjusts based on changes in a market index' },
+            { term: 'adjusted basis', definition: 'The final basis for taxing purposes, computed by taking acquisition costs plus capital improvements and less certain deductions such as depreciation' },
+            { term: 'adjustment', definition: 'In appraisals or CMAs, the dollar value or percentage added to or subtracted from the sales price of a comparable to arrive at an indicated value for the subject; in closings, the credits and debits made to a settlement statement for accrued or prepaid expenses' },
+            { term: 'adjustment date', definition: 'The date on which the interest rate changes on an adjustable rate mortgage' },
+            { term: 'adjustment (loan)', definition: 'A debit or credit at closing to coincide with appropriate closing costs' },
+            { term: 'administrative law', definition: 'Law related to the legal process; enacted by administrative agencies, which are governmental bodies of the city, county, state, or federal government' },
+            { term: 'Administrative Procedure Act', definition: 'Helps to ensure that no governmental entity acts without an opportunity for public input by requiring public disclosure and discourse before rulemaking' },
+            { term: 'ad valorem', definition: 'Related to the concept of property taxes; a Latin term that means "according to value"' },
+            { term: 'adverse material fact', definition: 'A fact that might cause the buyer to change his mind about purchasing the property' },
+            { term: 'adverse possession', definition: 'A person actually and visibly possesses someone else\'s real property for a statutory length of time and then claims it as his or her own; openly hostile to another\'s ownership claim' },
+            { term: 'aerobic septic system', definition: 'A type of septic system that promotes the growth of aerobic bacteria by introducing air into the wastewater, leading to more efficient waste breakdown.' },
+            { term: 'aesthetic zoning', definition: 'Specifies style or architecture of buildings in an area in order to preserve charm, feel, etc.' },
+            { term: 'affidavit of title', definition: 'A sworn statement assuring that no title defects have occurred since the date of the last title search' },
+            { term: 'affiliated business arrangement (AfBA)', definition: 'A shared ownership among settlement service providers (such as a real estate firm and a mortgage brokerage) that must be disclosed to clients whenever more than 1% is owned by the other company, if both service providers are used by the same client in the same transaction.' },
+            { term: 'After-tax cash flow', definition: 'The amount of money left over after a property\'s operating expenses, debt service, and taxes have been paid' },
+            { term: 'agency coupled with interest', definition: 'A situation in which the agent has a financial stake in the transaction beyond the anticipated commission' },
+            { term: 'aggrieved person', definition: 'Anyone who claims to have been harmed by an unlawful or discriminatory housing practice or who believes they will be harmed by a discriminatory act that is about to occur.' },
+            { term: 'air rights', definition: 'Rights to use the airspace above the land may be sold or leased independently of the land itself' },
+            { term: 'alienation clause', definition: 'A provision in a mortgage that requires the loan to be paid in full by the mortgagor if a transfer of ownership takes place. This is also called a due-on-sale clause.' },
+            { term: 'alluvion', definition: 'The material that creates an increase of soil and thus land parcel size due to accretion' },
+            { term: 'alt-a loans', definition: 'A type of mortgage that has a risk profile that falls between that of prime and subprime mortgage loans' },
+            { term: 'amendment', definition: 'A change to an existing contract' },
+            { term: 'Americans with Disabilities Act of 1990 (ADA)', definition: 'A federal anti-discrimination law to protect persons with disabilities from discrimination in public accommodations and commercial facilities' },
+            { term: 'amortization', definition: 'The paying off of a debt with regular installments over a fixed repayment schedule' },
+            { term: 'amortization schedule/chart', definition: 'A table that shows how much of each payment will apply toward principal and how much toward interest for the loan term; also shows decrease in loan balance until paid off' },
+            { term: 'amperage', definition: 'Amount of current or electricity flowing through electrical wires' },
+            { term: 'anchor store/anchor tenant', definition: 'A large commercial tenant that draws in traffic to a mall or shopping center' },
+            { term: 'annexation', definition: 'An attachment of personal property to real property, thereby making it a fixture (also known as an attachment)' },
+            { term: 'Annual constant', definition: 'The sum of the annual mortgage payments-both principal and interest-divided by the mortgage balance; also commonly referred to as an annual loan constant or mortgage constant; annual constant = annual payment + mortgage balance' },
+            { term: 'Annual holding period', definition: 'The timeframe of one year during which income and expenses associated with the real estate investment are considered for tax purposes; also known as the annual withholding period' },
+            { term: 'annual percentage rate (APR)', definition: 'A rate derived to reflect the true cost of financing that allows consumers to compare loan products; includes financing fees, so it will always be higher than the actual interest rate on a loan' },
+            { term: 'antitrust, antitrust law', definition: 'Laws relating to the promotion of fair competition in the marketplace' },
+            { term: 'appraisal', definition: 'An estimate of value as of a specific date and for a specific use performed by a state-licensed or certified appraiser.' },
+            { term: 'appraisal contingency', definition: 'Contract clause that, if the property doesn\'t appraise at or above the sales price, the buyer is allowed to terminate' },
+            { term: 'appraised value', definition: 'An estimate of value as of a specific date, and for a specific use' },
+            { term: 'appraiser', definition: 'One who performs an appraisal' },
+            { term: 'appreciation', definition: 'Increase in property value' },
+            { term: 'appurtenances', definition: 'Automatic rights inherent in property ownership' },
+            { term: 'asbestos', definition: 'A fibrous mineral found in rocks and soil, previously used in construction materials for its insulating and fire-retardant strength and currently classified by the EPA as a hazardous material.' },
+            { term: 'asbestosis', definition: 'A chronic lung disease caused by breathing asbestos fibers' },
+            { term: 'as-built drawing', definition: 'A plan or drawing that reflects the final design and modifications of a septic system as constructed.' },
+            { term: 'as-of-right zoning', definition: 'Zoning regulations that permit property owners to develop their land in accordance with predetermined guidelines without needing special permissions or approvals from local authorities' },
+            { term: 'assemblage', definition: 'The process of combining separate adjacent parcels of land into one piece' },
+            { term: 'assessed value', definition: 'The dollar amount to which the local tax rate is multiplied to determine property tax owed' },
+            { term: 'assessment', definition: 'This definition could have two meanings: 1. Related to tax purposes - See Assessed Value. 2. The allocation of an individual\'s share of expenses for the maintenance and repairs of common areas such as those related to condominium ownership.' },
+            { term: 'assessment ratio', definition: 'The percentage of a property\'s market value that is subject to taxation, used to calculate the assessed value for property tax purposes' },
+            { term: 'asset', definition: 'Items of value owned by an individual; often used when qualifying for financing' },
+            { term: 'assignment (rentals)', definition: 'The substitution of tenants, putting the responsibility for the lease contract in the new tenant\'s hands. Requires written permission of landlord.' },
+            { term: 'assignment (contracts)', definition: 'When a new party to a contract agrees to satisfy the former party\'s obligations. Unless there is a novation (a new contract) the original parties remain liable for the contract terms.' },
+            { term: 'assignment (mortgages)', definition: 'The transfer of a mortgage from the original lender to another' },
+            { term: 'assumable mortgage', definition: 'A mortgage that can be assumed when property transfers ownership (requires borrower to qualify for the loan).' },
+            { term: 'assumption (or mortgage)', definition: 'A buyer agrees, in writing, to take over the sellers\' loan payments' },
+            { term: 'auction', definition: 'Sale in which highest bidder buys the property' },
+            { term: 'Auction Market', definition: 'Buyers and sells trade listed stocks and options that are registered for public trading. Securities that trade here are often called NMS securities. Examples include NYSE, regional exchanges, and Nasdaq.' },
+            { term: 'automated valuation models (AVMs)', definition: 'Rely on mathematical modeling combined with data from sources such as tax records to provide real estate property valuations' },
+            { term: 'avulsion', definition: 'A loss of existing land by the sudden change in a watercourse, washing it away' },
+            { term: 'B-1 environmental issue', definition: 'A significant environmental concern or condition associated with a property is typically identified during environmental due diligence assessments. These issues are categorized based on their severity and potential impact on human health or the environment, with B-1 being one of the highest priority classifications.' },
+            { term: 'balloon mortgage', definition: 'A nontraditional mortgage product that has lower initial payments that do not amortize and require a "catch up" lump sum payment to be paid at a specific time, usually at the end of a loan period' },
+            { term: 'balloon payment', definition: 'A one-time payment, usually occurring at or near the end of a loan term, which is larger than all the other payment amounts' },
+            { term: 'bankruptcy', definition: 'The legal process of discharging or restructuring a borrower\'s debts' },
+            { term: 'bargain and sale deed', definition: 'A deed where there is at most one warranty: that the current owner has the right to convey the property. This type of deed makes no warranty against other encumbrances.' },
+            { term: 'base flood elevation (BFE)', definition: 'BFE is the elevation of surface water resulting from a flood that has a 1% chance of equaling or exceeding that level in any given year. The BFE is shown on FEMAs Flood Insurance Rate Map (FIRM) for some zones.' },
+            { term: 'base line', definition: 'An imaginary line that runs east and west and crosses the principal meridian at a specified point; it is used by surveyors as a reference point to locate and describe land under the rectangular survey system.' },
+            { term: 'basement', definition: 'Below-ground/below-grade square footage' },
+            { term: 'Before-tax cash flow', definition: 'The amount of money after all operating expenses and mortgage payments are paid' },
+            { term: 'benchmark', definition: 'A permanent affixed brass plaque that is numbered and is used as a point of reference by surveyors when measuring elevation' },
+            { term: 'beneficiary', definition: 'The person entitled to the benefit of a trust arrangement' },
+            { term: 'bill of sale', definition: 'A document transferring title to personal property.' },
+            { term: 'biweekly mortgage', definition: 'A mortgage in which the borrower makes payments every two weeks, resulting in 13 full payments a year instead of 12. Some borrowers use this strategy to pay off their loan earlier.' },
+            { term: 'blockbusting', definition: 'A discriminatory and illegal practice in which licensees or other real estate professionals encourage homeowners to sell because of a supposed increase of members of a protected class in the area' },
+            { term: 'blueprint', definition: 'A building plan with an architect\'s or engineer\'s stamp that includes the layout of the rooms and their measurements, and indicates location of windows, doors, fixtures, and major appliances' },
+            { term: 'bond market', definition: 'Market for buying and selling of (frequently) 30-year treasury bonds. Yield on bonds often rises and falls as fixed rate mortgages do.' },
+            { term: 'bracketing', definition: 'Determines a probable range of property values by comparing a group of comparable sales to the subject' },
+            { term: 'brand', definition: 'The entire perception and image of a company or product in the minds of consumers, including values, culture, visual identity, and messaging.' },
+            { term: 'breach of contract', definition: 'One or more parties fail to meet the terms of their agreement' },
+            { term: 'bridge loan', definition: 'A temporary loan used to cover the interval between two transactions.' },
+            { term: 'British Thermal Unit (BTU)', definition: 'A measure of heat energy (the amount of heat required to raise the temperature of one pound of water by one degree Fahrenheit.' },
+            { term: 'broker\'s price opinion (BPO)', definition: 'An opinion of value prepared by a real estate licensee; similar to a comparative market analysis, but not as detailed; a lender or relocation company generally orders the BPO' },
+            { term: 'brownfield', definition: 'An abandoned commercial or industrial site that is believed to contain toxic waste' },
+            { term: 'BTU (British Thermal Unit)', definition: 'A measure of heat energy (the amount of heat required to raise the temperature of one pound of water by one degree Fahrenheit.' },
+            { term: 'budget mortgage', definition: 'A mortgage in which taxes and insurance are added to the payment for principal and interest.' },
+            { term: 'building code', definition: 'Minimum standard construction rules intended to ensure a safe, properly functioning environment for building occupants' },
+            { term: 'building permit', definition: 'Authority from a local government to construct or improve a building or residential property' },
+            { term: 'building specifications', definition: 'Written narrative of the building plan; describes major systems, construction details, landscaping, and design features not captured in the building plan' },
+            { term: 'bundle of rights', definition: 'The tangible and intangible rights of ownership that come with owning real property; includes the right to sell individual "sticks" in the bundle separately from the land itself. The bundle of rights includes the rights of possession, disposition, enjoyment, exclusion, and control.' },
+            { term: 'buydown', definition: 'A financing technique in which the buyer obtains a lower interest rate by buying down the interest rate at the time the loan is made' },
+            { term: 'buyer presentation', definition: 'Opportunity to build trust with a potential client, showcase your expertise, and learn more about the buyer\'s needs' },
+            { term: 'bylaws', definition: 'The rules of an association, such as a homeowner\'s association or cooperative.' },
+            { term: 'calendar year', definition: 'When prorating expenses for a real estate transaction, this method uses the actual number of days in a year' },
+            { term: 'call option', definition: 'A clause in a financial contract that enables the buyer to pay the remainder of the loan balance at a specific price within a specific time period.' },
+            { term: 'CAN-SPAM Act', definition: 'Controlling the Assault of Non-Solicited Pornography and Marketing Act; a federal law that protects consumers against unwanted email solicitations' },
+            { term: 'cap', definition: 'See rate cap' },
+            { term: 'capital improvements', definition: 'Permanent structural changes, remodels, or restorations that increase a property\'s value or use' },
+            { term: 'capitalization', definition: 'Any method used to convert an income stream into value' },
+            { term: 'capitalization rate / cap rate', definition: 'The return on investment that other investors in a given marketplace are receiving for a similar property; expresses the income a real estate investment produces as a percentage of its price' },
+            { term: 'carbon monoxide (CO)', definition: 'A colorless, odorless gas that results as a byproduct of combustion of wood, gas, and other heated materials; poses a health hazard when released into the atmosphere and breathed in' },
+            { term: 'Cash-on-cash return', definition: 'A rate of return that calculates the cash income earned on the total cash invested' },
+            { term: 'cash-out refinance', definition: 'A refinance in which the borrower assumes a loan balance higher than the current one to pull out money for other use.' },
+            { term: 'casualty loss', definition: 'Physical damage to or destruction of a house, barn, garage, or other improvement on a property' },
+            { term: 'cease-and-desist order (advertising)', definition: 'Requires you to stop running a deceptive ad or engaging in a deceptive practice; effective immediately upon issuance' },
+            { term: 'certificate of deposit', definition: 'A deposit held in a bank for a specified term which earns interest (e.g., one-year CD, three-year CD).' },
+            { term: 'certificate of eligibility (COE)', definition: 'A document issued by the U.S. Department of Veterans Affairs that certifies a veteran\'s eligibility for a VA loan' },
+            { term: 'certificate of reasonable value (CRV)', definition: 'A document used with a VA loan that indicates its appraised value' },
+            { term: 'certified general real estate appraiser', definition: 'An appraiser certified to perform appraisals for any time and value of property for federally related real estate transactions' },
+            { term: 'Certified Municipal Assessor', definition: 'A professional who is qualified and licensed to assess the value of real property for tax purposes within a municipality.' },
+            { term: 'certified residential real estate appraiser', definition: 'An appraiser certified to perform appraisals for one- to four-unit dwellings for federally related real estate transactions.' },
+            { term: 'cesspool', definition: 'Underground containers that collect wastewater and rely on soil absorption without structured treatment.' },
+            { term: 'chain of title', definition: 'Establishes the title history or the path and proof of property ownership through a public records search for successive conveyances of title and encumbrances; each owner is considered to be a "link" in the chain' },
+            { term: 'chlorofluorocarbons (CFCs)', definition: 'Synthetic chemical substances used in cooling products whose release into the atmosphere is blamed for ozone layer depletion' },
+            { term: 'Civil Rights Act of 1866', definition: 'The first statute affecting equal housing opportunity largely interpreted to prohibit racial discrimination' },
+            { term: 'clean hands doctrine', definition: 'Courts may deny relief to a party acting unethically in relation to the case.' },
+            { term: 'Clean Water Act', definition: 'Established quality standards for surface waters and added a structure to regulate pollutants (e.g., oil) discharged into U.S. waters' },
+            { term: 'clear title', definition: 'A marketable title (free and clear of liens or question of ownership).' },
+            { term: 'client', definition: 'A person who enlists the services of a real estate licensee to aid in a property transaction' },
+            { term: 'closing', definition: 'The settlement of a real estate transaction in which a property transfer occurs' },
+            { term: 'closing agent', definition: 'Manages the closing process, presents and explains all of the closing documents to the parties, and obtains signatures; may be an attorney, broker, or a title company representative' },
+            { term: 'Closing Disclosure', definition: 'A statement of final loan terms and closing costs, provided to the borrower three days prior to closing; part of TRID lender disclosure requirements' },
+            { term: 'cloud on title', definition: 'Aka title defect; any encumbrance, such as a lien or inheritance claim, that impedes the conveyance of a property; may be removed with a quitclaim deed' },
+            { term: 'CLUE report', definition: 'A C.L.U.E. (comprehensive loss underwriting exchange report provides a history of insurance claims on a specific property; helps home insurance underwriters and buyers determine whether a particular property has hidden issues and whether it may be difficult or expensive to obtain insurance' },
+            { term: 'Coastal Zone Management Act', definition: 'Administered by the National Oceanic and Atmospheric Administration; designed to "preserve, protect, develop, and where possible, to restore or enhance the resources of the nation\'s coastal zone"' },
+            { term: 'co-borrower', definition: 'A person who\'s both responsible for the loan and on the title for the property.' },
+            { term: 'collateral', definition: 'An asset used to secure a loan. With a home mortgage, the home itself acts as collateral. If the borrower defaults, the lender can foreclose and take the property.' },
+            { term: 'collateralized mortgage obligation (CMO)', definition: 'A security that uses mortgage-backed securities as collateral' },
+            { term: 'collection', definition: 'A process of attempting to recover loaned funds when the borrower is in default.' },
+            { term: 'co-marketing agreement', definition: 'A written contract between two businesses that have agreed to work together in achieving a common goal' },
+            { term: 'commercial paper', definition: 'Loans made by banks to consumers who need funds to purchase personal property or to meet short-term needs' },
+            { term: 'commercial property', definition: 'A category of real estate that includes income-producing properties.' },
+            { term: 'commercial real estate', definition: 'A real estate category that includes income-producing properties. Related to financing, may also refer to residential properties with five or more units.' },
+            { term: 'commingle', definition: 'Mix or deposit funds belonging to others (trust or escrow funds) with business or personal funds.' },
+            { term: 'commission', definition: 'The amount of brokerage fee received for a real estate transaction' },
+            { term: 'commission split', definition: 'A type of compensation arrangement between brokers, salespersons, etc., and their managing brokers in which the two parties split the commission earned on a transaction.' },
+            { term: 'common area assessment', definition: 'See homeowner association (HOA) fees' },
+            { term: 'common areas', definition: 'The portions of a property shared by common interest owners (e.g., in a condominium property, this would include the pool)' },
+            { term: 'common law', definition: 'Law established by court outcome or tradition rather than statute' },
+            { term: 'common level range', definition: 'The acceptable deviation from the average assessment ratio for properties within a taxing district. Typically, it spans about 15% above and below the average ratio, ensuring assessments remain within a reasonable range of true market values.' },
+            { term: 'common level ratio', definition: 'Compares assessed property values to their actual market values, helping to adjust assessments to reflect current market conditions accurately' },
+            { term: 'community property', definition: 'The equal ownership of property in a marriage; nine states recognize community property: Arizona, California, Idaho, Louisiana, Nevada, New Mexico, Texas, Washington, and Wisconsin' },
+            { term: 'Community Reinvestment Act (CRA)', definition: 'A federal law requiring lenders to meet the credit needs of the communities they serve by expanding credit to low- and moderate-income people.' },
+            { term: 'compaction', definition: 'The matting down of soil on a land parcel. May be purposeful or not. Soil density tests may be required for certain projects or in certain geographical areas before building can begin.' },
+            { term: 'comparable', definition: 'Recently sold real estate that can be used to determine the value of a similar piece of real estate.' },
+            { term: 'compensation agreement', definition: 'A contract outlining how much an agent or broker will be paid for their services in a property transaction.' },
+            { term: 'completion bond', definition: 'Subdivision bond; a developer\'s guarantee that off-site improvements will be made upon completion of the project. The municipality is named as beneficiary for the bond.' },
+            { term: 'Computer-generated data', definition: 'Information that is the result of a computer process or application process, created without human intervention; also known as machine-generated data' },
+            { term: 'conditions, covenants, and restrictions (CC&Rs)', definition: 'The rules of an association, such as a homeowners association or cooperative' },
+            { term: 'condominium', definition: 'A form of ownership that consists of an individual interest in a unit (commercial, industrial, or residential) and an undivided interest in the project\'s common areas.' },
+            { term: 'condominium conversion', definition: 'The transformation of a building into condominiums (usually with an apartment building).' },
+            { term: 'condominium hotel, condotel, condo hotel', definition: 'A condominium project that includes a rental desk; allows short-term occupancy, and is operated similar to a commercial hotel, even though the units are individually owned. Often found in resort areas, such as Hawaii.' },
+            { term: 'confidentiality', definition: 'One of the fiduciary duties, confidentiality means an agent must keep the client\'s information confidential, provided the agent is not legally required to disclose it. Confidentiality is one of the duties that survives agency termination.' },
+            { term: 'conforming loan', definition: 'A loan that meets the Fed\'s qualification standards and may be sold on the secondary market' },
+            { term: 'consent', definition: 'An essential element of a contract meaning it must be entered into as a free and voluntary act, without undue influence or duress.' },
+            { term: 'conservation easement', definition: 'A landowner chooses to create a legal agreement with a land trust or government entity that includes permanent use and development restrictions' },
+            { term: 'consideration', definition: 'The giving of something of value, which can include the agreement to not do something. Consideration is a required element of a binding contract.' },
+            { term: 'construction loan/mortgage', definition: 'Interim financing for developing land. The contract allows for disbursements of funds at specific stages of construction.' },
+            { term: 'constructive notice', definition: 'A public recordation of an event, meaning notice was published but not necessarily given directly to the affected parties while still technically being available in the public record' },
+            { term: 'Consumer credit transaction', definition: 'A loan for personal, family, or household purposes, making it subject to stringent consumer protection laws and disclosure requirements' },
+            { term: 'Consumer Financial Protection Bureau (CFPB)', definition: 'A federal regulatory agency that oversees all financial products and services offered to consumers' },
+            { term: 'Consumer Price Index (CPI)', definition: 'Measures changes in the price level of consumer goods and services, drawing samples from various marketplaces' },
+            { term: 'contingency', definition: 'A condition of an offer; all contingencies must be satisfied or removed before a transaction can close' },
+            { term: 'control', definition: 'The right of property owners to determine interest in their property for others' },
+            { term: 'conversion', definition: 'Using escrow funds for personal or business purposes' },
+            { term: 'convertible ARM', definition: 'An adjustable rate mortgage that allows the borrower to convert the loan into a fixed-rate loan within a specified period of time.' },
+            { term: 'conveyance', definition: 'The legal transfer of property ownership to another' },
+            { term: 'cooperative', definition: 'Form of real property ownership in which the owner is a member of an association that owns the building and shares stock in that association' },
+            { term: 'co-ownership', definition: 'When more than one person owns the same piece of real estate' },
+            { term: 'corporate bonds', definition: 'Typically issued when a business needs ready cash for capital improvements, development, or expansion' },
+            { term: 'corporation', definition: 'A business organization owned by stockholders that exists as a legal entity' },
+            { term: 'correlation process', definition: 'The weighing of the value factors in an appraisal, with the appropriateness of the various comparable sales in relation to the subject considered' },
+            { term: 'cost of funds index (COFI)', definition: 'An index used to determine interest rate changes for some adjustable rate mortgages.' },
+            { term: 'covenant of seisin', definition: 'Deed warranty that the seller is the actual owner of the property being conveyed and has the right to convey it' },
+            { term: 'credit history', definition: 'An individual\'s record of repayment of debt; reviewed when lenders determine whether a borrower is a good risk for financing' },
+            { term: 'creditor', definition: 'A person or entity to who money is owed.' },
+            { term: 'credit report', definition: 'A report of an individual\'s credit history. Used by lenders to determine creditworthiness of the individual.' },
+            { term: 'credit score', definition: 'A number that signifies a borrower\'s credit risk to lenders' },
+            { term: 'crowdfunding', definition: 'Funding a project by raising money from a large number of people, usually on the Internet' },
+            { term: 'cul-de-sac', definition: 'A dead-end street that usually has a rounded turnaround area at its closed end, allowing vehicles to turn around.' },
+            { term: 'curtesy', definition: 'A husband\'s interest in the real estate owned by his deceased wife; a form of legal life estate' },
+            { term: 'custodial maintenance', definition: 'Ordinary cleaning and maintenance, such as vacuuming, trash removal, and landscaping' },
+            { term: 'customer', definition: 'A person related to the transaction whom the agent does not represent' },
+            { term: 'debt-to-income ratio', definition: 'Qualifying ratio used by mortgage lenders, calculated by dividing the borrower\'s recurring monthly debt by the borrower\'s total monthly income' },
+            { term: 'decline', definition: 'Stage in neighborhood life cycle in which the area declines in desirability and value' },
+            { term: 'dedication by deed', definition: 'Formally conveying a parcel of land to a municipality without consideration and for the public\'s use' },
+            { term: 'Deed', definition: 'a legal document that serves as evidence of ownership or transfer of ownership of a property' },
+            { term: 'deed in lieu of foreclosure', definition: 'A defaulting borrower voluntarily conveys the deed to the lender to avoid foreclosure' },
+            { term: 'deed of conveyance', definition: 'A legal document to show title has been transferred from one person to another. This can be done as a gift, exchange, lease, or mortgage. This is also called a conveyance deed.' },
+            { term: 'deed of trust', definition: 'Similar to a mortgage, in this document, the borrower conveys title for the property to a trust, which holds it as security for the lender' },
+            { term: 'deed restriction', definition: 'A private control which limits the use or appearance of a given property' },
+            { term: 'default', definition: 'Failure to pay on a loan.' },
+            { term: 'defeasible fee estate', definition: 'An estate which transfers fee simple title, but subject to certain conditions (so inherently less than fee simple). Also called a qualified fee estate' },
+            { term: 'deficit', definition: 'When spending and bills are more than revenue' },
+            { term: 'delinquency', definition: 'Failure to make a payment (e.g., a mortgage payment) when due. Even before a late fee applies, if it\'s past the due date to pay the loan, the payment is late and the loan is delinquent. A delinquency beyond 30 days prompts a report to the credit bureaus.' },
+            { term: 'delivery and acceptance', definition: 'Delivery is the act of giving the deed to the grantee; acceptance is the grantee\'s receipt of the deed.' },
+            { term: 'depreciable basis', definition: 'Basis used to calculate the tax deduction allowed for a property\'s depreciation each year' },
+            { term: 'depreciation', definition: 'Loss in property value from any cause' },
+            { term: 'Descent', definition: 'process by which property of a deceased person is inherited' },
+            { term: 'Designated Market Maker (DMM)', definition: 'A firm that maintains a fair and orderly market in each assigned stock. They match buyers and sellers, and if there are no public orders outstanding, they may buy or sell for their own account. They cannot compete with public orders.' },
+            { term: 'development cost', definition: 'Cost of developing a property' },
+            { term: 'devisor', definition: 'One who devises (gives something, such as real property) in a will' },
+            { term: 'Diligence', definition: 'One of the duties an agent owes to the client, diligence means doing one\'s work in a determined, careful, and efficient manner, while paying attention to details.' },
+            { term: 'directional growth', definition: 'The general trend toward which a neighborhood appears to be headed' },
+            { term: 'disability or handicap', definition: 'A physical or mental impairment that limits a major life activity' },
+            { term: 'disabled licensee', definition: 'A licensed person who\'s under severe disability of such a nature to prevent that person from being able to attend any instruction lasting at least three hours in duration' },
+            { term: 'disclosure', definition: 'Providing information to the principal, or any party to a transaction, that is required to be provided by law. Disclosure is one of the duties required of an agent.' },
+            { term: 'discounted cash flow (DCF)', definition: 'The most common method used to calculate yield capitalization to estimate the value of a stream of future cash flows' },
+            { term: 'discount points', definition: 'Points a lender charges at closing; buyers sometimes opt to pay points to get a lower rate or to buy down the interest rate' },
+            { term: 'discount rate', definition: 'The interest rate that Federal Reserve district banks charge when loaning money to member banks, which borrow money and use commercial paper as collateral for the loan' },
+            { term: 'discrimination', definition: 'Treating people differently because of their status as a member of a protected group' },
+            { term: 'disposition', definition: 'The right of property owners to determine how, when, and if their property is to be sold or transferred.' },
+            { term: 'doctrine of laches', definition: 'A legal condition in which unused or unclaimed rights may be lost' },
+            { term: 'Dodd-Frank Wall Street Reform and Consumer Protection Act', definition: 'The act that brought about the creation of one set of mortgage loan disclosures (the Loan Estimate and Closing Disclosure) that TILA and RESPA require' },
+            { term: 'double escrow', definition: 'A real estate transaction structure in which a property is sold twice in quick succession.' },
+            { term: 'dower', definition: 'A wife\'s interest in the real estate owned by her deceased husband; a form of legal life estate' },
+            { term: 'down payment', definition: 'The amount of cash a buyer contributes to the purchase price (as opposed to borrowed funds)' },
+            { term: 'down payment assistance programs', definition: 'Helps reduce the amount of money homebuyers need to have saved to put down on a home; program requirements apply; include grants and/or funds for closing costs, second mortgage grants and deferred loans, and mortgage credit certificates (MCCs)' },
+            { term: 'drainfield', definition: 'Either a number of trenches or a space lined with gravel or sand that naturally filters septic system water and releases it back into the soil' },
+            { term: 'drip irrigation', definition: 'A method of wastewater dispersal in which treated effluent is distributed through perforated pipes or tubing and slowly dripped onto the soil surface.' },
+            { term: 'dual rate commission', definition: 'A form of compensation in which the seller agrees to pay a specified commission if the property is sold or leased by the listing broker without assistance and a different commission if the sale or lease results through the efforts of a cooperating broker' },
+            { term: 'due-on-sale clause', definition: 'A mortgage clause that requires the borrower to pay off the loan balance when selling the property' },
+            { term: 'DUST', definition: 'An acronym used in valuation that stands for demand, utility, scarcity and transferability' },
+            { term: 'earned increment', definition: 'Increase in property value as a result of an owner\'s actions (improvements, etc.)' },
+            { term: 'earnest money deposit', definition: 'An amount of money the buyer places in escrow or trust to show good faith in the buyer\'s intention to purchase the seller\'s property' },
+            { term: 'easement', definition: 'The authorized use of another\'s property for a specific purpose; runs with the land' },
+            { term: 'economic characteristics', definition: 'Characteristics outside of the physical components of real property that contribute to its value' },
+            { term: 'effective age', definition: 'An appraiser\'s estimate of the physical condition of a building (actual age may be shorter or longer).' },
+            { term: 'elevation certificate', definition: 'A record of a community\'s adherence to elevation requirements used by communities in flood-prone areas' },
+            { term: 'elevator speech', definition: 'A 30 to 60-second blurb about a person\'s qualifications or highlights that can be shared spontaneously to entice or inform a potential customer. Originated based on the amount of conversation that can occur in the time it takes to go a couple of floors in an elevator.' },
+            { term: 'emblements', definition: 'Growing crops, such as decorative trees or corn, which are produced annually; usually not considered fixtures, but are the personal property of the person who planted them' },
+            { term: 'eminent domain', definition: 'The power of the government to take private property for public use' },
+            { term: 'employee', definition: 'A worker whose employer controls the details of the worker\'s performance' },
+            { term: 'employing broker', definition: 'An entity that\'s registered with the state and is authorized to engage in real estate activities, and can be individuals, sole proprietorships, corporations, partnerships, or limited liability companies' },
+            { term: 'encroachment', definition: 'The illegal intrusion of some structure or object across a property boundary line' },
+            { term: 'encryption', definition: 'A security measure that turns electronic information into an undecipherable code' },
+            { term: 'encumbrance', definition: 'A limitation on a property title, such as a lien or easement' },
+            { term: 'Environmental Protection Agency (EPA)', definition: 'Federal agency that aims to protect human health and the environment' },
+            { term: 'Environmental Quality Incentives Program (EQIP)', definition: 'Provides financial and technical assistance to landowners who put conservation practices into place on their agricultural and non-industrial private forestland' },
+            { term: 'Equal Credit Opportunity Act (ECOA)', definition: 'A 1974 federal law that prohibits discrimination based on protected class status when providing credit.' },
+            { term: 'equalization', definition: 'The procedure aimed at guaranteeing that each property bears its rightful and lawful portion of the tax responsibility in all taxing districts.' },
+            { term: 'equilibrium', definition: 'Stage in neighborhood life cycle characterized by stability and steady property values' },
+            { term: 'equitable lien', definition: 'A monetary encumbrance that\'s placed on a property as a result of a court order' },
+            { term: 'equity', definition: 'The amount of value in a property after debts associated with financing have been paid' },
+            { term: 'equity buildup', definition: 'The portion of the loan payment directed toward the principal rather than the interest, plus any gain in property value due to appreciation.' },
+            { term: 'erosion', definition: 'The wearing away of land by wind, water, and other natural disturbances' },
+            { term: 'errors and omissions (E&O) insurance', definition: 'Protects licensees in the event they make a mistake or leave out important information that causes financial harm to a consumer while conducting real estate-related duties' },
+            { term: 'escalation clause', definition: 'A clause in a purchase offer that allows buyers to state they\'d pay more for the property if a higher competing offer comes in' },
+            { term: 'escheat', definition: 'The state\'s power to claim the estate of a deceased person who left no will, heirs, or creditors' },
+            { term: 'escrow', definition: 'A neutral repository for client trust funds' },
+            { term: 'escrow account', definition: 'A special account that\'s separate from any other business or personal accounts; typically used to hold earnest money' },
+            { term: 'escrow analysis', definition: 'A lender\'s look at how escrow funds on deposit by a borrower are holding out. The lender may make adjustments based on anticipated expenses (taxes and insurance).' },
+            { term: 'escrow disbursement', definition: 'The spending of escrow funds to pay property taxes, hazard insurance, mortgage insurance, etc., when due.' },
+            { term: 'estate', definition: 'Interest in land; alternatively, assets owned by a deceased person' },
+            { term: 'Estate', definition: 'Ownership or interest of a property' },
+            { term: 'estate at sufferance', definition: 'A type of possession in which a tenant stays after the right to possess has terminated' },
+            { term: 'estate at will', definition: 'Leasehold estate in which the duration of the lease is unknown at the time it\'s created; may be terminated by either the lessor or lessee at any time' },
+            { term: 'estate for years', definition: 'A fixed-termination type of lease that may be for a day, week, month, year, several years, or any definite period of time; when the specified date occurs, the lease terminates automatically' },
+            { term: 'estate in severalty', definition: 'One person owns the property, and all other interests are severed' },
+            { term: 'ethics', definition: 'Beliefs and behaviors that are dependent on a person\'s conscience and values' },
+            { term: 'eviction', definition: 'A legal action to remove the tenant and the tenant\'s belongings from the premises' },
+            { term: 'examination of title', definition: 'The title report derived from public records or an abstract of title.' },
+            { term: 'exclusive listing', definition: 'A written contract between a seller or building owner and a real estate licensee giving the licensee the exclusive right to sell or lease the property during the term of the listing agreement.' },
+            { term: 'executor', definition: 'One named in a will to carry out the deceased wishes in regard to distribution of property. The female term is "executrix" but "executor" is becoming more commonly used for both genders.' },
+            { term: 'executor\'s deed', definition: 'A deed that conveys real property from a decedent\'s estate to a buyer' },
+            { term: 'Exempt Securities', definition: 'Not required to register with the SEC: U.S. government and agency issues; Municipal issues; Money market issues; Bank issues; Common carrier issues; Insurance company issues; Nonprofit or religious organization issues' },
+            { term: 'Fair Credit Reporting Act', definition: 'A consumer protection law regulating disclosure of consumer credit reports by credit reporting agencies and establishes procedures whereby consumers can correct mistakes in their records' },
+            { term: 'Fair Credit Reporting Act (FCRA)', definition: 'A federal law that regulates how consumer\'s credit information is used and collected' },
+            { term: 'Fair Housing Amendments Act of 1988', definition: 'This amended fair housing act broadened the scope of protections, enhanced enforcement process, and added familial status and disability as protected classes.' },
+            { term: 'fair market value', definition: 'The price that a willing buyer and seller would agree to, given market conditions and absence of duress.' },
+            { term: 'familial status', definition: 'A class status protected under the Fair Housing Act; prohibits discrimination against families with children under 18, including pregnant women' },
+            { term: 'family', definition: 'Among other definitions, this includes one or more persons living as a single housekeeping unit' },
+            { term: 'Fannie Mae', definition: 'FNMA, the Federal National Mortgage Association; a private, for profit corporation that operates under a congressional charter that buys loans in the secondary mortgage market from lenders in the primary mortgage market' },
+            { term: 'Farmer Mac', definition: 'The Federal Agricultural Mortgage Corporation, created by Congress, provides a secondary market for agricultural mortgage and rural utilities loans.' },
+            { term: 'fascia', definition: 'The area of material facing the outer edge of the soffit' },
+            { term: 'feasibility study', definition: 'An assessment of the practicality of a proposed plan or project.' },
+            { term: 'Federal Fair Housing Act of 1968', definition: 'This original fair housing act prohibited discrimination based on race, religion, color, and national origin in the sale or rental of residential real estate, sex was added later as a protected class.' },
+            { term: 'federal funds rate', definition: 'The interest rate for loans made by member banks to other member banks that want to borrow money without collateral for a short period (usually overnight)' },
+            { term: 'Federal Housing Administration (FHA)', definition: 'The Federal Housing Administration (FHA) is an agency of the U.S. Department of Housing and Urban Development. It sets underwriting standards for loans it insures, but it doesn\'t make loans.' },
+            { term: 'Federal Housing Finance Agency (FHFA)', definition: 'A federal agency that insures qualifying loans with low down payments, enabling more people to buy homes; common FHA loan types include FHA 203(b) loan, energy efficient mortgage, Good Neighbor Next Door, homeownership voucher assistance, programs for Native Americans, and disaster relief programs' },
+            { term: 'Federal Reserve System', definition: 'Aka "The Fed"; a national banking system that helps to control inflation and deflation by regulating interest rates and reserve fund requirements of its member banks' },
+            { term: 'Federal Trade Commission Act', definition: 'A federal law passed to prevent unfair methods of competition and deceptive advertising; created the Federal Trade Commission' },
+            { term: 'Federal Trade Commission (FTC)', definition: 'A federal body formed through an act of Congress in 1914 with the power to declare trade practices that conflict with basic policies of antitrust legislation to be unfair' },
+            { term: 'fee on condition', definition: 'Type of defeasible estate recognized by the words ""but if."" The estate continues unless a specific event occurs, in which case it terminates' },
+            { term: 'fee simple absolute', definition: 'An inheritable estate with absolute ownership; provides the most complete form of ownership and bundle of rights in real property' },
+            { term: 'fee simple/fee simple absolute', definition: 'An inheritable estate with absolute ownership; provides the most complete form of ownership and bundle of rights in real property' },
+            { term: 'FHA 203(k) loan', definition: 'A two-part loan program that provides the borrower with funds to secure the property and make improvements to the property' },
+            { term: 'FICO score', definition: 'Fair Isaac Corporation score; the most widely used credit score, based off information in the credit reports produced by the three credit bureaus (Trans Union, Equifax, and Experian)' },
+            { term: 'fiduciary', definition: 'A person in whom another\'s trust and confidence are placed' },
+            { term: 'fiduciary duties', definition: 'The duties of obedience, loyalty, disclosure, confidentiality, accounting, and reasonable skill and care comprise the list of fiduciary duties an agent owes the principal.' },
+            { term: 'first mortgage', definition: 'A mortgage in first place among other recorded loans. Receives payment first in the event of a foreclosure.' },
+            { term: 'fixed interest rate', definition: 'An interest rate that remains constant throughout the entire duration of a loan or financial agreement, providing borrowers with predictable monthly payments' },
+            { term: 'fixed-rate loan', definition: 'A loan where the principal and interest payment remains the same over the life of the loan' },
+            { term: 'fixture', definition: 'An item that is permanently attached to real property.' },
+            { term: 'flashing', definition: 'Metal or rubber strips installed at corners and edges of roofing, chimneys, etc., to prevent moisture penetration.' },
+            { term: 'flood insurance', definition: 'Required when properties are in designated flood areas; covers the costs of damage resulting from flooding' },
+            { term: 'floodplain', definition: 'Lowland and flat areas adjoining inland and coastal waters, including flood-prone areas on offshore islands; subject to at least a 1% chance of flooding in a given year.' },
+            { term: 'flood zone', definition: 'Geographic areas that the FEMA has defined according to varying levels of flood risk' },
+            { term: 'floor area ratio (FAR)', definition: 'Total floor area divided by the total lot area' },
+            { term: 'footing', definition: 'A concrete base built below the frost line that supports the foundation' },
+            { term: 'footings', definition: 'A part of a building\'s foundation typically made of rebar-reinforced concrete that\'s been poured into an excavated trench; installed to support the foundation and prevent settling' },
+            { term: 'foreclosure', definition: 'A lender forces the sale of a property because the buyer has defaulted on the loan' },
+            { term: 'Foreign Investment in Real Property Tax Act of 1980 (FIRPTA)', definition: 'The disposition of a U.S. real property interest by a foreign person (the transferor) is subject to the Foreign Investment in Real Property Tax Act of 1980 (FIRPTA) income tax withholding.' },
+            { term: 'formaldehyde', definition: 'A product used in the manufacture of urea-formaldehyde foam insulation, paneling and other products that is a chemical air pollutant.' },
+            { term: 'foundation wall', definition: 'Masonry or concrete walls below ground level that serve as support for the structure' },
+            { term: 'framing', definition: 'The "wooden skeleton" of a home to which interior and exterior walls are attached' },
+            { term: 'fraud', definition: 'Trickery or deceit to induce someone to do something, especially in a real estate contract; may involve concealment of material facts, providing false information, or using trickery' },
+            { term: 'Freddie Mac', definition: 'The Federal Home Loan Mortgage Corporation (FHLMC) which increases the availability of financing for conventional mortgages insured by the federal government by purchasing them from lenders in the primary market.' },
+            { term: 'Freedom of Information Law (FOIL)', definition: 'This law grants individuals the right to access government records and documents' },
+            { term: 'freehold estate', definition: 'An inheritable estate with absolute ownership' },
+            { term: 'Freeze Act', definition: 'The Freeze Act stipulates that the new assessment, resulting from the appeal, cannot be increased by the Tax Assessor for the year of the appeal or for the subsequent two years. Exceptions include an appeal from either party, added assessments, or a completed revaluation/reassessment in the district.' },
+            { term: 'Freon', definition: 'Hydrochlorofluorocarbons' },
+            { term: 'friable', definition: 'Flaky, crumbly' },
+            { term: 'frontage', definition: 'Also see front foot. The linear measurement of a property that abuts a street, highway, waterway, etc. Also called frontage.' },
+            { term: 'front foot', definition: 'Aka frontage; the linear measurement of a property that abuts a street, highway, waterway, etc.' },
+            { term: 'full covenant and warranty deed', definition: 'Aka general warranty deed; a deed that grants the most protection to the buyer because it carries all the possible covenants of the grantor' },
+            { term: 'Full holding period', definition: 'The entire duration in which the investor owns the real estate investment; also known as the full withholding period' },
+            { term: 'full-service lease', definition: 'The base rent, the nets, utilities, and janitorial services are included in one lease rate, based on price per square foot' },
+            { term: 'functional obsolescence', definition: 'A decrease in property value resulting from poor or outdated design or material' },
+            { term: 'fuse', definition: 'A device that melts and opens the circuit, interrupting electrical power when overheating occurs' },
+            { term: 'future value (FV)', definition: 'The value of today\'s money, tomorrow' },
+            { term: 'Future worth $1 per period', definition: 'The amount to which a series of periodic payments of $1 will compound at a periodic interest rate (i) over a given number of periods (n); also known as the future value of $1' },
+            { term: 'Future worth of $1', definition: 'The amount $1 will be worth if it earns interest for a specific time' },
+            { term: 'general lien', definition: 'A lien against a person and all the property owned by that person, whether real or personal (e.g., judgments, estate and inheritance tax liens, income tax liens)' },
+            { term: 'general warranty deed', definition: 'A deed that grants the most protection to the buyer because it carries all the possible covenants of the grantor' },
+            { term: 'Ginnie Mae', definition: 'Government National Mortgage Association (GNMA); a federal agency located within the Department of Housing and Urban Development (HUD) that establishes requirements for loans that can be accepted into its mortgage pool' },
+            { term: 'girder', definition: 'Another term for "beam"; a component that spans the distance from one side of the foundation to the other on which the joists rest for support' },
+            { term: 'Good Faith Estimate', definition: 'estimate of the costs of a service or product that is based on information available at the time of the estimate.' },
+            { term: 'good funds', definition: 'Funds that are immediately available to the closing company for deposit and disbursement' },
+            { term: 'governing body', definition: 'A group or organization responsible for making decisions, setting policies, and overseeing the operations of a particular entity or jurisdiction, such as a government, corporation, or nonprofit organization.' },
+            { term: 'government loan', definition: 'A loan guaranteed, insured, or (in limited cases) made by an agency of the federal government' },
+            { term: 'government mortgage insurance', definition: 'Similar to PMI but applies to government-backed loans, such as FHA loans, VA loans, and USDA loans, and protects the lender against losses if homeowners fail to repay their loan' },
+            { term: 'government-sponsored enterprises (GSEs)', definition: 'Private companies such as Fannie Mae, Freddie Mac, and the Federal Home Loan Bank, created by the U.S. Congress to make borrowing easier and more cost effective' },
+            { term: 'Gramm-Leach-Bliley Act', definition: 'Enacted to legislate reforms in the financial services industry and to address concerns relating to consumer financial privacy' },
+            { term: 'grantor/grantee', definition: 'The grantee is the recipient of the deed (usually the new buyer); the grantor is the giver of the deed (usually the seller)' },
+            { term: 'grantor/grantee index', definition: 'Collective name of two lists that the county recorder updates when a property is transferred' },
+            { term: 'gross domestic product (GDP)', definition: 'The quantity of goods and services our country produces, which influences demand for commercial properties' },
+            { term: 'gross income', definition: 'Income before expenses are deducted' },
+            { term: 'gross income multiplier (GIM)', definition: 'A figure used as a multiplier of gross annual income of a property; used to estimate property value for properties of five-plus units' },
+            { term: 'gross lease', definition: 'The tenant pays a fixed rent and the landlord pays all operating expenses; most common type of lease used in residential rentals' },
+            { term: 'gross rent multiplier', definition: 'A figure used as a multiplier of gross monthly rent of a property; used to estimate property value for properties of one to four units' },
+            { term: 'groundwater', definition: 'Water found beneath the earth\'s surface that collects in aquifers' },
+            { term: 'group boycotting', definition: 'An illegal agreement between parties to not do business with a particular person or company' },
+            { term: 'group home', definition: 'As defined in fair housing law, a dwelling occupied by two or more unrelated people with disabilities' },
+            { term: 'growth', definition: 'Stage in neighborhood life cycle during which the neighborhood is under development and property values will steadily increase' },
+            { term: 'habendum clause', definition: 'A deed clause containing the words "to have and to hold," and which describes the interests and rights of the grantee' },
+            { term: 'hammer price', definition: 'Amount of the final, successful auction bid, signaled by a bang of the auctioneer\'s gavel' },
+            { term: 'Hart-Scott-Rodino Act', definition: 'Gives state attorneys the general the authority to sue on behalf of consumers in their states' },
+            { term: 'hazard insurance', definition: 'Insurance that covers property damage due to fire, wind, vandalism, and other hazards (usually flood insurance is separate).' },
+            { term: 'hectare', definition: '10,000 square meters, or approximately 2.47 acres' },
+            { term: 'heir', definition: 'Intestate successor' },
+            { term: 'higher-priced mortgage loan (HPML)', definition: 'A loan secured by the borrower\'s principal residence with an annual percentage rate that exceeds the average prime offer rate, depending on the lien type' },
+            { term: 'highest and best use', definition: 'The legal and feasible use of a property that would return its highest value' },
+            { term: 'Holding period', definition: 'The amount of time the investment is held by an investor or the period between the purchase and sale of a security' },
+            { term: 'holdover clause', definition: 'A clause sometimes included in a listing agreement that gives licensees the right to collect a commission after a listing agreement expires. Also known as a "broker protection," "extender," "extension," "safety," "procuring," or "tail" clause.' },
+            { term: 'Homebuyers Armed With Knowledge (HAWK)', definition: 'FHA program aimed at educating buyers in order to reduce defaults on FHA-insured loans; Buyers that complete the program receive reductions in their MIP and other benefits.' },
+            { term: 'home equity conversion mortgage (HECM)', definition: 'The lender makes payments to the homeowner for a specified period of time, and gains corresponding ownership' },
+            { term: 'home equity line of credit (HELOC)', definition: 'An open line of credit based on the available equity in the borrower\'s home' },
+            { term: 'home improvement loan', definition: 'Financing for home improvements (such as additions or modernization), with terms of up to five years' },
+            { term: 'home inspection', definition: 'A thorough examination of a property conducted by a professional home inspector' },
+            { term: 'home inspector', definition: 'An individual who inspects homes on behalf of prospective buyers' },
+            { term: 'Home Mortgage Disclosure Act', definition: 'The Home Mortgage Disclosure Act (HMDA), enacted by Congress in 1975; requires financial institutions to make mortgage data available to the public' },
+            { term: 'Home Mortgage Disclosure Act (HMDA)', definition: 'A 1975 law that requires financial institutions to make mortgage data available to the public' },
+            { term: 'Homeowner and Equity Protection Act (HOEPA)', definition: 'Addresses abusive practices in refinancing and home equity loans by requiring special disclosures and restrictions on loan terms; an amendment to the Truth in Lending Act' },
+            { term: 'homeowners association', definition: 'A governing body made up of homeowners or their appointees to manage aspects of living in a community (e.g. fence heights, paint colors, amenities, etc.)' },
+            { term: 'homeowners association (HOA) fee', definition: 'Dues paid to the homeowners association in a common interest community (e.g., condominium property) to pay for the costs to use and maintain common area elements, such as landscaping, pools, etc.' },
+            { term: 'homeowner\'s insurance', definition: 'An insurance policy that combines hazard insurance and liability insurance for a home and its contents' },
+            { term: 'homeowners insurance', definition: 'Insurance that covers property damage due to fire, wind, vandalism, and other hazards (usually flood insurance is separate) and is also known as hazard insurance' },
+            { term: 'homeowner\'s warranty', definition: 'See home warranty' },
+            { term: 'homestead', definition: 'An estate which gives the owner special rights in property used as a family home. For instance, an approved assessing unit may opt to have different tax rates for homestead properties than for non-homestead properties.' },
+            { term: 'home warranty', definition: 'A service contract to repair and maintain household items and systems, such as workmanship, materials, and structural issues, for a certain period of time' },
+            { term: 'Housing and Community Development Act of 1974', definition: 'This Act changed Section 109 of Title I in the Fair Housing Act to include sex in the list of protected classes.' },
+            { term: 'Housing for Older Persons Act of 1995', definition: 'States that communities and facilities that meet certain criteria for providing housing to older persons are legally exempt from the familial status discrimination' },
+            { term: 'housing ratio', definition: 'Qualifying ratio mortgage lenders use to determine the percentage of a borrower\'s gross monthly income that will be used for housing expenses' },
+            { term: 'HUD-1', definition: 'The unofficial name for a now outdated settlement statement that was provided to borrowers prior to closing' },
+            { term: 'HUD median income', definition: 'The median family income for a statistical area as determined by the Department of Housing and Urban Development (HUD).' },
+            { term: 'hydraulic load test', definition: 'A procedure used to assess the performance and capacity of a septic system\'s absorption area by simulating typical wastewater flow conditions.' },
+            { term: 'impact fees', definition: 'Fees a local government charges a developer to reimburse for costs of providing public services to the new development' },
+            { term: 'implied agency', definition: 'Agency that is created from the actions of the parties rather than an express agreement' },
+            { term: 'Implied rights to mineral estate', definition: 'The ability to access the property to extract oil' },
+            { term: 'improvement', definition: 'Anything added to the land which benefits the land, such as a building, driveway, etc.' },
+            { term: 'improvement location certificate (ILC)', definition: 'Developed from a spot survey; often requested by lenders and title companies when a property changes hands; offers reasonable assurance regarding property boundaries and possible encroachments' },
+            { term: 'incentive zoning', definition: 'Where a municipality will allow an otherwise prohibited type of construction if the developer will give the municipality something back' },
+            { term: 'income approach', definition: 'An approach to determining value used for investment properties based on the income it will produce' },
+            { term: 'income-producing property', definition: 'Property that is managed for cash flow and income.' },
+            { term: 'Income property', definition: 'Property that is purchased primarily for its income-producing capabilities' },
+            { term: 'incurable depreciation', definition: 'A form of physical depreciation indicated by a loss in value that is not economically feasible to remedy because the increase in value from the "fix" would not equal the cost to fix it' },
+            { term: 'independent contractor', definition: 'A person whose work is not directly controlled by a supervisor or manager' },
+            { term: 'index', definition: 'An economic indicator to which interest rates are applied.' },
+            { term: 'index lease', definition: 'Rent either increases or decreases depending on some economic indicator, such as an inflation index' },
+            { term: 'indirect cost', definition: 'A cost for an expenditure other than materials and labor' },
+            { term: 'individual development account (IDA) programs', definition: 'Aid low- and very low-income households in setting up savings accounts used to purchase a home' },
+            { term: 'industrial property', definition: 'A type of real property used for industry' },
+            { term: 'informed consent', definition: 'Agreement as to the agency relationship a consumer accepts after considering all options available' },
+            { term: 'infrastructure', definition: 'Community services such as water, sewer, utilities, schools, roadways, medical, fire and police support' },
+            { term: 'initial cap', definition: 'The amount the interest rate may adjust up upon the first rate adjustment in an adjustable rate loan' },
+            { term: 'inspection contingency', definition: 'Contract clause that allows the buyer to terminate if an issue arises during the inspection that can\'t be successfully negotiated' },
+            { term: 'installment sale', definition: 'Aka land contract; allows the seller to provide financing by providing credit to the buyer; buyer makes payments directly to seller' },
+            { term: 'insurable title', definition: 'A title against which there may be known defects (such as easements), but the title company has notified the parties of the defect and has agreed to insure against it (not list it as a policy exception)' },
+            { term: 'insurance estimation', definition: 'The combined value of a homeowner\'s belongings and the home replacement costs, should the dwelling be destroyed' },
+            { term: 'Insurance score', definition: 'A numerical rating that summarizes the likelihood of a person filing an insurance claim during the coverage period' },
+            { term: 'intentional misrepresentation', definition: 'Essentially the same as fraud; misrepresentation that occurs when the person knows better and intentionally remains silent or misstates the facts' },
+            { term: 'interest (financing)', definition: 'The percentage fee charged on the amount loaned.' },
+            { term: 'interest-only mortgage loan', definition: 'Loan feature allowing the borrower to only pay the interest due on the loan for a specified number of years' },
+            { term: 'interest (property)', definition: 'The right or claim a person has to property' },
+            { term: 'Internal rate of return (IRR)', definition: 'The annualized rate of return that an investment is expected to generate over its lifetime, considering the timing and magnitude of its cash flow' },
+            { term: 'International Codes® (I-Codes®)', definition: 'Created by the International Code Council to provide standards for residential construction across the country; aka I-Codes®' },
+            { term: 'Internet Data Exchange (IDX)', definition: 'Aka Broker Reciprocity, created by the National Association of REALTORS to enable brokers to share listing information across MLSS' },
+            { term: 'interpleader action', definition: 'When brokers deposit disputed escrow funds with the court and then obtain a discharge and release from any liability regarding the escrow account and the disputing parties' },
+            { term: 'Interstate Land Sales Full Disclosure Act', definition: 'A federal law regulating interstate land sales' },
+            { term: 'intestate', definition: 'Dying without a will' },
+            { term: 'intestate succession', definition: 'Determines how the deceased person\'s property is to be distributed when the person died without a will' },
+            { term: 'inverse condemnation', definition: 'The government takes private property but fails to compensate the owner; property owners are forced to file suit to obtain compensation. The taking may be physical through occupation, or regulatory, where government regulations deprive the owner of the property\'s beneficial use and cause the property to lose its economic value' },
+            { term: 'investment value', definition: 'The value to an investor of an investment property' },
+            { term: 'involuntary lien', definition: 'A lien imposed on a property or person by someone else, such as for nonpayment of taxes' },
+            { term: 'joint tenancy', definition: 'Property is owned by a group of two or more persons; the death of one person simply raises the stake the others have in the property; called right of survivorship' },
+            { term: 'joint venture', definition: 'A temporary organization of two or more people to carry out a single project.' },
+            { term: 'joists', definition: 'A horizontal length of timber or steel supporting part of the structure of a building, usually arranged in parallel between foundation, walls or beams to support a ceiling or floor' },
+            { term: 'judicial foreclosure', definition: 'Foreclosure process requiring court proceedings' },
+            { term: 'jumbo loan', definition: 'A loan amount that exceeds conforming loan limits established by Fannie Mae and Freddie Mac' },
+            { term: 'junior lien', definition: 'A loan that creates a lien against a property that has already been pledged as collateral' },
+            { term: 'Junior loan', definition: 'A type of loan that is subordinate to a senior loan in terms of priority of payment in case of default or bankruptcy' },
+            { term: 'Junk Fax Prevention Act', definition: 'Makes it unlawful to send an unsolicited commercial message via fax unless the sender has permission from the recipient or an established business relationship with the recipient' },
+            { term: 'jurisdiction', definition: 'The legal authority of a court to hear a case and make judgments.' },
+            { term: 'kickback', definition: 'A payment made (either with money or another item of value) to a real estate professional in exchange for providing a service referral; kickbacks are illegal per RESPA rules' },
+            { term: 'knowing violation', definition: 'An intentional act or failure to act in which the person is aware they are committing a violation of the law.' },
+            { term: 'lally columns', definition: 'A concrete-filled column for structural support' },
+            { term: 'land', definition: 'The Earth\'s surface, down to the center of the earth and upward infinitely into space, that is not covered by water, including any items permanently attached to the land, such as plants' },
+            { term: 'land trust', definition: 'A trust holding real property' },
+            { term: 'latent defect', definition: 'An issue with a property not immediately recognizable by a layperson; concealed, hidden, or requiring professional evaluation' },
+            { term: 'lead', definition: 'A metallic element found in rocks and soils worldwide' },
+            { term: 'lease', definition: 'A contract that transfers possession for consideration' },
+            { term: 'lease agreement', definition: 'A legally binding, written contract between an owner/landlord (lessor) and a tenant (lessee) for the tenant to possess the owner\'s real property for a specified period of time in exchange for a fee (rent or rental payment)' },
+            { term: 'leasehold estate', definition: 'This defines the legal relationship between the parties who sign the lease. It grants possession, but not title, to the tenant, and is for a limited period of time.' },
+            { term: 'lease option', definition: 'See lease with option to buy' },
+            { term: 'lease with option to buy', definition: 'Allows the lessee (renter) the option to purchase the property at the end of the lease term' },
+            { term: 'legal capacity', definition: 'The ability to enter into legal contracts' },
+            { term: 'legal description', definition: 'A method of identifying a property in written words that allows for an unambiguous interpretation of a property\'s boundaries and location' },
+            { term: 'legally competent party', definition: 'A party who has the capacity (legal and mental) to enter into a contract' },
+            { term: 'legal purpose', definition: 'The idea that a contract must not propose to do anything illegal; such a contract would be unenforceable' },
+            { term: 'legal title', definition: 'Ownership interest that is enforceable by law' },
+            { term: 'legatee', definition: 'Testate successor who benefits from the deceased\'s will' },
+            { term: 'lender application form', definition: 'A lender application form, or loan application, is a form completed by a borrower specifying personal and financial data to be considered by the lender in evaluating borrower risk' },
+            { term: 'lender\'s policy', definition: 'A title insurance policy that protects the lender\'s interest in the property for the amount of the loan' },
+            { term: 'lessee', definition: 'One who leases and is placed in possession (tenant)' },
+            { term: 'lessor', definition: 'One who leases out, granting temporary possession to another (landlord)' },
+            { term: 'leverage', definition: 'The use of borrowed funds to increase the potential return on an investment' },
+            { term: 'levy', definition: 'The placement of tax that creates a lien.' },
+            { term: 'liability', definition: 'The amount of money an individual or company owes to a lender' },
+            { term: 'liability insurance', definition: 'Standard package homeowner\'s insurance policy coverage for personal injuries to others resulting from the insured\'s acts or negligence; may include medical payments for accidents sustained by guests visiting the property and physical damage to others\' property' },
+            { term: 'license', definition: 'The temporary right to use another person\'s property' },
+            { term: 'lien', definition: 'A creditor\'s legal right to have their debt paid out of the property of a defaulting debtor, usually by a court sale' },
+            { term: 'lienor/lienee', definition: 'The lienor is the party holding the lien, such as a lender. The lienee is the person who needs to pay up!' },
+            { term: 'lien theory', definition: 'A state that adopts a lien theory goes under the presumption that a lender\'s mortgage is a lien on the property. A title theory state says that the lender owns the property until the loan is paid off.' },
+            { term: 'life cap', definition: 'A limit on the amount that an adjustable rate mortgage can increase over the term of the loan.' },
+            { term: 'life estate', definition: 'A freehold estate granted for someone\'s lifetime' },
+            { term: 'lifting clause', definition: 'A provision that allows the lien(s) ahead of the junior mortgage to be refinanced without changing their priority in lien positions' },
+            { term: 'limited liability company (LLC)', definition: 'A hybrid business formation that combines the limited liability features of a corporation with the tax efficiencies and operational flexibility of a partnership' },
+            { term: 'limited partnership', definition: 'A partnership in which there is one or more general partners who administer the enterprise, and one or more limited partners who are liable only to the extent of their investment' },
+            { term: 'liquid asset', definition: 'An asset that\'s either cash, or that may easily be converted into cash.' },
+            { term: 'liquidity', definition: 'The ease with which an asset is converted to cash' },
+            { term: 'lis pendens', definition: 'A public notice that a legal issue is pending' },
+            { term: 'list back', definition: 'An agreement in which a licensee reserves the right to list a property the licensee has helped the buyer secure or develop.' },
+            { term: 'listing agreement', definition: 'A legally binding contract between the seller and real estate licensee in which the dates of service, terms of compensation, and authority to market and list the property are provided' },
+            { term: 'littoral rights', definition: 'Rights of the owners of a bordering property to the use of a stationary body of water, such as a lake or sea' },
+            { term: 'living trust', definition: 'A legal document in which assets are placed by a trustor during the trust-maker\'s lifetime and then transferred to a designated beneficiary at the trust-maker death by a chosen representative, called a successor trustee.' },
+            { term: 'Loan Estimate', definition: 'Disclosure lender gives to the borrower within three days of the borrower applying for a loan; discloses loan terms, estimated interest rate, estimated payment, and estimated closing costs' },
+            { term: 'loan modification', definition: 'Borrowers work with lender to restructure or modify the terms of their mortgage so they can continue to make payments' },
+            { term: 'loan origination', definition: 'The making of a loan' },
+            { term: 'loan servicing', definition: 'The term for the lender processing payments, sending statements, and managing the escrow/impound account for a loan' },
+            { term: 'loan-to-value ratio (LTV)', definition: 'The ratio of a loan amount to the value of the property being purchased' },
+            { term: 'lock in', definition: 'Secure a given interest rate for a specified period of time (between a borrower and a lender). The term is called the lock-in period, and it\'s often for 30 or 45 days.' },
+            { term: 'loft lease', definition: 'Rental of floor space for wide open loft type spaces; structural changes are generally not permitted' },
+            { term: 'long-term capital gain', definition: 'Gain realized from an investment held for more than one year (receives favorable tax treatment, as compared to short-term capital gains)' },
+            { term: 'lot and block', definition: 'A legal description that refers to a lot and block number within a subdivision as indicated on a recorded subdivision plat' },
+            { term: 'lot lease provision', definition: 'A lender requirement that a portion of a construction or development loan be paid off as each lot is sold.' },
+            { term: 'loyalty', definition: 'One of the fiduciary duties, loyalty means putting the client\'s interests ahead of all others, including your own' },
+            { term: 'maintenance', definition: 'The upkeep of a property' },
+            { term: 'manufactured home loan', definition: 'Used for purchasing manufactured homes, with terms starting at 10 years. Longer loan terms are available to finance for homes permanently attached to their foundation' },
+            { term: 'manufactured housing / manufactured home', definition: 'Housing that is built to HUD specifications; manufactured housing must be at least 320 square feet and built on a permanent chassis' },
+            { term: 'mapping requirements', definition: 'Criteria a developer must meet in order to obtain approval for a development project. Can include setting aside land for schools and parks.' },
+            { term: 'margin', definition: 'The amount a lender charges (expressed in points or percentages) above a variable index, as in an adjustable rate mortgage' },
+            { term: 'marital status', definition: 'The status of being married or divorced' },
+            { term: 'marketable title', definition: 'A title that is reasonably free and clear of encumbrances so that the average buyer would not hesitate to consummate a sale' },
+            { term: 'market allocation', definition: 'The illegal process of dividing up a market by geography, price point, etc., to limit competition' },
+            { term: 'marketing service agreement (MSA)', definition: 'A legal document used to establish a relationship between a business or individual and a provider of marketing services' },
+            { term: 'market price', definition: 'The price at which a property can be bought or sold' },
+            { term: 'market rent', definition: 'The rent a leased space would likely get in the current market' },
+            { term: 'market value', definition: 'A price at which a willing buyer and willing seller can strike a deal given ordinary market conditions' },
+            { term: 'material defect', definition: 'A defect in the property or title that could cause a reasonable person to not purchase a property, or cause the buyer to value the property lower' },
+            { term: 'material fact', definition: 'A fact that would influence a reasonable person when making a decision; a person\'s decision would have been different had the information not been disclosed' },
+            { term: 'maturity', definition: 'The date on which the principal balance of a loan or bond, for example, becomes due and payable.' },
+            { term: 'mechanic\'s lien', definition: 'A lien placed by a laborer on a property for nonpayment of work done' },
+            { term: 'mediation', definition: 'A dispute resolution process whereby a neutral party hears each side and attempts to get the parties to resolve their differences.' },
+            { term: 'Megan\'s Law', definition: 'A law which requires the local authorities to publish the location of registered sex offenders in the area' },
+            { term: 'menace', definition: 'Threat of violence' },
+            { term: 'metes and bounds', definition: 'A survey system using points of reference and directional indicators to identify and locate a property for legal purposes' },
+            { term: 'mill', definition: 'A unit of measurement used in property tax calculations, where one mill represents one-thousandth of a property\'s assessed value. It is used to determine the amount of property tax owed, with the tax rate expressed in mills.' },
+            { term: 'millage rate', definition: 'The amount per $1,000 used to calculate property taxes; one mill represents $1 in tax per $1,000 of assessed value.' },
+            { term: 'Mineral estate', definition: 'An ownership interest part of the bundle of rights that come with real property ownership that can be sold or retained with the transfer of property' },
+            { term: 'ministerial acts', definition: 'Services performed that are routine and do not involve judgment, advocacy, or negotiation' },
+            { term: 'misrepresentation', definition: 'A false statement of a material fact in a real estate transaction, made either intentionally or through lack of proper care' },
+            { term: 'mission statement', definition: 'A broad overview of an organization\'s core principles and articulation of its fundamental purpose, values, and goals.' },
+            { term: 'mistake', definition: 'An error involving the parties to a contract that would affect their decision to enter into the contract had they known of the error.' },
+            { term: 'mixed-use developments', definition: 'A development with mixed zoning uses, generally commercial and residential' },
+            { term: 'Modified gross lease', definition: 'Rental agreements where the tenant pays base rent at the lease\'s inception as well as a proportional share of other costs like utilities.' },
+            { term: 'mold', definition: 'Part of the fungi kingdom that includes mildew; mold growth is encouraged by the presence of moisture and a lack of air circulation' },
+            { term: 'monetary damages', definition: 'A cash award granted to a party as an outcome of a legal action' },
+            { term: 'monument', definition: 'A natural or man-made permanent landmark that serves as a point of reference in a metes-and-bounds description' },
+            { term: 'moratorium', definition: 'Temporary halt on development' },
+            { term: 'mortgage', definition: 'A voluntary lien placed on a property as collateral against a loan' },
+            { term: 'mortgage-backed security (MBS)', definition: 'Mortgages that are pooled together and sold to investors on the secondary mortgage market' },
+            { term: 'mortgage banker', definition: 'An entity that makes and services mortgage loans' },
+            { term: 'mortgage broker', definition: 'A service professional who acts as a liaison between borrowers and lenders for a fee' },
+            { term: 'mortgage commitment', definition: 'A lender\'s promise to the borrower that a specified loan will be provided to the borrower.' },
+            { term: 'mortgage credit certificates', definition: 'Allow qualified buyers to claim some of the mortgage interest they paid as a credit on their tax returns' },
+            { term: 'Mortgage Disclosure Improvement Act (MDIA)', definition: 'Amends TILA to require specific timing related to disclosures that give consumers time to think about the loan they\'re about to obtain' },
+            { term: 'mortgagee', definition: 'The lender in a mortgage' },
+            { term: 'mortgage fraud', definition: 'Using deceptive means to obtain financing or make a loan that would otherwise not be possible were the facts known' },
+            { term: 'mortgage insurance', definition: 'See MIP/mortgage insurance premium and PMI/private mortgage insurance' },
+            { term: 'mortgage insurance premium (MIP)', definition: 'Mortgage insurance is due from borrowers who make a down payment of less than 20% on a home mortgage loan. It\'s paid by the borrower to protect the lender from losses due to potential default.' },
+            { term: 'mortgage loan originator (MLO)', definition: 'An individual who originates loans and guides mortgage applicants through the approval process' },
+            { term: 'mortgage REIT', definition: 'Invests in real estate debt, including mortgage-backed securities' },
+            { term: 'mortgagor', definition: 'The borrower in a mortgage, usually the homeowner.' },
+            { term: 'mound septic system', definition: 'A type of septic system designed for areas with poor soil drainage or shallow water tables, consisting of a raised mound of sand and gravel constructed above ground level to facilitate wastewater treatment and dispersal.' },
+            { term: 'multidwelling units', definition: 'See multi-family' },
+            { term: 'multi-family', definition: 'A property with more than one dwelling, e.g., a duplex.' },
+            { term: 'multiple listing service (MLS)', definition: 'A system that pools the listings of all member companies' },
+            { term: 'municipal bonds', definition: 'Bonds issued by a city, county, or state to fund government projects' },
+            { term: 'municipal fees', definition: 'Fees a developer pays to a municipality as part of the costs of development' },
+            { term: 'municipality', definition: 'A municipality is a local administrative area typically governed by elected officials, responsible for providing public services and infrastructure within a specific geographic area, such as a city or town.' },
+            { term: 'mutual mistake', definition: 'When both parties to a contract have an incorrect belief about an important fact' },
+            { term: 'mutual rescission', definition: 'An agreement between the parties to cancel the contract' },
+            { term: 'Nasdaq', definition: 'The largest electronic trading exchange in the United States. A "virtual" exchange market, it operates as a negotiated market without a physical trading floor.' },
+            { term: 'National Flood Insurance Program (NFIP)', definition: 'A federal program created to help mitigate future flood losses through the use of building and zoning ordinances, and by providing homeowners with access to affordable flood insurance protection' },
+            { term: 'natural person', definition: 'A term differentiating an actual human being from a \'legal person\' (which could be a private entity, such as a company or corporation)' },
+            { term: 'navigable water', definition: 'A river or other moving body of water that will accommodate commercial shipping.' },
+            { term: 'net income', definition: 'Income after expenses have been deducted' },
+            { term: 'net lease', definition: 'The tenant pays on top of the rent one or more of the following expenses: property taxes, property insurance premiums, or maintenance costs' },
+            { term: 'net listing', definition: 'A listing agreement in which the broker contracts with the seller to receive all net proceeds from a sale above a specified sales price; illegal in some states' },
+            { term: 'net operating income (NOI)', definition: 'Income projected after deducting losses for vacancy, collection loss, and operating expenses' },
+            { term: 'net present value (NPV)', definition: 'The value of all future cash flows (positive and negative) over the life of an investment discounted to the present' },
+            { term: 'net worth', definition: 'The value left after subtracting liabilities from assets' },
+            { term: 'no-cost loan', definition: 'Some lenders offer no-cost loans; it\'s important to determine what this means, exactly - are these lender costs only or other costs, such as escrow fees, title insurance, appraisal, etc?' },
+            { term: 'non-conforming loan', definition: 'A loan that doesn\'t meet the Fed\'s qualification standards (cannot be sold to Fannie Mae or Freddie Mac)' },
+            { term: 'nonconforming loan', definition: 'A loan that doesn\'t meet all qualifying guidelines set by Fannie Mae and Freddie Mac' },
+            { term: 'nonconforming use', definition: 'A use that no longer conforms with new or changed zoning; its use is allowed through the concept of grandfathering' },
+            { term: 'Non-consumer credit transaction', definition: 'Loans not primarily for personal, family, or household purposes that often involve businesses, commercial entities, or investments rather than individual consumers' },
+            { term: 'nondisturbance clause', definition: 'Protects a valid lease from termination in the event of mortgage foreclosure' },
+            { term: 'nonhomogeneity', definition: 'Uniqueness, the inability to exactly replicate something.' },
+            { term: 'non-judicial foreclosure', definition: 'A lender is able to sell a property in the event of buyer default, without going through the court system; usually granted via a power-of-sale clause in the security instrument' },
+            { term: 'non-possessory', definition: 'No right to occupy the property; easements are non-possessory rights' },
+            { term: 'nonqualified (non-QM loan)', definition: 'A mortgage option designed for borrowers who don\'t meet standard qualifying criteria set by government-sponsored enterprises, offering more flexibility but often with higher interest rates and stricter terms' },
+            { term: 'nontraditional mortgage loan', definition: 'Any mortgage product other than a 30-year fixed-rate mortgage' },
+            { term: 'note', definition: 'A debtor\'s contractual promise to repay' },
+            { term: 'notice of default', definition: 'A written notice that a borrower has defaulted; lets borrower know that legal action, including possible foreclosure, is imminent.' },
+            { term: 'novation', definition: 'The substitution of a new contract for a prior contract, or a new party for an old party' },
+            { term: 'obedience', definition: 'One of the duties an agent owes to the client, obedience means carrying out all lawful instructions of the client.' },
+            { term: 'offeror/offeree', definition: 'The offeror is the person making the offer; the offeree is the person to whom the offer is being made' },
+            { term: 'omitted assessment', definition: 'The process of adding a property to the tax rolls or adjusting its assessed value when it was inadvertently left out or undervalued in previous assessments.' },
+            { term: 'online rental scam', definition: 'Where a con artist use real estate listing information to fraudulently rent out a property' },
+            { term: 'open listing', definition: 'A listing agreement that allows the owner to work with multiple brokers, only paying a commission to the broker who procures the buyer' },
+            { term: 'open-market operations', definition: 'When government securities are bought and sold in the open market in order to increase or decrease the amount of money in the banking system' },
+            { term: 'operating budget', definition: 'A property manager\'s detailed plan for managing expenses and income' },
+            { term: 'operating expenses', definition: 'Expenses realized for the operation of an enterprise.' },
+            { term: 'operation of law', definition: 'Dictates the manner in which parties automatically acquire rights or liabilities due to established rules of law, and not through an agreement or act of their own' },
+            { term: 'option clause', definition: 'Allow a tenant to purchase the lease (at a predetermined price) or extend the term of the lease if desired.' },
+            { term: 'option period', definition: 'The length of time in an option contract in which the optionee may act' },
+            { term: 'option to renew', definition: 'The right of a tenant to renew a lease upon the expiration of a lease period. Seen frequently in commercial leases.' },
+            { term: 'orientation', definition: 'How a house is built in relation to the direction of the sun' },
+            { term: 'originate, hold, and service', definition: 'The original lender holds and services the loan for the length of the loan term.' },
+            { term: 'originate, sell, and service', definition: 'The original lender sells the loan on the secondary mortgage market, but continues to service it.' },
+            { term: 'originate, sell, and service release', definition: 'The original lender sells the loan on the secondary mortgage market and someone else services it.' },
+            { term: 'origination fee', definition: 'The cost of making the loan; on a conventional loan, this refers to the amount of points the borrower pays' },
+            { term: 'outlot', definition: 'Extra lots beyond those developed in a subdivision' },
+            { term: 'owner financing', definition: 'See seller financing' },
+            { term: 'owner participation', definition: 'Amount of cash a developer puts down that is not financed' },
+            { term: 'owner\'s policy', definition: 'A title insurance policy that covers the borrower in case title defects come up after closing' },
+            { term: 'parcel', definition: 'A specific tract of land with specific boundaries.' },
+            { term: 'partial performance', definition: 'Meeting some, but not all terms of a contract' },
+            { term: 'partition', definition: 'A division of a piece of property' },
+            { term: 'partnership', definition: 'A legal form of business relationship between two or more people; may take the form of a limited partnership or a general partnership' },
+            { term: 'passive fraud', definition: 'Intentional nondisclosure; when the law imposes a duty to disclose a known fact and someone intentionally remains silent' },
+            { term: 'passive income', definition: 'Income earned without active participation, such as rental income' },
+            { term: 'payee', definition: 'The person to whom a negotiable instrument is intended to pay.' },
+            { term: 'percentage', definition: 'A fraction of 100' },
+            { term: 'percentage lease', definition: 'The tenant pays a base rent, plus an additional charge based on a percentage of the tenant\'s gross sales or income (usually in retail property rentals, like shopping centers and malls)' },
+            { term: 'percolation rate', definition: 'The absorption rate of soil for a septic drain field; determined through a percolation test (aka perc test)' },
+            { term: 'performance of a contract', definition: 'The discharging (ending) of a contract through the full completion of all terms' },
+            { term: 'periodic cap', definition: 'Aka subsequent cap or period cap; limits the amount an adjustable rate loan\'s interest rate can go up in subsequent adjustments (after the initial adjustment)' },
+            { term: 'periodic estate', definition: 'Possessory interest that is automatically renewed at the end of each period specified in the lease' },
+            { term: 'Periodic repayment', definition: 'The regular payments made toward a debt or investment over a set period; also known as the loan amortization factor or loan payment factor' },
+            { term: 'personal property', definition: 'Property that is movable, may be owned by a person, and is not real property' },
+            { term: 'personal property law', definition: 'Law pertaining to personal property' },
+            { term: 'physical characteristics', definition: 'The tangible attributes of a property, including its size, shape, location, topography, natural features (such as terrain, soil, and vegetation), accessibility, climate, and proximity to amenities or infrastructure.' },
+            { term: 'piggyback (split) loan', definition: 'A legal way for borrowers to avoid having to purchase private mortgage insurance (PMI) when they put less than 20% down; involves two separate loans' },
+            { term: 'pitch', definition: 'The angle of slope to a roof' },
+            { term: 'plaintiff', definition: 'The person who files a lawsuit in a civil matter.' },
+            { term: 'planned unit development (PUD)', definition: 'A mix of land uses such as residential and commercial in one contained development' },
+            { term: 'plasterboard (aka wallboard)', definition: 'Building material used to make walls that consists of large pieces of plaster covered with paper.' },
+            { term: 'platform construction', definition: 'The most common form of framing used in residential construction, platform framing consists of a framing structure resting on as subfloor platform.' },
+            { term: 'plat map', definition: 'A map which shows the location of a piece of property in context to its adjoining lots, roads and landmarks. It includes lot, street and block identifiers.' },
+            { term: 'plot plan', definition: 'A map that shows the boundaries and dimensions of the property and the location of all improvements to the land, such as buildings, driveways, patios, walks, etc.' },
+            { term: 'plottage', definition: 'The increase or decrease in land value that occurs when several parcels are combined into one large plot, as that value compares to their combined total value if sold individually' },
+            { term: 'point', definition: 'A fee equal to 1% of a loan amount. It\'s typically paid upfront to lower the interest rate on a loan.' },
+            { term: 'point of beginning', definition: 'A reference point marking the beginning point of a metes-and-bounds description' },
+            { term: 'police power', definition: 'The authority of all levels of government to act on behalf of the health, safety, and welfare of its citizens' },
+            { term: 'policies and procedures manual', definition: 'Contains a brokerage firm\'s best practices, core business processes and procedures, and guidelines and standards by which the members of the firm perform their respective functions' },
+            { term: 'poly-chlorinated byphenols (PCBs)', definition: 'Synthetic liquid compounds used as a cooling and insulating medium in electrical transformers until they were banned' },
+            { term: 'possession', definition: 'The right to live or work on a property' },
+            { term: 'possessory', definition: 'A right to occupy the property' },
+            { term: 'post and beam construction', definition: 'Type of framing that uses wood members that are much larger than ordinary studs and are spaced farther apart' },
+            { term: 'power of attorney', definition: 'The right to act for someone else in a legal transaction.' },
+            { term: 'power of sale', definition: 'Allows a lender to sell a property if the buyer defaults on payments without going through a formal court proceeding' },
+            { term: 'pre-approval', definition: 'An assurance from the lender that the borrower appears to have the funds and creditworthiness to close; includes verifying the borrower\'s credit standing, available funds and employment history' },
+            { term: 'preliminary title report', definition: 'A document provided by a title company early in a real estate transaction, outlining conditions for issuing a title insurance policy and detailing property ownership history, liens, encumbrances, and other title-related matters' },
+            { term: 'prepaid items', definition: 'Items a seller paid in advance and that the buyer must reimburse at closing, e.g., utilities' },
+            { term: 'pre-payment penalty', definition: 'A penalty charged by a lender to a borrower for paying off a loan early' },
+            { term: 'prequalification', definition: 'A letter from a lender stating that, on the face of information provided by the borrower, the borrower will likely qualify for the loan.' },
+            { term: 'pre-qualification', definition: 'Less reliable than a pre-approval; buyer-reported information still needs to be verified' },
+            { term: 'present value (PV)', definition: 'The current worth of an amount of money' },
+            { term: 'Present worth of $1', definition: 'The amount that must be deposited today to grow to $1 in the future, given periodic interest rate (i) and (n) periods; also known as the present value of $1' },
+            { term: 'Present worth of $1 per period', definition: 'The present value of a series of future periodic payments of $1, discounted at a periodic interest rate (i) over (n) periods, assuming the payments occur at the end of each period; also known as the present value of $1 per period' },
+            { term: 'preventative maintenance', definition: 'Property upkeep tasks that are done to prevent future damage or deterioration' },
+            { term: 'price', definition: 'The dollar amount agreed upon for the sale of a property' },
+            { term: 'price fixing', definition: 'The illegal agreement between competitors to fix services or products at a specific price' },
+            { term: 'primary market', definition: 'The primary market is where loans are originated; the secondary market is where they are sold' },
+            { term: 'primary mortgage market', definition: 'Where loans are originated; they are sold on the secondary mortgage market' },
+            { term: 'prime rate', definition: 'The interest rates that lenders offer to preferred customers.' },
+            { term: 'principal', definition: 'The amount being borrowed, or the amount left to be repaid.' },
+            { term: 'principal (agency)', definition: 'The person represented by an agent in a real estate transaction' },
+            { term: 'principal balance', definition: 'What\'s left to be repaid on the principal of a loan (doesn\'t include interest and other charges).' },
+            { term: 'principal, interest, taxes, and insurance (PITI)', definition: 'The four expenses in a budget mortgage payment' },
+            { term: 'principal (loans)', definition: 'Loan balance' },
+            { term: 'principal meridian', definition: 'An imaginary line that runs north and south and crosses a base line at a specific point, and used by surveyors of reference to locate and describe land using the rectangular survey system.' },
+            { term: 'principle of anticipation', definition: 'A term used in valuing income property when using capitalization rate.' },
+            { term: 'principle of conformity', definition: 'A valuation term indicating that a property holds its value when surrounding properties are similar to the subject property.' },
+            { term: 'principle of contribution', definition: 'An appraisal term indicating that the value of a portion of the property is dependent upon the value it brings to the entire property' },
+            { term: 'priority', definition: 'The order in which liens are paid' },
+            { term: 'private mortgage insurance (PMI)', definition: 'An insurance requirement that protects the lender when it approves a loan with more than 75% to 80% of the purchase being financed' },
+            { term: 'Private Placement Memorandum (PPM)', definition: 'Written disclosure document provided to private placement purchasers, also called offering memorandum.' },
+            { term: 'Privity of Contract', definition: 'The law that states only the parties within a contract can be held to the contract\'s requirements.' },
+            { term: 'Privity of Estate', definition: 'When two or more parties hold an interest in the same real property.' },
+            { term: 'probate', definition: 'The process by which the court determines how a deceased person\'s estate should be distributed' },
+            { term: 'procuring cause', definition: 'The initiator in a chain of events that leads to a real estate sale' },
+            { term: 'professional corporation (PC)', definition: 'Like a typical corporation, but all members, officers, etc. must be licensed and only practice in the professional field in which it\'s registered; may not be licensed as an employing broker' },
+            { term: 'professional limited liability company (PLLC)', definition: 'Like an LLC, but all members must be licensed and only practice in the professional field in which it\'s registered; may not be licensed as an employing broker' },
+            { term: 'profit (land)', definition: 'The right to take products out of the soil' },
+            { term: 'pro forma', definition: 'A financial statement based on assumptions and projections.' },
+            { term: 'progression', definition: 'The bump in value that a lower-valued property receives when a neighboring property\'s value increases' },
+            { term: 'prohibition of waste', definition: 'The understanding that a life tenant or other possessor of a property will maintain it, pay taxes, and do other things to keep up the property' },
+            { term: 'promissory note', definition: 'A promise by the borrower to repay the loan; it includes the terms for repayment' },
+            { term: 'property insurance', definition: 'Also called hazard insurance, property insurance is a way of protecting a home or property against physical damage or loss of assets in the case of damage or theft. The policy holder pays a premium, and insurance pays the policy holder to recover losses when they occur.' },
+            { term: 'property management', definition: 'Managing a property or properties for another' },
+            { term: 'property management agreement', definition: 'A contract entered into by a property manager (or property management company) and a property owner that creates an agency relationship between the parties; property management agreements outline the responsibilities and duties the property manager will conduct on behalf of the owner.' },
+            { term: 'property management plan', definition: 'A plan created by a property manager that supports the owner’s present and future objectives for the property under management. It can include a current property status analysis, market analysis, competitive analysis, and analysis of alternatives.' },
+            { term: 'property manager', definition: 'Someone who manages real estate for another for compensation; duties include generating income, budgeting, market analysis, advertising, and negotiating leases' },
+            { term: 'property tax assessment', definition: 'The evaluation of a property\'s value by a government entity for the purpose of determining the amount of property tax owed by the owner.' },
+            { term: 'proprietary lease', definition: 'A lease held by the shareholder of a cooperative which allows the shareholder the right to occupy the shareholder\'s unit.' },
+            { term: 'proration', definition: 'A division of expenses and income between the buyer and seller according to who owns the property before and after the sale date; the seller and buyer each pay for items, like taxes and insurance, or receive income from the property only for the days they actually own the property' },
+            { term: 'protection clause', definition: 'Prevents buyers from reaching an agreement with a seller on a property and then discarding their broker so that neither party has to pay a broker commission' },
+            { term: 'provenance', definition: 'History of ownership and conveyance that drives up the price of an auctioned item' },
+            { term: 'puffery/puffing', definition: 'A statement of opinion or exaggeration that is generally understood not to be a statement of fact' },
+            { term: 'pur autre vie', definition: '"For the life of another"; a life estate that lasts for the life of someone other than the life tenant' },
+            { term: 'purchase agreement', definition: 'A written contract between a buyer and seller specifying the terms for the transfer of interest in real property' },
+            { term: 'purchase money mortgage', definition: 'A form of seller financing in which a loan is given to the buyer from the seller; the buyer puts the money toward the purchase price in the form of a down payment' },
+            { term: 'purchase money second mortgage', definition: 'A nontraditional loan that takes the form of equity in a property or a seller-funded loan; used to cover part of a property\'s purchase price' },
+            { term: 'quadrangle', definition: 'A 24-mile by 24-mile parcel (16 townships) as defined by the government\'s rectangular survey system.' },
+            { term: 'qualified fee', definition: 'Inheritable freehold estate that\'s defeasible (the grantor can terminate the title); e.g., a parent might transfer property to a child as long as the child remained unmarried; also known as fee simple defeasible estate' },
+            { term: 'qualified mortgage', definition: 'A loan that meets stringent CFPB guidelines that are designed to curb lending practices that led to the late 2000s financial crisis' },
+            { term: 'qualifying ratio', definition: 'Calculations to determine whether a buyer qualifies for financing. The front-end ratio uses the borrower\'s monthly housing debt and compares it to the borrower\'s gross monthly income. The back-end ratio uses total monthly debt compared to gross monthly income.' },
+            { term: 'quiet enjoyment', definition: 'This is a right of a tenant to enjoy the property without being dispossessed or trespassed upon, even by the landlord' },
+            { term: 'quiet title', definition: 'A court action to remove a cloud on a title' },
+            { term: 'quitclaim deed (non-warranty deed)', definition: 'A deed that does not offer any warranties but simply releases the current owner’s claims to the property' },
+            { term: 'radon', definition: 'A radioactive gas found worldwide caused by the natural decay of uranium' },
+            { term: 'rafter', definition: 'An internal beam extending from the eaves to the peak of the roof' },
+            { term: 'rate lock', definition: 'The securing of a given interest rate for a specified period of time between a borrower and a lender.' },
+            { term: 'rate of return (ROR)', definition: 'Gain or loss on an investment over a period of time, expressed as a percentage of the investment\'s cost' },
+            { term: 'ratification', definition: 'Acceptance after the fact, sometimes in contrast to a prior agreement' },
+            { term: 'real estate', definition: 'Land, plus all things permanently attached to it, naturally or artificially' },
+            { term: 'real estate appraiser', definition: 'An appraiser is someone who, for a fee, estimates the value of real property. If the property is in any way related to a federal transaction of $250,000 or more, the appraiser must be licensed or certified to perform the appraisal.' },
+            { term: 'real estate investment trust (REIT)', definition: 'A business owned by shareholders who invest in properties or mortgages' },
+            { term: 'real estate owned (REO)', definition: 'Real estate owned property; when foreclosed homes don\'t sell at auction, they become a real estate owned (bank-owned) property' },
+            { term: 'Real Estate Settlement Procedures Act (RESPA)', definition: 'Protects borrowers from overcharges by requiring disclosure and prohibiting kickbacks' },
+            { term: 'real property', definition: 'Real estate, plus the interest, benefits, and rights included with ownership' },
+            { term: 'real property law', definition: 'Law pertaining to real property (e.g., real estate).' },
+            { term: 'real property tax rate', definition: 'The amount charged against assessed value of a property' },
+            { term: 'REALTOR(R)', definition: 'A member of the National Association of REALTORS(R)' },
+            { term: 'reasonable care', definition: 'The diligence and competence that agents must demonstrate while fulfilling their duties' },
+            { term: 'reasonable skill and care', definition: 'A duty owed to a client by an agent, reasonable care requires the agent to act at the utmost professional level in serving the client.' },
+            { term: 'reasonable time', definition: 'Period in which the parties must complete contract terms, if the date isn’t specified' },
+            { term: 'reasonably foreseeable', definition: 'What buyers can sue sellers for when sellers breach the contract; covers buyer expenses such as inspections, surveys, and other buyer costs' },
+            { term: 'reassessment', definition: 'A program implemented by a municipality and completed by the municipal tax assessor to evaluate all real estate within its jurisdiction based on its "full and fair value."' },
+            { term: 'rebate', definition: 'Any unearned fee, kickback, or thing of value given in connection with a transaction' },
+            { term: 'recession', definition: 'A moderate, short-term dip in the economy\'s health' },
+            { term: 'recidivism', definition: 'A tendency to relapse into a previous condition or mode of behavior, particularly a relapse into criminal behavior.' },
+            { term: 'reciprocity', definition: 'The agreement between states to allow licensed individuals to do business in both states' },
+            { term: 'reconciliation (appraisals)', definition: 'The final step in the appraisal process in which the appraiser weighs the estimates of value from the three approaches to value (market, cost, income) and arrives at a final number' },
+            { term: 'reconciliation (closing)', definition: 'A balancing of both sides of the Closing Disclosure' },
+            { term: 'reconveyance', definition: 'The returning of a deed to the borrower once their debt is pain in full' },
+            { term: 'recorder', definition: 'Often a county clerk, this is the public official who records transactions affecting real property.' },
+            { term: 'recording/recordation', definition: 'Public filing of a document' },
+            { term: 'rectangular survey system/rectangular government survey system', definition: 'A governmental survey system that describes land in reference to principal meridians and baselines' },
+            { term: 'redlining', definition: 'An illegal practice in which lenders refused to lend money to people buying in a specific area, often based on the presence of people who belong to one of the seven classes protected by the federal Fair Housing Act' },
+            { term: 'referee\'s/sheriff\'s deed', definition: 'A deed that contains no covenants or warranties but does imply ownership (seisin); often used in bankruptcy proceedings and foreclosures' },
+            { term: 'reference to a plat', definition: 'This is used in legal descriptions on documents such as deeds. The reference is to a subdivision plat map. The page number and subdivision name are provided, the lot and block as well, and the recording authority.' },
+            { term: 'referral fee', definition: 'A fee paid to someone who receives a client or customer for service to the person referring the client or customer' },
+            { term: 'refinancing, refinance', definition: 'Paying off a loan with the proceeds of a new loan, using the same property as collateral.' },
+            { term: 'regression', definition: 'The loss of value in a property that occurs when a nearby property\'s value decreases' },
+            { term: 'Regulation T', definition: 'Regulates the extension of credit from BD to customers for margin accounts. Also sets payment dates on corporate securities as T+4 or S+2.' },
+            { term: 'Regulation U', definition: 'Regulates the extension of credit from banks to BDs.' },
+            { term: 'Regulation Z', definition: 'Legislation from the Truth in Lending Act that requires disclosure of terms by lenders' },
+            { term: 'Rehab loan', definition: 'A rehab loan is a type of financing that allows homebuyers or homeowners to purchase and renovate a property with a single loan. These loans cover both the purchase price and renovation costs, making them ideal for fixer-upper homes or properties in need of repairs.' },
+            { term: 'release of liability', definition: 'In a loan assumption, a written agreement that the lender won’t hold the original borrower liable for the loan in case of default' },
+            { term: 'reliction', definition: 'The gradual creation of land when adjacent water levels recede' },
+            { term: 'remainder interests', definition: 'Ownership rights upon the death of the life tenant.' },
+            { term: 'remainderman', definition: 'The person receiving title upon the death of the life tenant' },
+            { term: 'rent roll', definition: 'A list of all the tenants and the particulars about the type of unit, what the tenant is paying for it, and when the lease ends' },
+            { term: 'replacement cost/replacement cost new', definition: 'The construction costs at current prices to replace a property that won’t be an exact duplicate, but serves the same purpose or function as the original' },
+            { term: 'replacement reserve fund', definition: 'A fund set aside for replacement of common property (e.g., a parking lot) in a common interest community, such as a condominium development.' },
+            { term: 'reproduction cost', definition: 'The construction costs at the current price point that will be necessary to exactly reproduce existing improvements to a property' },
+            { term: 'Residential Lead-Based Paint Hazard Reduction Act', definition: 'Law that requires sellers, landlords, and their agents to disclose the presence of any known lead hazards in the home' },
+            { term: 'residential office', definition: 'A type of combination property that includes residential and office zoning in the same place.' },
+            { term: 'Restricted Stock (Letter Stock)', definition: 'Stock purchased through a private placement, prohibited from resale in the secondary market for a minimum of 6 months.' },
+            { term: 'restrictive covenant', definition: 'Promises between two parties that appear on a deed and prohibit or require specific use of the property' },
+            { term: 'retaliatory eviction', definition: 'When a landlord evicts or threatens to evict a tenant because of a complaint the tenant made; illegal in many states' },
+            { term: 'return on investment (ROI)', definition: 'The amount of income an investor\'s financial investment is producing; expressed as a ratio: (investment gain - investment cost) ÷ investment cost' },
+            { term: 'revaluation', definition: 'A program implemented by a municipality and completed by an external professional appraisal firm hired by the municipality to evaluate all real estate within its jurisdiction based on its "full and fair value."' },
+            { term: 'revenue stamps', definition: 'A tax applied upon the recordation of a transfer of ownership in real property. May also be referred to as transfer tax' },
+            { term: 'reverse annuity mortgage', definition: 'With a reverse mortgage, the lender makes payments to the homeowner for a specified period of time, and gains corresponding equity.' },
+            { term: 'reverse exchange', definition: 'When an investor finds and closes on an investment property and then decides to sell another property, he or she can do a tax deferral “backward."' },
+            { term: 'reverse mortgage', definition: 'Also known as a home equity conversion mortgage or a reverse annuity mortgage (RAM); allows homeowners to use their home equity to stay in their homes; the lender makes payments to the homeowner for a specified period of time and gains a security interest in the value of the home' },
+            { term: 'reversion', definition: 'The lessor\'s right to reclaim possession of the property at the end of the lease term' },
+            { term: 'reversionary interest', definition: 'Right of repossession of the property by the owner after the end of the life estate' },
+            { term: 'revitalization', definition: 'The rehabilitation or renewal stage of the neighborhood life cycle' },
+            { term: 'revocation', definition: 'The permanent removal of a license. If a real estate licensee has a license revoked, it may not be re-enacted before a specific amount of time has passed.' },
+            { term: 'revolving debt', definition: 'Debt that allows a consumer to borrow against a line of credit (e.g., a credit card, home equity line of credit).' },
+            { term: 'R-factor', definition: 'R-factor or R-value is a term used in insulation and means the degree of resistance to the heat transfer of the walls (how much heat is kept in or out).' },
+            { term: 'ridge beam', definition: 'A structural member used to support the ends of the rafters at the ridge of the roof; transfers loads to end walls' },
+            { term: 'right of first refusal', definition: 'Provides a prospective buyer with the right to purchase a property if the seller decides to sell, or if another buyer comes along' },
+            { term: 'right of ingress or egress', definition: 'The right to enter (ingress) or leave (egress) a property.' },
+            { term: 'right of inheritance', definition: 'A co- ownership position in which a co-owner’s interest may be willed to another person' },
+            { term: 'right of survivorship', definition: 'A co-ownership position in which the death of one of the owners simply increases the interest of the others; ownership cannot be devised (passed down to heirs)' },
+            { term: 'right of way', definition: 'A type of easement' },
+            { term: 'riparian rights', definition: 'Rights of the owners of a bordering property to use a flowing body of water, such as a river or creek' },
+            { term: 'risk management', definition: 'Balancing potential rewards with potential losses by identifying, evaluating, and managing risks to a business' },
+            { term: 'Rivers and Harbors Act', definition: 'Prohibits discharging refuse into, altering the course of, or excavating, filling, or changing the condition or capacity of any port, harbor, or channel without a license or permit, or building any wharf, pier or other structure in any water outside established harbor lines without a permit' },
+            { term: 'Rule 144', definition: 'Restricted stock is unregistered and restricted from sale for 6 months. Sellers must file notice of intention to sell at or before the sale date. Maximum sales are the greater of 1% of outstanding shares, or weekly average of the 4-week trading volume preceding the filing.' },
+            { term: 'Rule 147 Intrastate Offering', definition: 'An exempt transaction, an offering made to investors in only one state. Securities purchased under Rule 147 may not be sold outside the state for 6 months.' },
+            { term: 'Safe Drinking Water Act', definition: 'A federal law enacted in 1974 that governs state drinking water regulations' },
+            { term: 'sale-and-leaseback/sale-leaseback', definition: 'Most often used in commercial transactions, a sale and lease back is where the building’s owner will sell the building and rent or lease it back from the new owner. This frees up capital for the owner.' },
+            { term: 'sales comparison approach', definition: 'An approach to determining value using similar recent sales data' },
+            { term: 'sales contingency', definition: 'A buyer’s ability to continue with a transaction is dependent on the buyer’s current home selling first' },
+            { term: 'sales contract', definition: 'A document that buyers and their agents use to prepare the purchase offer for the sellers' },
+            { term: 'sales price', definition: 'The price at which a property actually sells; also known as “market price”' },
+            { term: 'sand filter', definition: 'A component of some septic systems that further clarifies wastewater by passing it through layers of sand to remove suspended solids and impurities.' },
+            { term: 'savings and loan association (S&L)', definition: 'Popular from the 1930\'s to 1980\'s, these organizations would pool their savings, loan it to others, then create more loans off of the money that was paid back' },
+            { term: 'scope of work', definition: 'Includes house plans and specifications for new construction' },
+            { term: 'Secondary Market', definition: 'Trading of outstanding shares (previously issued). Proceeds from sales go to someone other than the issuer.' },
+            { term: 'secondary mortgage market', definition: 'The market for loans sold by the primary market; a secondary lender will service the loan for the consumer' },
+            { term: 'second mortgage', definition: 'A mortgage in secondary position to the first mortgage (e.g., a home equity loan)' },
+            { term: 'section', definition: 'In a government survey system, a township is divided into 36 sections, and each section is 1/36th of the township' },
+            { term: 'Section 8', definition: 'Series of HUD-funded housing assistance programs that are administered on the state level' },
+            { term: 'Secure and Fair Enforcement (SAFE) Act', definition: 'Requires every mortgage loan originator to be fully licensed and carry a mortgage surety bond' },
+            { term: 'secured loan', definition: 'A loan backed by collateral (e.g., a mortgage loan in which the property is used as collateral).' },
+            { term: 'security', definition: 'An intangible investment, such as stocks, bonds, or mutual funds' },
+            { term: 'security deposit', definition: 'A sum provided by a tenant to a landlord to help ensure the landlord is not stuck with expenses or unpaid rent when the tenant vacates' },
+            { term: 'security instrument', definition: 'Evidence of a pledge of an asset, to be used as security for a loan' },
+            { term: 'seller carryback', definition: 'A seller financing transaction in which the seller carries a portion of the buyer\'s loan.' },
+            { term: 'seller net sheet', definition: 'An estimate prepared by the seller\'s agent of what the seller\'s net proceeds will look like if the seller accepts the buyer\'s offer' },
+            { term: 'seller\'s agent', definition: 'An agent who represents only the seller in the transaction' },
+            { term: 'Senior loan', definition: 'A type of loan that has priority over other debts in case of default or bankruptcy' },
+            { term: 'septic system', definition: 'A private sewer system in which a pipeline connecting to the structure also connects to a drain and septic tank' },
+            { term: 'servient estate', definition: 'The property that is impacted by the easement.' },
+            { term: 'servient tenement', definition: 'The property subject to the easement.' },
+            { term: 'setback', definition: 'The required distance between the property line and the building line' },
+            { term: 'settlement service provider', definition: 'A service provider who assists in a real estate transaction (e.g., title company representative, mortgage broker, real estate broker)' },
+            { term: 'Settlement Service Provider (SSP)', definition: 'any company, individual, or entity that offers services related to the closing (settlement) of a real estate transaction.' },
+            { term: 'severalty', definition: 'A form of ownership that severs the interests of all others; complete, exclusive ownership' },
+            { term: 'severance', definition: 'Altering the characteristic of an item from real property to personal property by removing it from the land' },
+            { term: 'Sewage', definition: 'Human body wastes and the waste from toilets and other receptacles intended to receive or retain body wastes.' },
+            { term: 'shadow flicker effects', definition: 'Light changes created by the shadows given off by the motion of fully rotating wind turbines.' },
+            { term: 'sheathing', definition: 'A plywood covering the exterior framing members over which a final covering is placed—usually siding, brick, stucco, or stone.' },
+            { term: 'Sherman Act', definition: 'An 1890 act to protect the public from antitrust practices, such as monopolies or combinations that restrain trade' },
+            { term: 'short sale', definition: 'A distressed homeowner sells a property for less than is owed; requires lender approval' },
+            { term: 'short-term capital gain', definition: 'Gains realized from an investment held for less than one year (taxed as ordinary income)' },
+            { term: 'sick building syndrome', definition: 'A condition where people start getting headaches and respiratory problems due to being in an environment with poor ventilation or other air quality issues' },
+            { term: 'side agreement', definition: 'An agreement that is made between a seller and a buyer to modify, vary, or clarify the primary contract' },
+            { term: 'siding', definition: 'The exterior covering of the walls of a house that goes over the sheathing. It may be metal, wood, vinyl, or a combination of fieldstone, brick, or other materials.' },
+            { term: 'sill plate', definition: 'The bottom (or first) horizontal member of a wall or building' },
+            { term: 'simultaneous second-lien loan', definition: 'A nontraditional mortgage arrangement where either a closed-end second lien or a home equity line of credit (HELOC) is originated concurrently with the first lien mortgage loan' },
+            { term: 'single-family home', definition: 'Usually a detached residence designed for one family' },
+            { term: 'sinkhole', definition: 'A depression in the ground caused by gradual erosion or a sudden cave-in' },
+            { term: 'Sinking fund factor', definition: 'The calculation used to determine the periodic deposit or payment required to accumulate a specific amount of money; also known as the amortization of future value' },
+            { term: 'site analysis', definition: 'A determination of how the physical characteristics (the improvements relative to the site, nearby comps) of the site influence value' },
+            { term: 'site plan', definition: 'A detailed plan that shows the layout of a construction site, including the locations of structures, utilities, access points, and any relevant environmental features' },
+            { term: 'situs', definition: 'The location of a property' },
+            { term: 'sky lease', definition: 'Allows owners to lease the rights to the air above their property' },
+            { term: 'slab', definition: 'An important structural element made of a molded layer of plain or reinforced concrete and used to create flat surfaces in construction, such as floors, roofs, and ceilings' },
+            { term: 'slab-on-grade construction', definition: 'A foundation that is a concrete slab, instead of a foundation wall. Possible only on level terrains.' },
+            { term: 'slogan', definition: 'A catchy and memorable phrase that encapsulates the spirit of a brand, product, or service.' },
+            { term: 'Small Business Liability Relief and Brownfields Revitalization Act', definition: 'Aka Brownfields Law; protects future landowners of contaminated properties from liability under certain conditions' },
+            { term: 'soffit', definition: 'The area under the roof extension' },
+            { term: 'soil permeability', definition: 'The ability of soil to absorb and transmit water influences the effectiveness of wastewater treatment and dispersal in septic systems.' },
+            { term: 'Sole ownership', definition: 'A property that is owned by a single individual' },
+            { term: 'sole proprietorship', definition: 'A business of one person' },
+            { term: 'special agent', definition: 'An agent whose scope of authority is limited to a specific area' },
+            { term: 'special assessment', definition: 'A levy to fund community improvements' },
+            { term: 'special assessment lien', definition: 'Levied against real property to help fund the cost of a specific improvement (e.g., putting in sidewalks)' },
+            { term: 'Special Clause', definition: 'A provision added to the standard contract of sale to accommodate unique requirements or circumstances for the buyer or seller.' },
+            { term: 'special flood hazard areas (SFHAs)', definition: 'Areas designated as prone to flooding, mudflows, or flood-related erosion; properties located in SFHAs must carry flood insurance' },
+            { term: 'special lien', definition: 'A lien on a specific property. A property tax lien is an example of a special lien' },
+            { term: 'special use permit', definition: 'Allows a property to be used in a way that isn\'t really in accordance with zoning regulations' },
+            { term: 'special warranty deed', definition: 'Aka limited warranty deed or bargain and sale deed; a deed in which the grantor only guarantees the title against defects arising during the time the grantor owned the property but not against defects that may have been in existence before taking ownership of the property' },
+            { term: 'specifications', definition: 'Written narratives explaining a building plan.' },
+            { term: 'sphere of influence', definition: 'The people who know, like and trust you' },
+            { term: 'split estate', definition: 'The separation of surface land ownership and subsurface mineral rights ownership.' },
+            { term: 'spot assessment', definition: 'The reassessment of an individual property that has recently been sold, without being part of a broader scale reassessment or municipal-wide revaluation.' },
+            { term: 'spot zoning', definition: 'The act of allowing a specific property to be zoned differently from adjacent properties' },
+            { term: 'staging', definition: 'Preparing a property for show or sale by removing clutter, moving furniture, adding accessories, etc.' },
+            { term: 'standards for acceptable designs (SAD)', definition: 'ADA regulations that apply to new construction or remodeling of public accommodations and commercial buildings' },
+            { term: 'statute of frauds', definition: 'Adopted by all states, the statute of frauds is a legal concept that all contracts involving the creation or conveyance of an interest in real property must be in writing to be enforceable' },
+            { term: 'statutory laws', definition: 'Laws created by statute, as opposed to case law' },
+            { term: 'statutory lien', definition: 'A monetary encumbrance that’s placed on a property by statute' },
+            { term: 'statutory year', definition: 'Assumes that all months in the year have 30 days; calculations are made based upon a 360-day year' },
+            { term: 'steep slope', definition: 'Land whose slope is 30-45% or steeper, or a % as determined by the local building department to be a ""steep slope.""' },
+            { term: 'steering', definition: 'The illegal practice of nudging buyers away or toward a specific area based on the presence or absence of protected class members in the area relative to the buyers' },
+            { term: 'step-up/graduated rent', definition: 'A gradual increase in rent, agreed upon at lease signing' },
+            { term: 'stigmatized property', definition: 'A property that buyers may shy away from for reasons other than physical defects, such as a property being the site of a murder' },
+            { term: 'straight-line depreciation', definition: 'Income tax depreciation taken through regular deductions over time' },
+            { term: 'straight-line loan', definition: 'The portion of the payment applied to the principal remains the same with each payment, and the interest amount varies according to the outstanding loan balance' },
+            { term: 'straight loan', definition: 'A loan in which the periodic payments go to interest only and the entire loan amount is due at the end of the term' },
+            { term: 'studs', definition: 'Framing members used vertically for wall construction' },
+            { term: 'sub-agent (or subagent)', definition: 'A licensee from a competing firm who brings the buyer to the deal, but instead of representing the buyer, works under the listing agent as a representative of the seller' },
+            { term: 'subdivision', definition: 'Land that\'s been or is being developed and is divided into lots' },
+            { term: 'subdivision regulations', definition: 'Rules for a subdivision that ensure compliance with zoning and public safety and preserve real property value' },
+            { term: 'subject property', definition: 'The property for which a borrower intends to get a loan.' },
+            { term: 'subject to clause', definition: 'A buyer can purchase a property "subject to" the seller\'s loan; the buyer is supposed to continue payment of that loan, but the seller is still ultimately liable for it' },
+            { term: 'sublease', definition: 'An agreement for a new occupant to live in the premises and pay rent to the tenant, who pays the landlord. Requires written permission of the landlord.' },
+            { term: 'subordinate financing', definition: 'A mortgage or loan secondary to another.' },
+            { term: 'subordinate lease', definition: 'A lease in which the lender retains the right to evict the tenant if the borrower defaults' },
+            { term: 'subordination agreement', definition: 'An agreement to subordinate a senior to a junior lien' },
+            { term: 'subordination clause', definition: 'Allows the security instrument\'s lien position to be placed in a lower priority to a new loan using the same property as collateral' },
+            { term: 'subpoena', definition: 'An order or command for a person to appear and give testimony or provide evidence in court' },
+            { term: 'subprime loan', definition: 'A loan offered at a rate above prime to individuals who don\'t qualify for prime rate loans' },
+            { term: 'subrogation (insurance)', definition: 'When a covered party grants permission to the title company to pursue a party that caused a claim or loss' },
+            { term: 'subsidy', definition: 'A method of lowering closing costs through seller-paid closing costs. They are often tax-deductible and are called a seller subsidy.' },
+            { term: 'subsurface rights', definition: 'Rights related to the use of minerals and other products below the surface of the property' },
+            { term: 'Sunshine Law', definition: 'Legislation or regulations that require certain government meetings, proceedings, and records to be open to the public' },
+            { term: 'Superfund Amendments and Reauthorization Act (SARA)', definition: 'An amendment to CERCLA (the Comprehensive Environmental Response, Compensation, and Liability Act' },
+            { term: 'supply and demand', definition: 'Economic variables that are inversely proportionate to price' },
+            { term: 'surety bond', definition: 'A financial contract between the mortgage professional, the surety, and the entity that requires the bond (often a government regulatory agency), in which the surety provides a guarantee to the entity that it will abide by the terms established in the contract' },
+            { term: 'surface rights', definition: 'The right to use, or an ownership interest in, the surface of a property, including both land and water' },
+            { term: 'surface water', definition: 'Water that\'s above the ground in the form of rivers, streams, lakes, ponds, seas, and oceans. Includes storm runoff.' },
+            { term: 'surplus', definition: 'When spending and bills are less than revenue' },
+            { term: 'survey', definition: 'A blueprint or map showing measurements, boundaries, and area of a property; sometimes required by lenders to ensure that no encroachments exist' },
+            { term: 'survey marker', definition: 'The official benchmark used to mark key points in a survey, typically affixed to buildings or the tops of concrete pillars or pipes in the ground' },
+            { term: 'sweat equity', definition: 'A contribution to the value of a property made in labor, rather that funds.' },
+            { term: 'tacking', definition: 'The process of adding one adverse possessor\'s possessory time to the subsequent owner\'s adverse possession time to meet the statutory requirements' },
+            { term: 'take-out loan', definition: 'Used to convert a short-term construction loan to more traditional, long-term financing; aka end loan' },
+            { term: 'taking', definition: 'Governmental appropriation of property; a taking may or may not use the power of eminent domain' },
+            { term: 'tax assessor', definition: 'The tax assessor is a local government official who estimates the value of real property within a city, town or village. The assessor may be elected or appointed, and serves for six years. In addition to placing value on all taxable property, and listing it on the assessment roll, the assessor maintains tax maps, assists taxpayers with certain exemptions, and maintains property tax records for the municipality.' },
+            { term: 'tax-deferred exchange', definition: 'Trading of business properties or investment properties in order to defer paying taxes on gains from a sale of the property.' },
+            { term: 'tax depreciation', definition: 'Deductions in taxes taken against property depreciation over time' },
+            { term: 'taxing district', definition: 'A legal entity empowered to impose taxes within a defined geographic region for particular purposes. It can cover various administrative divisions like states, counties, or cities. Also known as a tax district.' },
+            { term: 'tax lien', definition: 'A lien imposed for nonpayment of taxes' },
+            { term: 'Taxpayer Relief Act of 1997', definition: 'Legislation that allows first-time home buyers to use up to $10,000 of their IRA funds towards the down payment and closing costs of their new home without paying an early withdrawal penalty.' },
+            { term: 'Tax Relief Act of 1997', definition: 'Allows first-time homebuyers to use as much as $10,000 of their IRA funds to pay the down payment and closing costs of their new home without incurring an early distribution penalty' },
+            { term: 'tax sale', definition: 'Property with unpaid taxes is sold at auction' },
+            { term: 'tax shelter', definition: 'A way to protect income from taxes, such as depreciation.' },
+            { term: 'tenancy', definition: 'Possession (rather than owernship) of property' },
+            { term: 'tenancy at sufferance', definition: 'A tenant continues to occupy a property after lawful authority has expired. The tenant is known as a holdover tenant.' },
+            { term: 'tenancy by the entirety', definition: 'A type of concurrent estate in real property in which the owners of property are married; each spouse has an equal and undivided interest in the property' },
+            { term: 'tenancy in common', definition: 'A form of ownership that includes an undivided interest in the property; owners may sell, convey, mortgage, or transfer their interest without the consent of co-owners' },
+            { term: 'testamentary trust', definition: 'A trust established at the death of a will maker, by provisions made within the will. Often used to create a trust for minor children.' },
+            { term: 'testate', definition: 'Dying with a will in place' },
+            { term: 'testator', definition: 'One who drafts a valid will.' },
+            { term: 'testers', definition: 'People hired to impersonate prospective buyers or prospective tenants to determine whether a landlord or seller is practicing discriminatory behavior.' },
+            { term: 'thrift', definition: 'Smaller lenders, such as savings and loan associations, credit unions, and mutual savings banks' },
+            { term: 'tie-in arrangement', definition: 'An antitrust violation in which the provider of a service requires the customer or client to purchase another service as a condition of the transaction' },
+            { term: 'TILA-RESPA Integrated Disclosures (TRID)', definition: 'Replaced the HUD-1, Good Faith Estimate, and Truth in Lending disclosures with the Loan Estimate and Closing Disclosure' },
+            { term: 'timeshare', definition: 'A condominium-type property that is occupied for short periods by multiple unrelated individuals. These individuals may own real interest in the property or simply the right to use the property for specific times and duration.' },
+            { term: 'timeshare estate', definition: 'The type of timeshare ownership that is a fee simple ownership' },
+            { term: 'timeshare interest', definition: 'Another term for owning a timeshare; also known as "interval ownership," "interval ownership interest," and "vacation ownership interest"' },
+            { term: 'timeshare use', definition: 'This type of timeshare ownership does not convey ownership, just the right to occupy the property for the period of time set forth in the timeshare contract.' },
+            { term: 'time value of money', definition: 'The financial principle that a dollar in the present is worth more than a promised dollar in the future, because the present dollar can earn interest between now and the future date' },
+            { term: 'title', definition: 'The legal concept of property ownership and the rights that go with it' },
+            { term: 'title commitment', definition: 'A document outlining that a title insurance policy will be issued to the buyer provided certain conditions are met (usually a required payoff of liens or other title defects)' },
+            { term: 'title company', definition: 'The business used to determine clear ownership and possibly to facilitate the closing' },
+            { term: 'title examination', definition: 'An examination by a title company to determine marketable title or uncover any deficiencies in title' },
+            { term: 'title insurance', definition: 'An insurance contract insuring the policy owner against financial loss if the title to real estate is defective' },
+            { term: 'title search', definition: 'A title company\'s search to determine marketable title or to uncover any deficiencies in title' },
+            { term: 'title theory', definition: 'The theory that a lender owns the property until the underlying loan is paid off' },
+            { term: 'topography', definition: 'The physical features and contours of the land' },
+            { term: 'torts', definition: 'Legal wrongs' },
+            { term: 'townhome (townhouse)', definition: 'A single-family home attached to another on one side; often built in a two-story design' },
+            { term: 'township', definition: 'A square that is six miles by six miles (36 square miles) and makes up the principal unit of the rectangular government survey system' },
+            { term: 'trade fixture', definition: 'A piece of equipment or other item that is on or attached to the real estate and is used in a trade or business' },
+            { term: 'transfer tax', definition: 'A tax applied upon the recordation of a transfer of ownership in real property; sometimes referred to as revenue stamps or tax stamps' },
+            { term: 'Treasury index', definition: 'An index based on the yield from sales of Treasury bills and securities' },
+            { term: 'triggering term', definition: 'Term that, when used in advertising, requires disclosure of other terms so as not to mislead consumers' },
+            { term: 'trigger term', definition: 'A term that, if used in advertising a loan product, requires the disclosure of all other terms' },
+            { term: 'triple net lease', definition: 'A lease in which the tenant is required to pay rent plus taxes, insurance, and maintenance costs' },
+            { term: 'truss', definition: 'A framework of rafters, posts, and struts, supporting a roof; usually manufactured offsite' },
+            { term: 'trust', definition: 'An estate planning vehicle in which property is owned by an entity controlled by the trust maker' },
+            { term: 'trustee', definition: 'The person in charge of carrying out the terms of the trust' },
+            { term: 'trustee\'s deed', definition: 'A deed executed by a trustee that conveys land held within a trust' },
+            { term: 'trustor', definition: 'The individual creating the trust' },
+            { term: 'Truth in Lending Act (TILA)', definition: 'Requires disclosure of all financing terms when specific trigger terms are used in advertising' },
+            { term: 'umbrella policy', definition: 'An insurance policy that covers additional risks beyond the underlying policies; doesn’t apply until the primary insurance coverage is exhausted' },
+            { term: 'Unauthorized practice of law', definition: 'Acting outside the scope of a real estate license by offering legal advice' },
+            { term: 'underground storage tanks', definition: 'A tank for storing liquids, such as chemicals or oil, below ground' },
+            { term: 'underwriting', definition: 'The detailed analysis of a loan application, evaluating the borrower\'s ability to repay the loan and conformance to the lender\'s qualification standards' },
+            { term: 'undisclosed buyer rebate', definition: 'A type of mortgage fraud in which the seller or another party provides funds that aren’t included in the settlement statement (a legal buyer rebate must be disclosed to the lender and appear on the settlement statement)' },
+            { term: 'undisclosed dual agency', definition: 'Representing more than one party in a transaction without fully disclosing the agency relationships to all parties' },
+            { term: 'undivided interest', definition: 'An ownership situation in which each person shares in the ownership of the entire property' },
+            { term: 'undivided loyalty', definition: 'One of the duties an agent owes to the client, undivided loyalty means the agent puts the client\'s interests ahead of all others, including the agent\'s own' },
+            { term: 'undue influence', definition: 'Using a position of trust or power to bend them to your will' },
+            { term: 'unearned increment', definition: 'Increase in property value as a result of inflation, change in neighborhood directional growth, or other external factor' },
+            { term: 'Uniform Electronic Transaction Act (UETA)', definition: 'Gives electronic signatures and documents the same legal weight as paper writings and signatures' },
+            { term: 'Uniform Residential Appraisal Report (URAR)', definition: 'Provides a standard method for reporting results when appraising single-family homes' },
+            { term: 'Uniform Residential Landlord Tenant Act of 1972 (URLTA)', definition: 'A series of laws intended to lay out standardized responsibilities and rights of both tenants and landlords' },
+            { term: 'Uniform Standards of Professional Appraisal Practice (USPAP)', definition: 'The ethical and performance standards for the appraisal profession in the U.S. Compliance is required for state-licensed and state-certified appraisers involved in federally-related real estate transactions.' },
+            { term: 'unilateral rescission', definition: 'When one party cancels the contract' },
+            { term: 'unimproved land', definition: 'Land that has no structures built upon it, and no services' },
+            { term: 'unintentional misrepresentation', definition: 'Occurs when a licensee makes an inadvertent misstatement, the buyer relies on it, and the buyer is harmed' },
+            { term: 'unity of person', definition: 'The fifth unity required to take property as tenants by the entirety, based on the legal principle that married couples constitute a single legal entity' },
+            { term: 'unity of possession', definition: 'Each co-owner acquires an undivided interest in a property at the same time' },
+            { term: 'universal agent', definition: 'A person with unlimited power to act for another, such as a conservator or one who holds a broad scope power of attorney' },
+            { term: 'unjust enrichment', definition: 'A situation that occurs when one party benefits at the expense of another' },
+            { term: 'unlawful detainer', definition: 'Refusal to give up possession of real property after being requested to do so in a legal manner' },
+            { term: 'unlawful detainer action', definition: 'A lawsuit intended to secure an eviction order against a tenant who unjustifiably remains in possession of real property; may also seek compensation for unpaid rent and property damage' },
+            { term: 'urea-formaldehyde foam insulation (UFFI)', definition: 'A foam insulation containing large amounts of formaldehyde' },
+            { term: 'USDA Farm Service Agency (FSA)', definition: 'Provides both direct farm ownership loans and guaranteed loans to lenders' },
+            { term: 'USDA mortgage insurance', definition: 'Mortgage insurance that applies to USDA loans' },
+            { term: 'USDA-Rural Development Loan', definition: 'A government-backed mortgage designed to help low-to-moderate-income buyers purchase homes in eligible rural and suburban areas with no down payment and low interest rates.' },
+            { term: 'USDA Rural Housing Service (RHS)', definition: 'Helps low- and moderate-income individuals attain housing in rural areas through grants, loans, and loan guarantees' },
+            { term: 'U.S. Department of Housing and Urban Development (HUD)', definition: 'A federal department that addresses housing needs, homelessness, and discrimination in housing' },
+            { term: 'use variance', definition: 'Permission to use the land for a purpose prohibited by current zoning restrictions' },
+            { term: 'utility, income, and value', definition: 'The basic characteristics of value' },
+            { term: 'vacancy and collection loss rate', definition: 'A percentage of all available units in a given market that are unoccupied at a given time' },
+            { term: 'vacancy rate', definition: 'A percentage of all available units in a given market that are unoccupied at a given time' },
+            { term: 'vacation ownership', definition: 'A type of timeshare ownership that allows buyers to pay a one-time purchase price and and annual maintenance fee, in return for selecting a vacation time and place for a certain number of years' },
+            { term: 'VA funding fee', definition: 'A one-time charge to borrowers who are using a VA loan' },
+            { term: 'valuable consideration', definition: 'An agreement to provide something of worth to another that is either a loss incurred by the person making the promise or a benefit received by the other person; it is an essential element of a binding contract' },
+            { term: 'valuation', definition: 'An estimate of value; an appraisal' },
+            { term: 'value', definition: 'What a property is worth' },
+            { term: 'value in use', definition: 'The worth of a property as the owner is currently using it' },
+            { term: 'value proposition', definition: 'A statement that identifies the value or benefits a customer will receive and what sets the product, service, or service provider apart from competitors.' },
+            { term: 'VA mortgage', definition: 'A mortgage in which the loan is guaranteed by the U.S. Department of Veterans Affairs' },
+            { term: 'variable expenses', definition: 'Expenses that change, depending on occupancy level' },
+            { term: 'variance', definition: 'A permitted deviation from zoning' },
+            { term: 'verification of mortgage (VOM)', definition: 'A mortgage form used to verify a borrower’s mortgage housing history if the history isn’t reported by the credit bureau' },
+            { term: 'verification of rent (VOR)', definition: 'Mortgage form used to verify a borrower\'s rental housing history' },
+            { term: 'vicarious liability', definition: 'A person’s liability for another person’s actions when the other person is acting on the original party’s behalf' },
+            { term: 'violation', definition: 'A failure to abide by a rule or law' },
+            { term: 'VOCs', definition: 'Volatile organic compounds; emitted as gases from certain solids or liquids' },
+            { term: 'volatile organic compounds', definition: 'VOCs; When they break down, they release toxins into the air/atmosphere, endangering health and the environment' },
+            { term: 'voltage', definition: 'The electrical pressure that pushes through electrical wires' },
+            { term: 'voluntary alienation', definition: 'The transfer of real property ownership with the owner’s consent (e.g., traditional sale)' },
+            { term: 'voluntary lien', definition: 'A lien that is agreed to, such as a mortgage' },
+            { term: 'walk-through', definition: 'A buyer\'s final inspection of a property to determine if all of the conditions to the purchase agreement have been satisfied and that the home is in the same condition it was in when it went under contract' },
+            { term: 'wallboard (aka plasterboard)', definition: 'Building material used to make walls that consists of large pieces of plaster covered with paper' },
+            { term: 'warranty', definition: 'In a deed, a guarantee that what is stated or promised is true' },
+            { term: 'water quality test', definition: 'Involves analyzing water samples to assess the presence of contaminants, pathogens, nutrients, and other substances that may impact groundwater or surface water quality.' },
+            { term: 'water rights', definition: 'The rights to use the water either on or adjacent to one\'s land' },
+            { term: 'watershed', definition: 'Land formations that direct the water “shed” from higher elevations to lakes, streams, and other bodies of water' },
+            { term: 'water table', definition: 'The ground saturation point' },
+            { term: 'wetlands', definition: 'Areas of standing water that remain wet for all or most of the year and support aquatic plants—including bogs, marshes, swamps, and sloughs that support a very high diversity of species' },
+            { term: 'wholesaling', definition: 'Buying real property at deep discounts and immediately selling for a small profit' },
+            { term: 'will', definition: 'A written document detailing the disposition of assets after death, and other wishes, signed by the testator' },
+            { term: 'wood-destroying insects', definition: 'Termites, wood-boring beetles, carpenter ants, and other insects that damage a property’s wooden structural components' },
+            { term: 'wrap-around mortgage', definition: 'A form of seller financing in which the seller’s mortgage remains in place but the seller receives payments from the buyer; generally a relatively short-term arrangement (perhaps five years) that\'s put in place until the buyer is able to qualify for a conventional mortgage' },
+            { term: 'writ of execution', definition: 'When a debtor is determined to be in default by the court, the court directs law enforcement to seize and sell the property that is in default' },
+            { term: 'writ of possession', definition: 'A court order that instructs the sheriff to remove any occupants from a foreclosed property that has been sold at a sheriff’s sale.' },
+            { term: 'written disclosure', definition: 'A formal document provided by a real estate broker or agent that outlines important information about a real estate transaction.' },
+            { term: 'yield', definition: 'The amount of money returned from an investment' },
+            { term: 'zoning', definition: 'Establishing specific classifications to land that dictate how the land may be used' },
+            { term: 'zoning ordinances', definition: 'Local laws or regulations that implement the comprehensive plan by regulating zoning and land use' }
+        ];
+
+        let currentCardIndex = 0;
+        let cards = [...flashcardData];
+
+        const flashcard = document.getElementById('flashcard');
+        const termEl = document.getElementById('term');
+        const definitionEl = document.getElementById('definition');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const shuffleBtn = document.getElementById('shuffleBtn');
+        const cardCounterEl = document.getElementById('cardCounter');
+        const askGeminiBtn = document.getElementById('askGeminiBtn');
+        const userQuestionInput = document.getElementById('userQuestion');
+        const geminiResponseEl = document.getElementById('geminiResponse');
+        const geminiLoader = document.getElementById('geminiLoader');
+
+        function displayCard() {
+            const card = cards[currentCardIndex];
+            termEl.textContent = card.term;
+            definitionEl.textContent = card.definition;
+            updateCounter();
+            updateNavButtons();
+            if (flashcard.classList.contains('is-flipped')) {
+                flashcard.classList.remove('is-flipped');
+            }
+            // Clear previous Gemini question and response
+            userQuestionInput.value = '';
+            geminiResponseEl.textContent = '';
+        }
+
+        function updateCounter() {
+            cardCounterEl.textContent = `${currentCardIndex + 1} / ${cards.length}`;
+        }
+
+        function updateNavButtons() {
+            prevBtn.disabled = currentCardIndex === 0;
+            nextBtn.disabled = currentCardIndex === cards.length - 1;
+        }
+
+        function flipCard() {
+            flashcard.classList.toggle('is-flipped');
+        }
+
+        function showNextCard() {
+            if (currentCardIndex < cards.length - 1) {
+                currentCardIndex++;
+                displayCard();
+            }
+        }
+
+        function showPrevCard() {
+            if (currentCardIndex > 0) {
+                currentCardIndex--;
+                displayCard();
+            }
+        }
+
+        function shuffleCards() {
+            for (let i = cards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [cards[i], cards[j]] = [cards[j], cards[i]];
+            }
+            currentCardIndex = 0;
+            displayCard();
+        }
+
+        async function askGemini() {
+            const userQuestion = userQuestionInput.value;
+            if (!userQuestion.trim()) {
+                geminiResponseEl.textContent = "Please enter a question.";
+                return;
+            }
+
+            const currentCard = cards[currentCardIndex];
+            const prompt = `You are a helpful real estate expert. In the context of the real estate term "${currentCard.term}", which is defined as "${currentCard.definition}", please answer the following question clearly and concisely: "${userQuestion}"`;
+            
+            geminiLoader.classList.remove('hidden');
+            geminiResponseEl.textContent = '';
+            askGeminiBtn.disabled = true;
+
+            try {
+                let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
+                const payload = { contents: chatHistory };
+                const apiKey = ""; // API key is handled by the environment
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`API request failed with status ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
+                    const text = result.candidates[0].content.parts[0].text;
+                    geminiResponseEl.textContent = text;
+                } else {
+                    geminiResponseEl.textContent = "Sorry, I couldn't get a response. The response from the AI was empty or malformed.";
+                }
+            } catch (error) {
+                console.error("Error calling Gemini API:", error);
+                geminiResponseEl.textContent = "Sorry, an error occurred while trying to get an answer. Please check the console for details.";
+            } finally {
+                geminiLoader.classList.add('hidden');
+                askGeminiBtn.disabled = false;
+            }
+        }
+
+        // Event Listeners
+        flashcard.addEventListener('click', flipCard);
+        nextBtn.addEventListener('click', showNextCard);
+        prevBtn.addEventListener('click', showPrevCard);
+        shuffleBtn.addEventListener('click', shuffleCards);
+        askGeminiBtn.addEventListener('click', askGemini);
+        userQuestionInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                askGemini();
+            }
+        });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (document.activeElement === userQuestionInput) return; // Don't navigate if typing
+            if (e.key === 'ArrowRight') {
+                showNextCard();
+            } else if (e.key === 'ArrowLeft') {
+                showPrevCard();
+            } else if (e.key === ' ') {
+                e.preventDefault();
+                flipCard();
+            }
+        });
+
+        // Initial display
+        displayCard();
+    </script>
+</body>
+</html>
