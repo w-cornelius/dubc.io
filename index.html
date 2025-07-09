@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>dubhub</title>
+    <title>Dubhub</title>
     <meta name="keywords" content="dub, dubb, dubbb, dubbb_, dubc, dubhub, dubbb_c, social, links, tiktok, instagram, podcast, punchline, pause, the, twitch, kick, dj, content creator">
     
     <!-- Favicon Configuration -->
@@ -273,6 +273,32 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const visitedLinksKey = 'dubbcVisitedLinks';
+            let visitedLinks = JSON.parse(localStorage.getItem(visitedLinksKey)) || {};
+
+            const markAsVisited = (id) => {
+                const element = document.querySelector(`[data-link-id="${id}"]`);
+                if (element) {
+                    const checkmark = element.querySelector('.completion-mark');
+                    if (checkmark) {
+                        checkmark.classList.remove('hidden');
+                    }
+                }
+                visitedLinks[id] = true;
+                localStorage.setItem(visitedLinksKey, JSON.stringify(visitedLinks));
+            };
+
+            const allLinks = document.querySelectorAll('[data-link-id]');
+            allLinks.forEach(link => {
+                const linkId = link.dataset.linkId;
+                if (visitedLinks[linkId]) {
+                    markAsVisited(linkId);
+                }
+                link.addEventListener('click', () => {
+                    markAsVisited(linkId);
+                });
+            });
+
             // --- DOM Element Selectors ---
             const askAiBtn = document.getElementById('ask-ai-btn');
             const aiModal = document.getElementById('ai-modal');
