@@ -129,6 +129,7 @@
     </div>
 
     <script>
+        // --- DATA ---
         const allFlashcardData = [
             { term: '1031 tax-deferred exchange', definition: 'Section 1031 of the Internal Revenue Code allows the owner of real property to sell that property and then reinvest in a "like-kind" property and defer paying any capital gains taxes; strict IRS rules regulate this type of exchange' },
             { term: '15-year loan', definition: 'A nontraditional mortgage product that shortens the standard mortgage term from 30 years to 15 years' },
@@ -1126,7 +1127,6 @@
             { term: 'zoning', definition: 'Establishing specific classifications to land that dictate how the land may be used' },
             { term: 'zoning ordinances', definition: 'Local laws or regulations that implement the comprehensive plan by regulating zoning and land use' }
         ];
-
         // --- STATE MANAGEMENT ---
         let currentCardIndex = 0;
         let activeCards = [];
@@ -1282,14 +1282,8 @@
         // --- Gemini API Call via Secure Worker ---
         async function callGemini(prompt) {
             const apiUrl = 'https://dubbc-ai-proxy.wcornelius.workers.dev/';
-            // This payload structure matches what the Gemini API expects.
-            // The proxy worker should be designed to pass this through.
-            const payload = {
-                contents: [{
-                    role: "user",
-                    parts: [{ text: prompt }]
-                }]
-            };
+            // Corrected payload to send a simple object with a 'prompt' key
+            const payload = { prompt: prompt };
 
             try {
                 const response = await fetch(apiUrl, {
@@ -1301,6 +1295,7 @@
                     const errorBody = await response.text();
                     throw new Error(`API call failed with status: ${response.status}. Body: ${errorBody}`);
                 }
+                // The worker should return the Gemini response structure directly
                 const result = await response.json();
                 if (result.candidates && result.candidates.length > 0 && result.candidates[0].content.parts[0].text) {
                     return result.candidates[0].content.parts[0].text.trim();
