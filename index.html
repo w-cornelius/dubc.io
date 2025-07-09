@@ -22,170 +22,203 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
-        /* Styles for the modal scrollbar */
-        #modal-content .p-6 {
-          max-height: 60vh; 
-          overflow-y: auto; 
-        }
-        
-        #modal-content .p-6::-webkit-scrollbar {
-          width: 8px;
-        }
-        
-        #modal-content .p-6::-webkit-scrollbar-track {
-          background: #2d3748;
-        }
-        
-        #modal-content .p-6::-webkit-scrollbar-thumb {
-          background-color: #4a5568;
-          border-radius: 4px;
-          border: 2px solid #2d3748;
-        }
-        
-        #modal-content .p-6::-webkit-scrollbar-thumb:hover {
-          background: #718096;
-        }
-
-        /* General Body Styling */
+        /* General Body Styling & Font */
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #0a0a0a;
         }
 
-        /* Background glow effect */
-        .main-container::before {
+        /* --- Aurora Background Animation --- */
+        body::before, body::after {
+            content: '';
+            position: fixed; /* Changed to fixed to stay in place on scroll */
+            z-index: -1;
+            top: 50%;
+            left: 50%;
+            width: 150vmax;
+            height: 150vmax;
+            border-radius: 50%;
+            background-color: rgba(147, 51, 234, 0.15); /* Purple */
+            animation: rotate 25s linear infinite;
+            filter: blur(100px);
+        }
+
+        body::after {
+            background-color: rgba(34, 197, 94, 0.1); /* Green */
+            animation-delay: -12.5s;
+        }
+
+        @keyframes rotate {
+            0% { transform: translate(-50%, -50%) rotate(0deg) scale(1); }
+            50% { transform: translate(-50%, -50%) rotate(180deg) scale(1.1); }
+            100% { transform: translate(-50%, -50%) rotate(360deg) scale(1); }
+        }
+
+        /* --- Glassmorphism Effect --- */
+        .glassmorphic {
+            background: rgba(10, 10, 10, 0.5);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        /* --- Entrance Animations --- */
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes fade-slide-up {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-in {
+            animation: fade-in 0.8s ease-out forwards;
+        }
+        .animate-fade-slide-up {
+            opacity: 0; /* Start hidden */
+            animation: fade-slide-up 0.6s ease-out forwards;
+        }
+
+        /* --- Enhanced Link/Button Styling --- */
+        .social-link {
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .social-link:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.1);
+        }
+
+        /* Shimmer effect on hover */
+        .social-link::before {
             content: '';
             position: absolute;
             top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: radial-gradient(circle at 50% 0%, rgba(147, 51, 234, 0.15), transparent 40%);
-            z-index: 0;
-            pointer-events: none;
+            left: -150%;
+            width: 75%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0) 100%);
+            transform: skewX(-25deg);
+            transition: left 0.6s ease;
+        }
+        .social-link:hover::before {
+            left: 150%;
         }
 
-        /* Modal entrance animation */
-        .modal-enter {
-            opacity: 1;
-            transform: scale(1);
-        }
-
-        /* Discord widget transition */
-        #discord-widget-container {
-            transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out;
-            max-height: 0;
-            opacity: 0;
-        }
-        #discord-widget-container.expanded {
-            max-height: 500px; 
-            opacity: 1;
-        }
+        /* Modal Scrollbar */
+        #modal-content .p-6::-webkit-scrollbar { width: 8px; }
+        #modal-content .p-6::-webkit-scrollbar-track { background: #2d3748; }
+        #modal-content .p-6::-webkit-scrollbar-thumb { background-color: #4a5568; border-radius: 4px; border: 2px solid #2d3748; }
+        #modal-content .p-6::-webkit-scrollbar-thumb:hover { background: #718096; }
     </style>
 </head>
-<body class="bg-gray-900 text-white antialiased">
+<body class="text-white antialiased">
 
     <!-- Main Container -->
-    <div class="main-container relative min-h-screen flex flex-col items-center justify-center p-4 pb-20 overflow-hidden">
+    <div class="relative min-h-screen flex flex-col items-center justify-center p-4">
         
-        <div class="relative z-10 w-full max-w-md mx-auto">
+        <div class="relative z-10 w-full max-w-lg mx-auto pt-10 pb-24">
             
             <!-- Profile Section -->
-            <header class="text-center mb-8">
+            <header class="text-center mb-10 animate-fade-in">
                 <img 
                     src="avatar1.png" 
                     alt="dubbb_c Avatar" 
-                    class="w-24 h-24 md:w-32 md:h-32 rounded-full mx-auto mb-4 border-4 border-gray-700 shadow-lg"
+                    class="w-32 h-32 rounded-full mx-auto mb-5 border-4 border-white/20 shadow-2xl"
                     onerror="this.onerror=null;this.src='https://placehold.co/128x128/1a202c/9ca3af?text=Error';"
                 >
-                <h1 class="text-2xl md:text-3xl font-bold text-white">dubbb_c</h1>
-                <p id="streamer-bio" class="text-gray-400 mt-2 text-sm md:text-base">Content Creator | DJ | Semi-Pro Gamer</p>
+                <h1 class="text-4xl font-bold text-white tracking-tight">dubbb_c</h1>
+                <p id="streamer-bio" class="text-gray-300 mt-2 text-lg">Content Creator | DJ | Semi-Pro Gamer</p>
             </header>
 
             <!-- Social Links Section -->
             <main class="space-y-4">
                 <!-- Ask Dub (AI) -->
-                <button id="ask-ai-btn" data-link-id="ask-ai" class="group flex items-center p-4 bg-teal-600/20 border border-teal-500 rounded-lg w-full transition-all duration-300 hover:bg-teal-500 hover:scale-105 shadow-md text-teal-300 hover:text-white">
-                    <svg class="w-6 h-6 mr-4 transition-colors duration-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5a.75.75 0 01.75.75v.31a10.493 10.493 0 015.484 2.836.75.75 0 01-.976 1.138 9.001 9.001 0 00-10.517 0 .75.75 0 01-.976-1.138A10.493 10.493 0 0111.25 3.56V3.25a.75.75 0 01.75-.75zM7.757 8.243a.75.75 0 011.06 0l1.158 1.158a.75.75 0 010 1.06l-1.158 1.159a.75.75 0 01-1.06-1.061l.628-.629-.628-.628a.75.75 0 010-1.06zM12 8.25a.75.75 0 01.75.75v3a.75.75 0 01-1.5 0v-3a.75.75 0 01.75-.75zm4.183.993a.75.75 0 010 1.06l-.628.628.628.629a.75.75 0 11-1.06 1.06l-1.159-1.158a.75.75 0 010-1.061l1.159-1.158a.75.75 0 011.06 0zM12 15.75a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM5.75 18a.75.75 0 00-.75.75v.31a10.493 10.493 0 005.484 2.836.75.75 0 10.582-1.322 9 9 0 01-4.823-2.574V18.75a.75.75 0 00-.5-.75zm12.5 0a.75.75 0 00-.5.75v.25a9 9 0 01-4.823 2.574.75.75 0 10.582 1.322A10.493 10.493 0 0018.25 19.06v-.31a.75.75 0 00-.75-.75z"></path></svg>
+                <button id="ask-ai-btn" data-link-id="ask-ai" class="social-link group flex items-center p-4 glassmorphic rounded-xl w-full text-white animate-fade-slide-up" style="animation-delay: 0.1s;">
+                    <svg class="w-6 h-6 mr-4 text-teal-300" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5a.75.75 0 01.75.75v.31a10.493 10.493 0 015.484 2.836.75.75 0 01-.976 1.138 9.001 9.001 0 00-10.517 0 .75.75 0 01-.976-1.138A10.493 10.493 0 0111.25 3.56V3.25a.75.75 0 01.75-.75zM7.757 8.243a.75.75 0 011.06 0l1.158 1.158a.75.75 0 010 1.06l-1.158 1.159a.75.75 0 01-1.06-1.061l.628-.629-.628-.628a.75.75 0 010-1.06zM12 8.25a.75.75 0 01.75.75v3a.75.75 0 01-1.5 0v-3a.75.75 0 01.75-.75zm4.183.993a.75.75 0 010 1.06l-.628.628.628.629a.75.75 0 11-1.06 1.06l-1.159-1.158a.75.75 0 010-1.061l1.159-1.158a.75.75 0 011.06 0zM12 15.75a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM5.75 18a.75.75 0 00-.75.75v.31a10.493 10.493 0 005.484 2.836.75.75 0 10.582-1.322 9 9 0 01-4.823-2.574V18.75a.75.75 0 00-.5-.75zm12.5 0a.75.75 0 00-.5.75v.25a9 9 0 01-4.823 2.574.75.75 0 10.582 1.322A10.493 10.493 0 0018.25 19.06v-.31a.75.75 0 00-.75-.75z"></path></svg>
                     <span class="font-semibold text-lg flex-grow text-left">Ask Dub (AI)</span>
                     <span class="completion-mark ml-auto hidden">&#10003;</span>
                 </button>
                 
                  <!-- Twitch | Main -->
-                 <a href="https://twitch.tv/dubbb_c" data-link-id="twitch-main" target="_blank" rel="noopener noreferrer" class="group flex items-center p-4 bg-gray-800 rounded-lg w-full transition-all duration-300 hover:bg-[#6441a5] hover:scale-105 shadow-md">
-                    <svg class="w-6 h-6 mr-4 text-[#9146ff] group-hover:text-white transition-colors duration-300" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Twitch</title><path d="M11.571 4.714h1.715v5.143H11.57zm4.714 0h1.714v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0H6zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714v9.429z" fill="currentColor"/></svg>
+                 <a href="https://twitch.tv/dubbb_c" data-link-id="twitch-main" target="_blank" rel="noopener noreferrer" class="social-link group flex items-center p-4 glassmorphic rounded-xl w-full animate-fade-slide-up" style="animation-delay: 0.2s;">
+                    <svg class="w-6 h-6 mr-4 text-[#9146ff]" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Twitch</title><path d="M11.571 4.714h1.715v5.143H11.57zm4.714 0h1.714v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0H6zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714v9.429z" fill="currentColor"/></svg>
                     <span class="font-semibold text-lg flex-grow text-left">Twitch | Main</span>
                     <span class="completion-mark ml-auto hidden">&#10003;</span>
                 </a>
                 
                 <!-- Twitch | DJ -->
-                <a href="https://twitch.tv/djdubc_" data-link-id="twitch-dj" target="_blank" rel="noopener noreferrer" class="group flex items-center p-4 bg-gray-800 rounded-lg w-full transition-all duration-300 hover:bg-[#6441a5] hover:scale-105 shadow-md">
-                    <svg class="w-6 h-6 mr-4 text-[#9146ff] group-hover:text-white transition-colors duration-300" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Twitch</title><path d="M11.571 4.714h1.715v5.143H11.57zm4.714 0h1.714v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0H6zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714v9.429z" fill="currentColor"/></svg>
+                <a href="https://twitch.tv/djdubc_" data-link-id="twitch-dj" target="_blank" rel="noopener noreferrer" class="social-link group flex items-center p-4 glassmorphic rounded-xl w-full animate-fade-slide-up" style="animation-delay: 0.3s;">
+                    <svg class="w-6 h-6 mr-4 text-[#9146ff]" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Twitch</title><path d="M11.571 4.714h1.715v5.143H11.57zm4.714 0h1.714v5.143h-1.714zM6 0L1.714 4.286v15.428h5.143V24l4.286-4.286h3.428L22.286 12V0H6zm14.571 11.143l-3.428 3.428h-3.429l-3 3v-3H6.857V1.714h13.714v9.429z" fill="currentColor"/></svg>
                     <span class="font-semibold text-lg flex-grow text-left">Twitch | DJ</span>
                     <span class="completion-mark ml-auto hidden">&#10003;</span>
                 </a>
 
                 <!-- Kick -->
-                <a href="https://kick.com/dubbb_c" data-link-id="kick" target="_blank" rel="noopener noreferrer" class="group flex items-center p-4 bg-gray-800 rounded-lg w-full transition-all duration-300 hover:bg-[#53fc18] hover:scale-105 shadow-md">
-                    <svg class="w-6 h-6 mr-4 text-[#53fc18] group-hover:text-gray-900 transition-colors duration-300" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Kick</title><path d="M19.462 3.82L12.5 11.24v12.26l-3.32-3.32-3.32 3.32V11.24L-.001 3.82h6.24l2.94 2.94 2.94-2.94zm0-3.32h-6.24L10.282 3.44 7.342 6.38H1.102L10.282 16v7.5l4.14-4.14 4.14 4.14V16l9.18-9.62h-6.24L14.422 3.44l2.94-2.94z" fill="currentColor"/></svg>
-                    <span class="font-semibold text-lg flex-grow text-left text-white group-hover:text-gray-900">Kick</span>
+                <a href="https://kick.com/dubbb_c" data-link-id="kick" target="_blank" rel="noopener noreferrer" class="social-link group flex items-center p-4 glassmorphic rounded-xl w-full animate-fade-slide-up" style="animation-delay: 0.4s;">
+                    <svg class="w-6 h-6 mr-4 text-[#53fc18]" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Kick</title><path d="M19.462 3.82L12.5 11.24v12.26l-3.32-3.32-3.32 3.32V11.24L-.001 3.82h6.24l2.94 2.94 2.94-2.94zm0-3.32h-6.24L10.282 3.44 7.342 6.38H1.102L10.282 16v7.5l4.14-4.14 4.14 4.14V16l9.18-9.62h-6.24L14.422 3.44l2.94-2.94z" fill="currentColor"/></svg>
+                    <span class="font-semibold text-lg flex-grow text-left">Kick</span>
                     <span class="completion-mark ml-auto hidden">&#10003;</span>
                 </a>
 
                 <!-- Podcasts -->
-                <a href="podcasts.html" data-link-id="podcasts" class="group flex items-center p-4 bg-gray-800 rounded-lg w-full transition-all duration-300 hover:bg-purple-600 hover:scale-105 shadow-md">
-                    <svg class="w-6 h-6 mr-4 text-purple-400 group-hover:text-white transition-colors duration-300" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Apple Podcasts</title><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 21.6c-5.302 0-9.6-4.298-9.6-9.6S6.698 2.4 12 2.4s9.6 4.298 9.6 9.6-4.298 9.6-9.6 9.6zM8.4 9.6c0-.994.806-1.8 1.8-1.8s1.8.806 1.8 1.8v6c0 .994-.806 1.8-1.8 1.8s-1.8-.806-1.8-1.8V9.6zm5.4 0c0-.994.806-1.8 1.8-1.8s1.8.806 1.8 1.8v6c0 .994-.806 1.8-1.8 1.8s-1.8-.806-1.8-1.8V9.6z" fill="currentColor"/></svg>
+                <a href="podcasts.html" data-link-id="podcasts" class="social-link group flex items-center p-4 glassmorphic rounded-xl w-full animate-fade-slide-up" style="animation-delay: 0.5s;">
+                    <svg class="w-6 h-6 mr-4 text-purple-400" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Apple Podcasts</title><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 21.6c-5.302 0-9.6-4.298-9.6-9.6S6.698 2.4 12 2.4s9.6 4.298 9.6 9.6-4.298 9.6-9.6 9.6zM8.4 9.6c0-.994.806-1.8 1.8-1.8s1.8.806 1.8 1.8v6c0 .994-.806 1.8-1.8 1.8s-1.8-.806-1.8-1.8V9.6zm5.4 0c0-.994.806-1.8 1.8-1.8s1.8.806 1.8 1.8v6c0 .994-.806 1.8-1.8 1.8s-1.8-.806-1.8-1.8V9.6z" fill="currentColor"/></svg>
                     <span class="font-semibold text-lg flex-grow text-left">Podcasts</span>
                     <span class="completion-mark ml-auto hidden">&#10003;</span>
                 </a>
-
+                
                 <!-- YouTube -->
-                <a href="https://www.youtube.com/@dubbb_c" data-link-id="youtube" target="_blank" rel="noopener noreferrer" class="group flex items-center p-4 bg-gray-800 rounded-lg w-full transition-all duration-300 hover:bg-[#FF0000] hover:scale-105 shadow-md">
-                    <svg class="w-6 h-6 mr-4 text-[#FF0000] group-hover:text-white transition-colors duration-300" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>YouTube</title><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" fill="currentColor"/></svg>
+                <a href="https://www.youtube.com/@dubbb_c" data-link-id="youtube" target="_blank" rel="noopener noreferrer" class="social-link group flex items-center p-4 glassmorphic rounded-xl w-full animate-fade-slide-up" style="animation-delay: 0.6s;">
+                    <svg class="w-6 h-6 mr-4 text-[#FF0000]" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>YouTube</title><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" fill="currentColor"/></svg>
                     <span class="font-semibold text-lg flex-grow text-left">YouTube</span>
                     <span class="completion-mark ml-auto hidden">&#10003;</span>
                 </a>
-                
-                <!-- Discord Link -->
-                <a href="https://discord.gg/hHzJp9zH9W" data-link-id="discord" target="_blank" rel="noopener noreferrer" class="group flex items-center p-4 bg-gray-800 rounded-lg w-full transition-all duration-300 hover:bg-[#5865F2] hover:scale-105 shadow-md">
-                    <svg class="w-6 h-6 mr-4 text-[#5865F2] group-hover:text-white transition-colors duration-300" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Discord</title><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4464.8254-.6182 1.2529a17.2966 17.2966 0 00-5.2734 0 11.2978 11.2978 0 00-.6182-1.2529.0741.0741 0 00-.0785-.0371 19.7363 19.7363 0 00-4.8851 1.5152.069.069 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0825.0825 0 00.0321.0524c.8021.4218 1.5735.7641 2.3254 1.0142a.0741.0741 0 00.086-.0215c.4218-.4463.7854-.9141.109-1.3818a12.6439 12.6439 0 01-1.566-2.5424.0741.0741 0 01.016-.0785c.1282-.0962.2564-.1923.3846-.2885a.0741.0741 0 01.0524-.008c4.5529 1.53 9.5332 1.53 14.0861 0a.0741.0741 0 01.0524.008c.1282.0962.2564.1923.3846.2885a.0741.0741 0 01.016.0785 12.0217 12.0217 0 01-1.566 2.5424.0741.0741 0 00.086.0215c.7519-.2501 1.5233-.5924 2.3254-1.0142a.0825.0825 0 00.0321-.0524c.5-4.3897-.5227-8.9236-2.6441-13.6603a.069.069 0 00-.0321-.0277zM8.02 15.3312c-.8934 0-1.6195-1.0675-1.6195-2.3852s.7261-2.3852 1.6195-2.3852c.8934 0 1.6195.995 1.6195 2.3852s-.7261 2.3852-1.6195 2.3852zm7.9648 0c-.8934 0-1.6195-1.0675-1.6195-2.3852s.7261-2.3852 1.6195-2.3852c.8934 0 1.6195.995 1.6195 2.3852s-.7261 2.3852-1.6195 2.3852z" fill="currentColor"/></svg>
+
+                <!-- Discord -->
+                <a href="https://discord.gg/hHzJp9zH9W" data-link-id="discord" target="_blank" rel="noopener noreferrer" class="social-link group flex items-center p-4 glassmorphic rounded-xl w-full animate-fade-slide-up" style="animation-delay: 0.7s;">
+                    <svg class="w-6 h-6 mr-4 text-[#5865F2]" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Discord</title><path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4464.8254-.6182 1.2529a17.2966 17.2966 0 00-5.2734 0 11.2978 11.2978 0 00-.6182-1.2529.0741.0741 0 00-.0785-.0371 19.7363 19.7363 0 00-4.8851 1.5152.069.069 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0825.0825 0 00.0321.0524c.8021.4218 1.5735.7641 2.3254 1.0142a.0741.0741 0 00.086-.0215c.4218-.4463.7854-.9141.109-1.3818a12.6439 12.6439 0 01-1.566-2.5424.0741.0741 0 01.016-.0785c.1282-.0962.2564-.1923.3846-.2885a.0741.0741 0 01.0524-.008c4.5529 1.53 9.5332 1.53 14.0861 0a.0741.0741 0 01.0524.008c.1282.0962.2564.1923.3846.2885a.0741.0741 0 01.016.0785 12.0217 12.0217 0 01-1.566 2.5424.0741.0741 0 00.086.0215c.7519-.2501 1.5233-.5924 2.3254-1.0142a.0825.0825 0 00.0321-.0524c.5-4.3897-.5227-8.9236-2.6441-13.6603a.069.069 0 00-.0321-.0277zM8.02 15.3312c-.8934 0-1.6195-1.0675-1.6195-2.3852s.7261-2.3852 1.6195-2.3852c.8934 0 1.6195.995 1.6195 2.3852s-.7261 2.3852-1.6195 2.3852zm7.9648 0c-.8934 0-1.6195-1.0675-1.6195-2.3852s.7261-2.3852 1.6195-2.3852c.8934 0 1.6195.995 1.6195 2.3852s-.7261 2.3852-1.6195 2.3852z" fill="currentColor"/></svg>
                     <span class="font-semibold text-lg flex-grow text-left">Discord</span>
                     <span class="completion-mark ml-auto hidden">&#10003;</span>
                 </a>
-                
+
                 <!-- TikTok -->
-                <a href="https://www.tiktok.com/@dubbb_c" data-link-id="tiktok" target="_blank" rel="noopener noreferrer" class="group flex items-center p-4 bg-gray-800 rounded-lg w-full transition-all duration-300 hover:bg-[#000000] hover:scale-105 shadow-md">
-                    <svg class="w-6 h-6 mr-4 text-[#ff0050] group-hover:text-[#ff0050] transition-colors duration-300" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>TikTok</title><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-2.43.05-4.84-.95-6.43-2.8-1.59-1.87-2.16-4.2-1.8-6.51.36-2.31 1.73-4.18 3.6-5.71 1.85-1.52 4.06-2.38 6.38-2.38.39-.01.79-.01 1.18-.01v4.03c-1.11 0-2.22.02-3.33-.01-1.36-.05-2.65.43-3.53 1.36-.88.93-1.33 2.14-1.27 3.41.07 1.27.53 2.46 1.38 3.44.85.98 1.99 1.52 3.24 1.52.85 0 1.7-.24 2.42-.72.72-.48 1.24-1.19 1.48-2.04.24-.85.28-1.78.28-2.64V.02z" fill="currentColor"/></svg>
+                <a href="https://www.tiktok.com/@dubbb_c" data-link-id="tiktok" target="_blank" rel="noopener noreferrer" class="social-link group flex items-center p-4 glassmorphic rounded-xl w-full animate-fade-slide-up" style="animation-delay: 0.8s;">
+                    <svg class="w-6 h-6 mr-4 text-[#ff0050]" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>TikTok</title><path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-2.43.05-4.84-.95-6.43-2.8-1.59-1.87-2.16-4.2-1.8-6.51.36-2.31 1.73-4.18 3.6-5.71 1.85-1.52 4.06-2.38 6.38-2.38.39-.01.79-.01 1.18-.01v4.03c-1.11 0-2.22.02-3.33-.01-1.36-.05-2.65.43-3.53 1.36-.88.93-1.33 2.14-1.27 3.41.07 1.27.53 2.46 1.38 3.44.85.98 1.99 1.52 3.24 1.52.85 0 1.7-.24 2.42-.72.72-.48 1.24-1.19 1.48-2.04.24-.85.28-1.78.28-2.64V.02z" fill="currentColor"/></svg>
                     <span class="font-semibold text-lg flex-grow text-left">TikTok</span>
                     <span class="completion-mark ml-auto hidden">&#10003;</span>
                 </a>
-                
+
                 <!-- Instagram -->
-                <a href="https://www.instagram.com/callmemikey_/" data-link-id="instagram" target="_blank" rel="noopener noreferrer" class="group flex items-center p-4 bg-gray-800 rounded-lg w-full transition-all duration-300 hover:bg-gradient-to-r hover:from-purple-500 hover:via-pink-500 hover:to-orange-500 hover:scale-105 shadow-md">
-                    <svg class="w-6 h-6 mr-4 text-pink-500 group-hover:text-white transition-colors duration-300" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Instagram</title><path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.784.305-1.455.717-2.126 1.387C1.333 2.705.92 3.377.612 4.14c-.3.765-.5 1.635-.56 2.913-.058 1.28-.072 1.687-.072 4.947s.015 3.667.072 4.947c.06 1.278.26 2.148.56 2.913.305.784.717 1.455 1.387 2.126.67.67 1.342 1.082 2.126 1.387.765.3 1.635.5 2.913.56 1.28.058 1.687.072 4.947.072s3.667-.015 4.947-.072c1.278-.06 2.148-.26 2.913-.56.784-.305 1.455-.717 2.126-1.387.67-.67 1.082-1.342 1.387-2.126.3-.765.5-1.635.56-2.913.058-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.278-.26-2.148-.56-2.913-.305-.784-.717-1.455-1.387-2.126C21.314 1.333 20.643.92 19.86.612c-.765-.3-1.635-.5-2.913-.56C15.667.015 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.07 1.17.055 1.805.248 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.168.422.36 1.057.413 2.227.056 1.265.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.056 1.17-.245 1.805-.413 2.227-.217.562-.477.96-.896 1.382-.42.419-.82.679-1.38.896-.423.168-1.057.36-2.227.413-1.265.056-1.646.07-4.85.07s-3.585-.015-4.85-.07c-1.17-.056-1.805-.245-2.227-.413-.562-.217-.96-.477-1.382-.896-.419-.42-.679-.82-1.381-.896-.168-.423-.36-1.057-.413-2.227-.056-1.265-.07-1.646-.07-4.85s.015-3.585.07-4.85c.055-1.17.248-1.805.415-2.227.217-.562.477.96.896-1.382.42-.419.819-.679 1.381-.896.422-.168 1.057-.36 2.227-.413C8.415 2.176 8.797 2.16 12 2.16zm0 5.48c-3.405 0-6.162 2.757-6.162 6.162s2.757 6.162 6.162 6.162 6.162-2.757 6.162-6.162-2.757-6.162-6.162-6.162zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm6.406-11.845c-.796 0-1.44.645-1.44 1.44s.645 1.44 1.44 1.44c.795 0 1.44-.645 1.44-1.44s-.645-1.44-1.44-1.44z" fill="currentColor"/></svg>
+                <a href="https://www.instagram.com/callmemikey_/" data-link-id="instagram" target="_blank" rel="noopener noreferrer" class="social-link group flex items-center p-4 glassmorphic rounded-xl w-full animate-fade-slide-up" style="animation-delay: 0.9s;">
+                    <svg class="w-6 h-6 mr-4 text-pink-500" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Instagram</title><path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.784.305-1.455.717-2.126 1.387C1.333 2.705.92 3.377.612 4.14c-.3.765-.5 1.635-.56 2.913-.058 1.28-.072 1.687-.072 4.947s.015 3.667.072 4.947c.06 1.278.26 2.148.56 2.913.305.784.717 1.455 1.387 2.126.67.67 1.342 1.082 2.126 1.387.765.3 1.635.5 2.913.56 1.28.058 1.687.072 4.947.072s3.667-.015 4.947-.072c1.278-.06 2.148-.26 2.913-.56.784-.305 1.455-.717 2.126-1.387.67-.67 1.082-1.342 1.387-2.126.3-.765.5-1.635.56-2.913.058-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.278-.26-2.148-.56-2.913-.305-.784-.717-1.455-1.387-2.126C21.314 1.333 20.643.92 19.86.612c-.765-.3-1.635-.5-2.913-.56C15.667.015 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.07 1.17.055 1.805.248 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.168.422.36 1.057.413 2.227.056 1.265.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.056 1.17-.245 1.805-.413 2.227-.217.562-.477.96-.896 1.382-.42.419-.82.679-1.38.896-.423.168-1.057.36-2.227.413-1.265.056-1.646.07-4.85.07s-3.585-.015-4.85-.07c-1.17-.056-1.805-.245-2.227-.413-.562-.217-.96-.477-1.382-.896-.419-.42-.679-.82-1.381-.896-.168-.423-.36-1.057-.413-2.227-.056-1.265-.07-1.646-.07-4.85s.015-3.585.07-4.85c.055-1.17.248-1.805.415-2.227.217-.562.477.96.896-1.382.42-.419.819-.679 1.381-.896.422-.168 1.057-.36 2.227-.413C8.415 2.176 8.797 2.16 12 2.16zm0 5.48c-3.405 0-6.162 2.757-6.162 6.162s2.757 6.162 6.162 6.162 6.162-2.757 6.162-6.162-2.757-6.162-6.162-6.162zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm6.406-11.845c-.796 0-1.44.645-1.44 1.44s.645 1.44 1.44 1.44c.795 0 1.44-.645 1.44-1.44s-.645-1.44-1.44-1.44z" fill="currentColor"/></svg>
                     <span class="font-semibold text-lg flex-grow text-left">Instagram</span>
                     <span class="completion-mark ml-auto hidden">&#10003;</span>
                 </a>
 
                 <!-- SoundCloud -->
-                <a href="https://soundcloud.com/callmemikey" data-link-id="soundcloud" target="_blank" rel="noopener noreferrer" class="group flex items-center p-4 bg-gray-800 rounded-lg w-full transition-all duration-300 hover:bg-orange-500 hover:scale-105 shadow-md">
-                    <svg class="w-6 h-6 mr-4 text-orange-500 group-hover:text-white transition-colors duration-300" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>SoundCloud</title><path d="M12.189.031C5.466.031 0 5.497 0 12.22c0 6.722 5.466 12.188 12.189 12.188 6.723 0 11.811-5.466 11.811-12.188V.031H12.19zM8.88 18.068c-1.584 0-2.868-1.284-2.868-2.868s1.284-2.868 2.868-2.868 2.868 1.284 2.868 2.868-1.284 2.868-2.868 2.868zm4.32-3.6c-1.584 0-2.868-1.284-2.868-2.868s1.284-2.868 2.868-2.868 2.868 1.284 2.868 2.868-1.284 2.868-2.868 2.868zm4.32-3.6c-1.584 0-2.868-1.284-2.868-2.868s1.284-2.868 2.868-2.868 2.868 1.284 2.868 2.868-1.284 2.868-2.868 2.868z" fill="currentColor"/></svg>
+                <a href="https://soundcloud.com/callmemikey" data-link-id="soundcloud" target="_blank" rel="noopener noreferrer" class="social-link group flex items-center p-4 glassmorphic rounded-xl w-full animate-fade-slide-up" style="animation-delay: 1.0s;">
+                    <svg class="w-6 h-6 mr-4 text-orange-500" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>SoundCloud</title><path d="M12.189.031C5.466.031 0 5.497 0 12.22c0 6.722 5.466 12.188 12.189 12.188 6.723 0 11.811-5.466 11.811-12.188V.031H12.19zM8.88 18.068c-1.584 0-2.868-1.284-2.868-2.868s1.284-2.868 2.868-2.868 2.868 1.284 2.868 2.868-1.284 2.868-2.868 2.868zm4.32-3.6c-1.584 0-2.868-1.284-2.868-2.868s1.284-2.868 2.868-2.868 2.868 1.284 2.868 2.868-1.284 2.868-2.868 2.868zm4.32-3.6c-1.584 0-2.868-1.284-2.868-2.868s1.284-2.868 2.868-2.868 2.868 1.284 2.868 2.868-1.284 2.868-2.868 2.868z" fill="currentColor"/></svg>
                     <span class="font-semibold text-lg flex-grow text-left">SoundCloud</span>
                     <span class="completion-mark ml-auto hidden">&#10003;</span>
                 </a>
             </main>
 
             <!-- Collapsible Discord Widget Section -->
-            <section class="mt-8">
-                <button id="toggle-discord-widget" data-link-id="discord-widget" class="group flex items-center justify-between w-full text-left p-4 bg-gray-800 rounded-lg transition-all duration-300 hover:bg-gray-700 focus:outline-none shadow-md">
-                    <h2 class="text-xl font-bold text-white">Join the Community</h2>
+            <section class="mt-10 animate-fade-slide-up" style="animation-delay: 1.1s;">
+                <button id="toggle-discord-widget" data-link-id="discord-widget" class="social-link group flex items-center justify-between w-full text-left p-4 glassmorphic rounded-xl">
+                    <h2 class="text-xl font-bold">Join the Community</h2>
                     <div class="flex items-center">
                         <span class="completion-mark mr-2 hidden">&#10003;</span>
-                        <svg id="discord-chevron" class="w-6 h-6 text-white transform transition-transform duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                        <svg id="discord-chevron" class="w-6 h-6 transform transition-transform duration-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
                         </svg>
                     </div>
                 </button>
-                <div id="discord-widget-container" class="mt-2 rounded-lg overflow-hidden shadow-lg mx-auto" style="max-width: 350px;">
+                <div id="discord-widget-container" class="mt-2 rounded-lg overflow-hidden shadow-lg mx-auto transition-all duration-500 ease-in-out max-h-0 opacity-0">
                     <iframe 
                         src="https://discord.com/widget?id=1207044666613305394&theme=dark" 
                         class="w-full" 
@@ -198,25 +231,26 @@
             </section>
 
         </div>
-
+        
         <!-- Footer -->
-        <footer class="absolute bottom-4 text-center text-gray-600 text-sm">
+        <footer class="absolute bottom-6 w-full text-center text-gray-500 text-sm animate-fade-in" style="animation-delay: 1.2s;">
             <p>&copy; 2025 dubbb_c. All Rights Reserved.</p>
         </footer>
+
     </div>
     
     <!-- AI Modal -->
-    <div id="ai-modal" class="fixed inset-0 bg-black bg-opacity-70 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
-        <div class="bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg border border-gray-700 transform transition-all duration-300 scale-95 opacity-0" id="modal-content">
+    <div id="ai-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50 hidden transition-opacity duration-300">
+        <div class="glassmorphic rounded-2xl shadow-2xl w-full max-w-lg transform transition-all duration-300 scale-95 opacity-0" id="modal-content">
             <!-- Modal Header -->
-            <div class="flex items-center justify-between p-4 border-b border-gray-700">
-                <h3 class="text-xl font-bold text-white" id="modal-title">✨ Ask Dub (AI)</h3>
+            <div class="flex items-center justify-between p-4 border-b border-white/10">
+                <h3 class="text-xl font-bold" id="modal-title">✨ Ask Dub (AI)</h3>
                 <button id="close-modal-btn" class="text-gray-400 hover:text-white text-3xl leading-none">&times;</button>
             </div>
             <!-- Modal Body -->
-            <div class="p-6">
+            <div class="p-6 max-h-[60vh] overflow-y-auto">
                 <div class="space-y-4">
-                    <input type="text" id="ai-question-input" placeholder="e.g., What games do you play? What is the meaning of life?" class="w-full p-3 bg-gray-700 rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-teal-500 text-white">
+                    <input type="text" id="ai-question-input" placeholder="e.g., What games do you play?" class="w-full p-3 bg-black/30 rounded-lg border border-white/20 focus:outline-none focus:ring-2 focus:ring-teal-500">
                     <button id="submit-ai-question-btn" class="w-full px-4 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors duration-300 font-semibold">Get Answer</button>
                 </div>
                 <div id="modal-loader" class="flex justify-center items-center h-32 hidden mt-4">
@@ -226,11 +260,11 @@
                     </svg>
                 </div>
                 <div id="modal-result-container" class="mt-4 hidden">
-                    <p id="modal-text" class="text-gray-300 text-base whitespace-pre-wrap bg-gray-900/50 p-4 rounded-lg"></p>
+                    <p id="modal-text" class="text-gray-300 text-base whitespace-pre-wrap bg-black/20 p-4 rounded-lg"></p>
                 </div>
             </div>
             <!-- Modal Footer -->
-            <div id="modal-footer" class="flex justify-end p-4 bg-gray-800/50 rounded-b-2xl border-t border-gray-700/50 hidden">
+            <div id="modal-footer" class="flex justify-end p-4 border-t border-white/10 hidden">
                 <button id="copy-btn" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors duration-300">Copy Text</button>
             </div>
         </div>
@@ -238,32 +272,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const visitedLinksKey = 'dubbcVisitedLinks';
-            let visitedLinks = JSON.parse(localStorage.getItem(visitedLinksKey)) || {};
-
-            const markAsVisited = (id) => {
-                const element = document.querySelector(`[data-link-id="${id}"]`);
-                if (element) {
-                    const checkmark = element.querySelector('.completion-mark');
-                    if (checkmark) {
-                        checkmark.classList.remove('hidden');
-                    }
-                }
-                visitedLinks[id] = true;
-                localStorage.setItem(visitedLinksKey, JSON.stringify(visitedLinks));
-            };
-
-            const allLinks = document.querySelectorAll('[data-link-id]');
-            allLinks.forEach(link => {
-                const linkId = link.dataset.linkId;
-                if (visitedLinks[linkId]) {
-                    markAsVisited(linkId);
-                }
-                link.addEventListener('click', () => {
-                    markAsVisited(linkId);
-                });
-            });
-
             // --- DOM Element Selectors ---
             const askAiBtn = document.getElementById('ask-ai-btn');
             const aiModal = document.getElementById('ai-modal');
@@ -284,14 +292,14 @@
             const showModal = () => {
                 aiModal.classList.remove('hidden');
                 setTimeout(() => {
+                    aiModal.classList.add('opacity-100');
                     modalContent.classList.remove('opacity-0', 'scale-95');
-                    modalContent.classList.add('modal-enter');
                 }, 10);
             };
 
             const hideModal = () => {
-                modalContent.classList.remove('modal-enter');
                 modalContent.classList.add('opacity-0', 'scale-95');
+                aiModal.classList.remove('opacity-100');
                 setTimeout(() => {
                     aiModal.classList.add('hidden');
                     modalResultContainer.classList.add('hidden');
@@ -299,7 +307,7 @@
                     aiQuestionInput.value = '';
                 }, 300);
             };
-
+            
             const showLoader = () => {
                 modalLoader.classList.remove('hidden');
                 modalResultContainer.classList.add('hidden');
@@ -364,25 +372,24 @@
             // --- Discord Widget Toggle ---
             toggleDiscordBtn.addEventListener('click', () => {
                 const isExpanded = discordWidgetContainer.classList.toggle('expanded');
+                if (isExpanded) {
+                    discordWidgetContainer.style.maxHeight = '500px';
+                    discordWidgetContainer.style.opacity = '1';
+                } else {
+                    discordWidgetContainer.style.maxHeight = '0';
+                    discordWidgetContainer.style.opacity = '0';
+                }
                 discordChevron.classList.toggle('rotate-180', isExpanded);
             });
 
             // --- Utility Functions ---
             copyBtn.addEventListener('click', () => {
-                const textToCopy = modalText.innerText;
-                const textArea = document.createElement('textarea');
-                textArea.value = textToCopy;
-                document.body.appendChild(textArea);
-                textArea.select();
-                try {
-                    document.execCommand('copy');
+                navigator.clipboard.writeText(modalText.innerText).then(() => {
                     copyBtn.innerText = 'Copied!';
                     setTimeout(() => { copyBtn.innerText = 'Copy Text'; }, 2000);
-                } catch (err) {
+                }).catch(err => {
                     console.error('Failed to copy text: ', err);
-                    copyBtn.innerText = 'Error';
-                }
-                document.body.removeChild(textArea);
+                });
             });
         });
     </script>
