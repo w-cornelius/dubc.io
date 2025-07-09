@@ -181,7 +181,7 @@
             <!-- Modal Body -->
             <div class="p-6">
                 <div class="space-y-4">
-                    <input type="text" id="ai-question-input" placeholder="e.g., What games do you play?" class="w-full p-3 bg-gray-700 rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-teal-500 text-white">
+                    <input type="text" id="ai-question-input" placeholder="e.g., What games do you play? What is the meaning of life?" class="w-full p-3 bg-gray-700 rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-teal-500 text-white">
                     <button id="submit-ai-question-btn" class="w-full px-4 py-3 bg-teal-600 text-white rounded-lg hover:bg-teal-700 transition-colors duration-300 font-semibold">Get Answer</button>
                 </div>
                 <div id="modal-loader" class="flex justify-center items-center h-32 hidden mt-4">
@@ -312,7 +312,7 @@
                     return;
                 }
                 showLoader();
-                const fullPrompt = `You are a helpful, friendly AI assistant for the streamer 'dubbb_c'. Your knowledge base includes: he streams on Twitch (dubbb_c and djdubc_), Kick (dubbb_c), and has content on YouTube, TikTok, Instagram, and SoundCloud. He co-hosts 'The Punchline & The Pause' podcast. Answer the fan's question concisely: "${question}"`;
+                const fullPrompt = `You are a helpful, friendly AI assistant for the streamer 'dubbb_c'. Your knowledge base includes: he streams on Twitch (dubbb_c and djdubc_), Kick (dubbb_c), and has content on YouTube, TikTok, Instagram, and SoundCloud. He co-hosts 'The Punchline & The Pause' podcast. You are omnisicient and very knowledgable about many things and can help fans with questions other than what concerns the streamer. Answer the fan's question concisely: "${question}"`;
                 const resultText = await callGemini(fullPrompt);
                 showResult(resultText);
             });
