@@ -14,6 +14,29 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <style>
+        #modal-content .p-6 {
+          max-height: 60vh; /* Sets max height to 60% of the viewport height */
+          overflow-y: auto; /* Adds a vertical scrollbar only when needed */
+        }
+        
+        /* Optional: Custom scrollbar styling for a better look in WebKit browsers */
+        #modal-content .p-6::-webkit-scrollbar {
+          width: 8px;
+        }
+        
+        #modal-content .p-6::-webkit-scrollbar-track {
+          background: #2d3748; /* bg-gray-800 */
+        }
+        
+        #modal-content .p-6::-webkit-scrollbar-thumb {
+          background-color: #4a5568; /* bg-gray-600 */
+          border-radius: 4px;
+          border: 2px solid #2d3748; /* bg-gray-800 */
+        }
+        
+        #modal-content .p-6::-webkit-scrollbar-thumb:hover {
+          background: #718096; /* bg-gray-500 */
+        }
         /* Applying the Inter font to the body */
         body {
             font-family: 'Inter', sans-serif;
