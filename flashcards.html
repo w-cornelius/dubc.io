@@ -94,15 +94,18 @@
                 Next
             </button>
         </div>
-        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 justify-center mt-4">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 justify-center mt-4">
             <button id="shuffleBtn" class="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition-colors">
-                Shuffle Deck
+                Shuffle
             </button>
             <button id="flipContentBtn" class="px-4 py-2 bg-purple-600 text-white font-semibold rounded-lg shadow-md hover:bg-purple-700 transition-colors">
-                Flip Term/Def
+                Flip
             </button>
-            <button id="resetBtn" class="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 transition-colors col-span-2 sm:col-span-1">
-                Reset & Unhide All
+            <button id="hideCardBtn" class="px-4 py-2 bg-yellow-500 text-white font-semibold rounded-lg shadow-md hover:bg-yellow-600 transition-colors">
+                Hide Card
+            </button>
+            <button id="resetBtn" class="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 transition-colors">
+                Reset All
             </button>
         </div>
 
@@ -1128,7 +1131,7 @@
         let currentCardIndex = 0;
         let activeCards = [];
         let studiedCardIndices = new Set();
-        let isTermFirst = true; // true: term on front, def on back. false: vice-versa
+        let isTermFirst = true;
 
         // --- DOM ELEMENTS ---
         const flashcard = document.getElementById('flashcard');
@@ -1138,6 +1141,7 @@
         const nextBtn = document.getElementById('nextBtn');
         const shuffleBtn = document.getElementById('shuffleBtn');
         const flipContentBtn = document.getElementById('flipContentBtn');
+        const hideCardBtn = document.getElementById('hideCardBtn');
         const resetBtn = document.getElementById('resetBtn');
         const cardCounterEl = document.getElementById('cardCounter');
         const askGeminiBtn = document.getElementById('askGeminiBtn');
@@ -1165,8 +1169,7 @@
         
         function initializeDeck() {
             activeCards = allFlashcardData.filter((_, index) => !studiedCardIndices.has(index));
-            if (activeCards.length === 0) {
-                // If all cards have been studied, reset the deck for the user
+            if (activeCards.length === 0 && allFlashcardData.length > 0) {
                 resetDeck();
                 return;
             }
@@ -1178,12 +1181,14 @@
             if (activeCards.length === 0) {
                 termEl.textContent = "All cards studied!";
                 definitionEl.textContent = "Click 'Reset & Unhide All' to start over.";
-                cardCounterEl.textContent = `0 / ${allFlashcardData.length}`;
+                cardCounterEl.textContent = `${allFlashcardData.length} / ${allFlashcardData.length}`;
                 prevBtn.disabled = true;
                 nextBtn.disabled = true;
+                hideCardBtn.disabled = true;
                 return;
             }
 
+            hideCardBtn.disabled = false;
             const cardData = activeCards[currentCardIndex];
             
             if (isTermFirst) {
@@ -1206,12 +1211,14 @@
         function updateCounter() {
             const studiedCount = studiedCardIndices.size;
             const totalCount = allFlashcardData.length;
-            cardCounterEl.textContent = `${studiedCount + currentCardIndex + 1} / ${totalCount}`;
+            const currentPositionInDeck = activeCards.length > 0 ? currentCardIndex + 1 : 0;
+            const activeCount = activeCards.length;
+            cardCounterEl.textContent = `${currentPositionInDeck} / ${activeCount} (Studied: ${studiedCount})`;
         }
 
         function updateNavButtons() {
             prevBtn.disabled = currentCardIndex === 0;
-            nextBtn.disabled = currentCardIndex === activeCards.length - 1;
+            nextBtn.disabled = currentCardIndex >= activeCards.length - 1;
         }
 
         function flipCard() {
@@ -1222,29 +1229,33 @@
 
         function showNextCard() {
             if (currentCardIndex < activeCards.length - 1) {
-                markCurrentCardAsStudied();
-                // The current card is removed, so we don't increment the index
-                // The next card automatically takes the current index.
+                currentCardIndex++;
                 displayCard();
-            } else if (currentCardIndex === activeCards.length - 1 && activeCards.length > 0) {
-                // This is the last card in the active deck
-                markCurrentCardAsStudied();
-                displayCard(); // This will now show the "All cards studied!" message
             }
         }
         
-        function markCurrentCardAsStudied() {
-            const originalIndex = allFlashcardData.findIndex(card => card.term === activeCards[currentCardIndex].term);
-            if (originalIndex !== -1) {
-                studiedCardIndices.add(originalIndex);
-                activeCards.splice(currentCardIndex, 1); // Remove from active deck
-                saveState();
+        function showPrevCard() {
+             if (currentCardIndex > 0) {
+                currentCardIndex--;
+                displayCard();
             }
         }
 
-        function showPrevCard() {
-            // "Previous" button is disabled for this study model to avoid complexity
-            // with re-adding studied cards. User can reset or shuffle.
+        function hideCurrentCard() {
+            if (activeCards.length === 0) return;
+            const cardToFind = activeCards[currentCardIndex];
+            const originalIndex = allFlashcardData.findIndex(card => card.term === cardToFind.term && card.definition === cardToFind.definition);
+            
+            if (originalIndex !== -1) {
+                studiedCardIndices.add(originalIndex);
+                activeCards.splice(currentCardIndex, 1);
+                saveState();
+
+                if (currentCardIndex >= activeCards.length && activeCards.length > 0) {
+                    currentCardIndex = activeCards.length - 1;
+                }
+                displayCard();
+            }
         }
 
         function shuffleCards() {
@@ -1268,7 +1279,42 @@
             initializeDeck();
         }
 
-        async function askGemini() {
+        // --- Gemini API Call via Secure Worker ---
+        async function callGemini(prompt) {
+            const apiUrl = 'https://dubbc-ai-proxy.wcornelius.workers.dev/';
+            // This payload structure matches what the Gemini API expects.
+            // The proxy worker should be designed to pass this through.
+            const payload = {
+                contents: [{
+                    role: "user",
+                    parts: [{ text: prompt }]
+                }]
+            };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) {
+                    const errorBody = await response.text();
+                    throw new Error(`API call failed with status: ${response.status}. Body: ${errorBody}`);
+                }
+                const result = await response.json();
+                if (result.candidates && result.candidates.length > 0 && result.candidates[0].content.parts[0].text) {
+                    return result.candidates[0].content.parts[0].text.trim();
+                } else {
+                    console.error('Unexpected API response format:', result);
+                    throw new Error('Unexpected API response format');
+                }
+            } catch (error) {
+                console.error('Error calling the proxy worker:', error);
+                return `An error occurred: ${error.message}. Please try again later.`;
+            }
+        }
+
+        async function handleAskGemini() {
             const userQuestion = userQuestionInput.value;
             if (!userQuestion.trim()) {
                 geminiResponseEl.textContent = "Please enter a question.";
@@ -1279,55 +1325,33 @@
                 return;
             }
 
-            const currentCard = activeCards[currentCardIndex];
-            const prompt = `You are a helpful real estate expert. In the context of the real estate term "${currentCard.term}", which is defined as "${currentCard.definition}", please answer the following question clearly and concisely: "${userQuestion}"`;
-            
             geminiLoader.classList.remove('hidden');
             geminiResponseEl.textContent = '';
             askGeminiBtn.disabled = true;
 
-            try {
-                const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
-                const proxyUrl = 'https://dubbc-ai-proxy.wcornelius.workers.dev/';
-
-                const response = await fetch(proxyUrl, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(payload)
-                });
-                
-                if (!response.ok) {
-                    const errorText = await response.text();
-                    throw new Error(`API request failed with status ${response.status}: ${errorText}`);
-                }
-
-                const result = await response.json();
-                
-                if (result.candidates && result.candidates[0]?.content?.parts?.[0]?.text) {
-                    geminiResponseEl.textContent = result.candidates[0].content.parts[0].text;
-                } else {
-                    geminiResponseEl.textContent = "Sorry, I couldn't get a response. The response from the AI was empty or malformed.";
-                }
-            } catch (error) {
-                console.error("Error calling Gemini API via proxy:", error);
-                geminiResponseEl.textContent = "Sorry, an error occurred while trying to get an answer. Please check the console for details.";
-            } finally {
-                geminiLoader.classList.add('hidden');
-                askGeminiBtn.disabled = false;
-            }
+            const currentCard = activeCards[currentCardIndex];
+            const prompt = `You are a helpful real estate expert. In the context of the real estate term "${currentCard.term}", which is defined as "${currentCard.definition}", please answer the following question clearly and concisely: "${userQuestion}"`;
+            
+            const responseText = await callGemini(prompt);
+            geminiResponseEl.textContent = responseText;
+            
+            geminiLoader.classList.add('hidden');
+            askGeminiBtn.disabled = false;
         }
+
 
         // --- EVENT LISTENERS & INITIALIZATION ---
         flashcard.addEventListener('click', flipCard);
         nextBtn.addEventListener('click', showNextCard);
-        prevBtn.addEventListener('click', showPrevCard); // Note: Previous button is disabled in this version
+        prevBtn.addEventListener('click', showPrevCard);
         shuffleBtn.addEventListener('click', shuffleCards);
         flipContentBtn.addEventListener('click', flipCardContent);
+        hideCardBtn.addEventListener('click', hideCurrentCard);
         resetBtn.addEventListener('click', resetDeck);
-        askGeminiBtn.addEventListener('click', askGemini);
+        askGeminiBtn.addEventListener('click', handleAskGemini);
         userQuestionInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
-                askGemini();
+                handleAskGemini();
             }
         });
 
