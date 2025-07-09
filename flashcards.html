@@ -47,7 +47,6 @@
             transform: rotateY(180deg);
             overflow-y: auto;
         }
-        /* Custom scrollbar for the back of the card */
         .card-back::-webkit-scrollbar {
             width: 8px;
         }
@@ -63,7 +62,7 @@
             background: #6b7280;
         }
         #geminiResponse {
-            white-space: pre-wrap; /* Allows line breaks to be displayed */
+            white-space: pre-wrap;
         }
     </style>
 </head>
@@ -95,9 +94,15 @@
                 Next
             </button>
         </div>
-        <div class="flex justify-center mt-4">
-            <button id="shuffleBtn" class="px-6 py-3 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition-colors">
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 justify-center mt-4">
+            <button id="shuffleBtn" class="px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg shadow-md hover:bg-indigo-700 transition-colors">
                 Shuffle Deck
+            </button>
+            <button id="flipContentBtn" class="px-4 py-2 bg-purple-600 text-white font-semibold rounded-lg shadow-md hover:bg-purple-700 transition-colors">
+                Flip Term/Def
+            </button>
+            <button id="resetBtn" class="px-4 py-2 bg-red-600 text-white font-semibold rounded-lg shadow-md hover:bg-red-700 transition-colors col-span-2 sm:col-span-1">
+                Reset & Unhide All
             </button>
         </div>
 
@@ -121,7 +126,15 @@
     </div>
 
     <script>
-        const flashcardData = [
+        // --- DATA ---
+        // NOTE: Only a few definitions are included to keep the initial code manageable.
+        // You can copy and paste the full array of terms and definitions here.
+        const allFlashcardData = [
+            { term: '1031 tax-deferred exchange', definition: 'Section 1031 of the Internal Revenue Code allows the owner of real property to sell that property and then reinvest in a "like-kind" property and defer paying any capital gains taxes; strict IRS rules regulate this type of exchange' },
+            { term: '15-year loan', definition: 'A nontraditional mortgage product that shortens the standard mortgage term from 30 years to 15 years' },
+            { term: 'abutting', definition: 'Land parcels that share a common border' },
+            { term: 'acceleration clause', definition: 'Allows a lender to demand immediate and full payment of all debt owed if a buyer defaults or fails to meet certain conditions that apply to the loan' },
+            { term: 'accession', definition: 'The addition of value to property through labor or the addition of new materials, including an increase in land through natural processes' }
             { term: '1031 tax-deferred exchange', definition: 'Section 1031 of the Internal Revenue Code allows the owner of real property to sell that property and then reinvest in a "like-kind" property and defer paying any capital gains taxes; strict IRS rules regulate this type of exchange' },
             { term: '15-year loan', definition: 'A nontraditional mortgage product that shortens the standard mortgage term from 30 years to 15 years' },
             { term: 'abutting', definition: 'Land parcels that share a common border' },
@@ -1114,69 +1127,148 @@
             { term: 'zoning ordinances', definition: 'Local laws or regulations that implement the comprehensive plan by regulating zoning and land use' }
         ];
 
+        // --- STATE MANAGEMENT ---
         let currentCardIndex = 0;
-        let cards = [...flashcardData];
+        let activeCards = [];
+        let studiedCardIndices = new Set();
+        let isTermFirst = true; // true: term on front, def on back. false: vice-versa
 
+        // --- DOM ELEMENTS ---
         const flashcard = document.getElementById('flashcard');
         const termEl = document.getElementById('term');
         const definitionEl = document.getElementById('definition');
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
         const shuffleBtn = document.getElementById('shuffleBtn');
+        const flipContentBtn = document.getElementById('flipContentBtn');
+        const resetBtn = document.getElementById('resetBtn');
         const cardCounterEl = document.getElementById('cardCounter');
         const askGeminiBtn = document.getElementById('askGeminiBtn');
         const userQuestionInput = document.getElementById('userQuestion');
         const geminiResponseEl = document.getElementById('geminiResponse');
         const geminiLoader = document.getElementById('geminiLoader');
 
+        // --- FUNCTIONS ---
+
+        function loadState() {
+            const savedStudied = localStorage.getItem('studiedRealEstateCards');
+            if (savedStudied) {
+                studiedCardIndices = new Set(JSON.parse(savedStudied));
+            }
+            const savedFlipState = localStorage.getItem('isTermFirst');
+            if (savedFlipState !== null) {
+                isTermFirst = JSON.parse(savedFlipState);
+            }
+        }
+
+        function saveState() {
+            localStorage.setItem('studiedRealEstateCards', JSON.stringify(Array.from(studiedCardIndices)));
+            localStorage.setItem('isTermFirst', JSON.stringify(isTermFirst));
+        }
+        
+        function initializeDeck() {
+            activeCards = allFlashcardData.filter((_, index) => !studiedCardIndices.has(index));
+            if (activeCards.length === 0) {
+                // If all cards have been studied, reset the deck for the user
+                resetDeck();
+                return;
+            }
+            currentCardIndex = 0;
+            displayCard();
+        }
+
         function displayCard() {
-            const card = cards[currentCardIndex];
-            termEl.textContent = card.term;
-            definitionEl.textContent = card.definition;
+            if (activeCards.length === 0) {
+                termEl.textContent = "All cards studied!";
+                definitionEl.textContent = "Click 'Reset & Unhide All' to start over.";
+                cardCounterEl.textContent = `0 / ${allFlashcardData.length}`;
+                prevBtn.disabled = true;
+                nextBtn.disabled = true;
+                return;
+            }
+
+            const cardData = activeCards[currentCardIndex];
+            
+            if (isTermFirst) {
+                termEl.textContent = cardData.term;
+                definitionEl.textContent = cardData.definition;
+            } else {
+                termEl.textContent = cardData.definition;
+                definitionEl.textContent = cardData.term;
+            }
+            
             updateCounter();
             updateNavButtons();
             if (flashcard.classList.contains('is-flipped')) {
                 flashcard.classList.remove('is-flipped');
             }
-            // Clear previous Gemini question and response
             userQuestionInput.value = '';
             geminiResponseEl.textContent = '';
         }
 
         function updateCounter() {
-            cardCounterEl.textContent = `${currentCardIndex + 1} / ${cards.length}`;
+            const studiedCount = studiedCardIndices.size;
+            const totalCount = allFlashcardData.length;
+            cardCounterEl.textContent = `${studiedCount + currentCardIndex + 1} / ${totalCount}`;
         }
 
         function updateNavButtons() {
             prevBtn.disabled = currentCardIndex === 0;
-            nextBtn.disabled = currentCardIndex === cards.length - 1;
+            nextBtn.disabled = currentCardIndex === activeCards.length - 1;
         }
 
         function flipCard() {
-            flashcard.classList.toggle('is-flipped');
+            if (activeCards.length > 0) {
+                flashcard.classList.toggle('is-flipped');
+            }
         }
 
         function showNextCard() {
-            if (currentCardIndex < cards.length - 1) {
-                currentCardIndex++;
+            if (currentCardIndex < activeCards.length - 1) {
+                markCurrentCardAsStudied();
+                // The current card is removed, so we don't increment the index
+                // The next card automatically takes the current index.
                 displayCard();
+            } else if (currentCardIndex === activeCards.length - 1 && activeCards.length > 0) {
+                // This is the last card in the active deck
+                markCurrentCardAsStudied();
+                displayCard(); // This will now show the "All cards studied!" message
+            }
+        }
+        
+        function markCurrentCardAsStudied() {
+            const originalIndex = allFlashcardData.findIndex(card => card.term === activeCards[currentCardIndex].term);
+            if (originalIndex !== -1) {
+                studiedCardIndices.add(originalIndex);
+                activeCards.splice(currentCardIndex, 1); // Remove from active deck
+                saveState();
             }
         }
 
         function showPrevCard() {
-            if (currentCardIndex > 0) {
-                currentCardIndex--;
-                displayCard();
-            }
+            // "Previous" button is disabled for this study model to avoid complexity
+            // with re-adding studied cards. User can reset or shuffle.
         }
 
         function shuffleCards() {
-            for (let i = cards.length - 1; i > 0; i--) {
+            for (let i = activeCards.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
-                [cards[i], cards[j]] = [cards[j], cards[i]];
+                [activeCards[i], activeCards[j]] = [activeCards[j], activeCards[i]];
             }
             currentCardIndex = 0;
             displayCard();
+        }
+
+        function flipCardContent() {
+            isTermFirst = !isTermFirst;
+            saveState();
+            displayCard();
+        }
+
+        function resetDeck() {
+            studiedCardIndices.clear();
+            saveState();
+            initializeDeck();
         }
 
         async function askGemini() {
@@ -1185,8 +1277,12 @@
                 geminiResponseEl.textContent = "Please enter a question.";
                 return;
             }
+            if (activeCards.length === 0) {
+                geminiResponseEl.textContent = "Please reset the deck to select a term.";
+                return;
+            }
 
-            const currentCard = cards[currentCardIndex];
+            const currentCard = activeCards[currentCardIndex];
             const prompt = `You are a helpful real estate expert. In the context of the real estate term "${currentCard.term}", which is defined as "${currentCard.definition}", please answer the following question clearly and concisely: "${userQuestion}"`;
             
             geminiLoader.classList.remove('hidden');
@@ -1194,33 +1290,29 @@
             askGeminiBtn.disabled = true;
 
             try {
-                let chatHistory = [{ role: "user", parts: [{ text: prompt }] }];
-                const payload = { contents: chatHistory };
-                const apiKey = ""; // API key is handled by the environment
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
+                const proxyUrl = 'https://dubbc-ai-proxy.wcornelius.workers.dev/';
 
-                const response = await fetch(apiUrl, {
+                const response = await fetch(proxyUrl, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
                 
                 if (!response.ok) {
-                    throw new Error(`API request failed with status ${response.status}`);
+                    const errorText = await response.text();
+                    throw new Error(`API request failed with status ${response.status}: ${errorText}`);
                 }
 
                 const result = await response.json();
                 
-                if (result.candidates && result.candidates.length > 0 &&
-                    result.candidates[0].content && result.candidates[0].content.parts &&
-                    result.candidates[0].content.parts.length > 0) {
-                    const text = result.candidates[0].content.parts[0].text;
-                    geminiResponseEl.textContent = text;
+                if (result.candidates && result.candidates[0]?.content?.parts?.[0]?.text) {
+                    geminiResponseEl.textContent = result.candidates[0].content.parts[0].text;
                 } else {
                     geminiResponseEl.textContent = "Sorry, I couldn't get a response. The response from the AI was empty or malformed.";
                 }
             } catch (error) {
-                console.error("Error calling Gemini API:", error);
+                console.error("Error calling Gemini API via proxy:", error);
                 geminiResponseEl.textContent = "Sorry, an error occurred while trying to get an answer. Please check the console for details.";
             } finally {
                 geminiLoader.classList.add('hidden');
@@ -1228,11 +1320,13 @@
             }
         }
 
-        // Event Listeners
+        // --- EVENT LISTENERS & INITIALIZATION ---
         flashcard.addEventListener('click', flipCard);
         nextBtn.addEventListener('click', showNextCard);
-        prevBtn.addEventListener('click', showPrevCard);
+        prevBtn.addEventListener('click', showPrevCard); // Note: Previous button is disabled in this version
         shuffleBtn.addEventListener('click', shuffleCards);
+        flipContentBtn.addEventListener('click', flipCardContent);
+        resetBtn.addEventListener('click', resetDeck);
         askGeminiBtn.addEventListener('click', askGemini);
         userQuestionInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
@@ -1240,21 +1334,20 @@
             }
         });
 
-        // Keyboard navigation
         document.addEventListener('keydown', (e) => {
-            if (document.activeElement === userQuestionInput) return; // Don't navigate if typing
-            if (e.key === 'ArrowRight') {
-                showNextCard();
-            } else if (e.key === 'ArrowLeft') {
-                showPrevCard();
-            } else if (e.key === ' ') {
+            if (document.activeElement === userQuestionInput) return;
+            if (e.key === 'ArrowRight') nextBtn.click();
+            if (e.key === 'ArrowLeft') prevBtn.click();
+            if (e.key === ' ') {
                 e.preventDefault();
                 flipCard();
             }
         });
+        
+        // Initial Load
+        loadState();
+        initializeDeck();
 
-        // Initial display
-        displayCard();
     </script>
 </body>
 </html>
