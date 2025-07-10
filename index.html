@@ -133,6 +133,15 @@
                 >
                 <h1 class="text-4xl font-bold text-white tracking-tight">dubbb_c</h1>
                 <p id="streamer-bio" class="text-gray-300 mt-2 text-lg">Content Creator | DJ | Semi-Pro Gamer</p>
+                
+                <!-- Progress Bar -->
+                <div class="px-4">
+                    <div class="mt-4 w-full bg-black/30 rounded-full h-3 animate-fade-in" style="animation-delay: 0.1s;">
+                        <div id="progress-bar" class="bg-gradient-to-r from-teal-400 to-purple-500 h-3 rounded-full transition-all duration-500 ease-out" style="width: 0%;"></div>
+                    </div>
+                    <p id="progress-text" class="text-center text-gray-400 text-xs mt-2 animate-fade-in" style="animation-delay: 0.15s;">0% Complete</p>
+                </div>
+
             </header>
 
             <!-- Social Links Section -->
@@ -276,6 +285,20 @@
             const visitedLinksKey = 'dubbcVisitedLinks';
             let visitedLinks = JSON.parse(localStorage.getItem(visitedLinksKey)) || {};
 
+            // --- DOM Element Selectors ---
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            const allLinks = document.querySelectorAll('[data-link-id]');
+            const totalLinks = allLinks.length;
+
+            const updateProgressBar = () => {
+                const visitedCount = Object.keys(visitedLinks).length;
+                const percentage = totalLinks > 0 ? Math.round((visitedCount / totalLinks) * 100) : 0;
+                
+                progressBar.style.width = `${percentage}%`;
+                progressText.innerText = `${percentage}% Complete`;
+            };
+
             const markAsVisited = (id) => {
                 const element = document.querySelector(`[data-link-id="${id}"]`);
                 if (element) {
@@ -284,11 +307,13 @@
                         checkmark.classList.remove('hidden');
                     }
                 }
-                visitedLinks[id] = true;
-                localStorage.setItem(visitedLinksKey, JSON.stringify(visitedLinks));
+                if (!visitedLinks[id]) {
+                    visitedLinks[id] = true;
+                    localStorage.setItem(visitedLinksKey, JSON.stringify(visitedLinks));
+                    updateProgressBar();
+                }
             };
 
-            const allLinks = document.querySelectorAll('[data-link-id]');
             allLinks.forEach(link => {
                 const linkId = link.dataset.linkId;
                 if (visitedLinks[linkId]) {
@@ -298,6 +323,9 @@
                     markAsVisited(linkId);
                 });
             });
+
+            // Initial Progress Bar Update on Load
+            updateProgressBar();
 
             // --- DOM Element Selectors ---
             const askAiBtn = document.getElementById('ask-ai-btn');
