@@ -12,13 +12,13 @@ def home():
     A simple welcome message for the root URL.
     This helps to confirm that the server is running.
     """
-    return "<h1>Random Variable API</h1><p>Visit /api/random to get random data.</p>"
+    return "<h1>Random Variable API</h1><p>Visit /api-dance to get random data.</p>"
 
-@app.route('/api/random', methods=['GET'])
+@app.route('/api-dance', methods=['GET'])
 def get_random_data():
     """
     This is the main API endpoint.
-    When a GET request is made to /api/random, this function will
+    When a GET request is made to /api-dance, this function will
     generate and return a JSON object with random data.
     """
     # Create a dictionary to hold the random data
