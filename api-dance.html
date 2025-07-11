@@ -1,0 +1,40 @@
+# main.py
+from flask import Flask, jsonify
+import random
+import uuid
+
+# Initialize the Flask application
+app = Flask(__name__)
+
+@app.route('/')
+def home():
+    """
+    A simple welcome message for the root URL.
+    This helps to confirm that the server is running.
+    """
+    return "<h1>Random Variable API</h1><p>Visit /api/random to get random data.</p>"
+
+@app.route('/api/random', methods=['GET'])
+def get_random_data():
+    """
+    This is the main API endpoint.
+    When a GET request is made to /api/random, this function will
+    generate and return a JSON object with random data.
+    """
+    # Create a dictionary to hold the random data
+    random_data = {
+        'random_integer': random.randint(1, 100),
+        'random_float': random.uniform(1.0, 100.0),
+        'random_boolean': random.choice([True, False]),
+        'random_color': random.choice(['Red', 'Green', 'Blue', 'Yellow', 'Purple']),
+        'unique_id': str(uuid.uuid4())
+    }
+    
+    # Use jsonify to convert the dictionary to a JSON response
+    return jsonify(random_data)
+
+# This part runs the app.
+# The host='0.0.0.0' makes the server accessible from your network.
+# The debug=True will automatically reload the server when you make changes.
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=5000, debug=True)
