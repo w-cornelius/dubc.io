@@ -1,0 +1,10 @@
+# We value the security community and believe that responsible disclosure
+# is essential. If you've found a vulnerability, please let us know.
+# Our full policy can be found at the URL in the "Policy" directive.
+
+Contact: mailto:wcornelius@protonmail.ch
+Expires: 2026-09-16T05:00:00.000Z
+Encryption: https://pgp.dubc.io/dubc_io-email-pgp-pubkey.asc
+Acknowledgments: https://dubc.io/security/hall-of-fame
+Policy: https://dubc.io/security
+Preferred-Languages: en
