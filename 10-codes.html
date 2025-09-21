@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>10 Codes - dubhub</title>
+    <meta name="keywords" content="dub, dubb, dubbb, dubbb_, dubc, dubhub, dubbb_c, social, links, gta rp, 10 codes, police codes, flashcards, quiz">
+    
+    <!-- Favicon Configuration -->
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="android-chrome-512x512.png">
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* General Body Styling & Font */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a0a0a;
+        }
+
+        /* --- Radiating Background Animation --- */
+        body::before {
+            content: '';
+            position: fixed;
+            z-index: -1;
+            top: 50%;
+            left: 50%;
+            width: 80vmax;
+            height: 80vmax;
+            border-radius: 50%;
+            background-color: rgba(120, 50, 220, 0.25);
+            animation: radiate 8s ease-in-out infinite;
+            filter: blur(100px);
+        }
+
+        @keyframes radiate {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(0.95);
+                opacity: 0.9;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.1);
+                opacity: 1;
+            }
+        }
+
+        /* --- Glassmorphism Effect --- */
+        .glassmorphic {
+            background: rgba(10, 10, 10, 0.5);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        /* --- Entrance Animations --- */
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes fade-slide-up {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-in {
+            animation: fade-in 0.8s ease-out forwards;
+        }
+        .animate-fade-slide-up {
+            opacity: 0; /* Start hidden */
+            animation: fade-slide-up 0.6s ease-out forwards;
+        }
+
+        /* --- Enhanced Link/Button Styling --- */
+        .social-link {
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .social-link:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.1);
+        }
+
+        /* Shimmer effect on hover */
+        .social-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 75%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0) 100%);
+            transform: skewX(-25deg);
+            transition: left 0.6s ease;
+        }
+        .social-link:hover::before {
+            left: 150%;
+        }
+    </style>
+</head>
+<body class="text-white antialiased">
+
+    <!-- Main Container -->
+    <div class="relative min-h-screen flex flex-col items-center justify-center p-4">
+
+        <!-- Back Button -->
+        <a href="btrp-lspd.html" class="absolute top-6 left-6 glassmorphic rounded-full p-3 hover:bg-white/10 transition-colors z-20 animate-fade-in">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+        </a>
+        
+        <div class="relative z-10 w-full max-w-lg mx-auto pt-10 pb-24">
+            
+            <!-- Page Header -->
+            <header class="text-center mb-10 animate-fade-in">
+                <h1 class="text-4xl font-bold text-white tracking-tight">10 Codes Training</h1>
+                <p class="text-gray-300 mt-2 text-lg">Tools to help you learn your 10 codes.</p>
+            </header>
+
+            <!-- Links Section -->
+            <main class="space-y-4">
+                <!-- 10 Codes Flashcards -->
+                <a href="10codes-flashcards-btrp.html" class="social-link group flex items-center p-4 glassmorphic rounded-xl w-full animate-fade-slide-up" style="animation-delay: 0.1s;">
+                    <svg class="w-6 h-6 mr-4 text-teal-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 15.75l-2.489-2.489m0 0a3.375 3.375 0 10-4.773-4.773 3.375 3.375 0 004.774 4.774zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <span class="font-semibold text-lg flex-grow text-left">10 Codes Flashcards</span>
+                </a>
+
+                <!-- 10 Codes Quiz -->
+                <a href="10codes-quiz-btrp.html" class="social-link group flex items-center p-4 glassmorphic rounded-xl w-full animate-fade-slide-up" style="animation-delay: 0.2s;">
+                    <svg class="w-6 h-6 mr-4 text-purple-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z" />
+                    </svg>
+                    <span class="font-semibold text-lg flex-grow text-left">10 Codes Quiz</span>
+                </a>
+
+            </main>
+        </div>
+        
+        <!-- Footer -->
+        <footer class="absolute bottom-6 w-full text-center text-gray-500 text-sm animate-fade-in z-20" style="animation-delay: 0.3s;">
+            <p>&copy; 2025 dubbb_c. All Rights Reserved.</p>
+        </footer>
+
+    </div>
+</body>
+</html>
+
