@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>10 Codes Quiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .favorite-btn.favorited svg {
+            fill: #facc15; /* yellow-400 */
+            stroke: #facc15;
+        }
+        .option-btn.correct-answer {
+            background-color: #d1fae5; /* green-100 */
+            border: 2px solid #10b981; /* green-500 */
+            color: #065f46; /* green-800 */
+        }
+        .option-btn.incorrect-answer {
+            background-color: #fee2e2; /* red-100 */
+            border: 2px solid #ef4444; /* red-500 */
+            color: #991b1b; /* red-800 */
+        }
+        .option-btn:disabled {
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_2.5fr] gap-4 sm:gap-6 md:gap-8 p-4 sm:p-6 md:p-8 min-h-screen">
+        
+        <!-- Left Column: Notepad -->
+        <div id="notepad-container" class="bg-white p-4 rounded-2xl shadow-lg lg:sticky top-8 self-start h-[calc(100vh-4rem)] flex flex-col">
+            <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">Scratch Pad</h3>
+            <textarea id="notepad" class="w-full h-full flex-grow bg-yellow-50 border-yellow-200 border rounded-lg p-3 focus:ring-2 focus:ring-yellow-400 focus:outline-none" placeholder="Take your notes here..."></textarea>
+        </div>
+
+        <!-- Center Column: Main Exam Content -->
+        <div class="w-full max-w-4xl mx-auto">
+            <header class="text-center mb-8">
+                <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">10 Codes Quiz</h1>
+                <p class="text-gray-600 mt-2">Test your knowledge of police 10 codes.</p>
+            </header>
+
+            <div class="bg-white p-6 rounded-2xl shadow-lg mb-6">
+                 <div class="text-center mb-6">
+                    <h2 class="text-2xl font-bold">Score: <span id="score-percentage">0</span>%</h2>
+                    <p class="text-gray-600"><span id="correct-answers">0</span> correct out of <span id="answered-questions">0</span> answered</p>
+                </div>
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+                     <button id="shuffle-btn" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300">
+                        Shuffle Unseen Questions
+                    </button>
+                    <div class="flex flex-wrap gap-2 w-full sm:w-auto justify-center">
+                        <button id="view-all-btn" class="flex-1 sm:flex-none bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2.5 px-4 rounded-lg transition">View All</button>
+                        <button id="view-favorites-btn" class="flex-1 sm:flex-none bg-yellow-200 hover:bg-yellow-300 text-yellow-800 font-bold py-2.5 px-4 rounded-lg transition">Favorites (<span id="favorites-count">0</span>)</button>
+                        <button id="view-incorrect-btn" class="flex-1 sm:flex-none bg-red-200 hover:bg-red-300 text-red-800 font-bold py-2.5 px-4 rounded-lg transition">Incorrect (<span id="incorrect-count">0</span>)</button>
+                    </div>
+                     <button id="reset-btn" class="w-full sm:w-auto bg-gray-700 hover:bg-gray-800 text-white font-bold py-2.5 px-6 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-300 mt-4 sm:mt-0">
+                        Reset Progress
+                    </button>
+                </div>
+            </div>
+
+            <div id="quiz-container" class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg">
+                <div id="question-header" class="mb-6">
+                     <div class="flex justify-between items-center mb-2">
+                        <p class="text-lg font-semibold text-gray-900">Question <span id="question-number">1</span> of <span id="total-questions">66</span></p>
+                        <button id="favorite-btn" class="favorite-btn text-gray-400 hover:text-yellow-400 p-1 rounded-full transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        </button>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2.5">
+                        <div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0.5%"></div>
+                    </div>
+                </div>
+                
+                <div id="question-area">
+                    <div id="question-text" class="text-lg text-gray-800 mb-6"></div>
+                    <div id="options-container" class="space-y-4 mb-6"></div>
+                </div>
+                <div id="message-container" class="hidden text-center text-gray-500 my-8"></div>
+                
+                <div id="answer-container" class="hidden p-4 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg mt-6">
+                    <p class="font-bold text-blue-800">Correct Answer:</p>
+                    <p id="correct-answer" class="text-blue-700"></p>
+                    <p class="font-bold mt-4 text-blue-800">Explanation:</p>
+                    <p id="explanation" class="text-blue-700"></p>
+                </div>
+
+                <div class="mt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <button id="prev-btn" class="w-full sm:w-auto bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-200">Previous</button>
+                    <button id="next-btn" class="w-full sm:w-auto bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-200">Next</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const codesData = [
+                { code: "10-2", meaning: "Radio Check" }, { code: "10-4", meaning: "Acknowledgement" },
+                { code: "10-6", meaning: "Busy" }, { code: "10-7", meaning: "Out Of Service" },
+                { code: "10-8", meaning: "In Service" }, { code: "10-9", meaning: "Repeat Most Recent" },
+                { code: "10-11", meaning: "Traffic Stop" }, { code: "10-15", meaning: "Uncooperative Subject" },
+                { code: "10-16", meaning: "Passively Resistant" }, { code: "10-17", meaning: "Suspicion Of Drugs / Guns" },
+                { code: "10-19", meaning: "Requesting Transport" }, { code: "10-20", meaning: "Location" },
+                { code: "10-22", meaning: "Disregard" }, { code: "10-23", meaning: "Arrived On Scene" },
+                { code: "10-25", meaning: "Report in Person (Meet Up)" }, { code: "10-26", meaning: "Detaining Subject, Expedite" },
+                { code: "10-27", meaning: "Drivers License Information" }, { code: "10-28", meaning: "Vehicle Registration Information" },
+                { code: "10-29", meaning: "Check for Wanted Person" }, { code: "10-30", meaning: "Unnecessary Use of Radio" },
+                { code: "10-31", meaning: "Additional Unit - Code 1" }, { code: "10-32", meaning: "Additional Units - Code 2" },
+                { code: "10-34", meaning: "Riot" }, { code: "10-35", meaning: "Major Crime Alert /MCI" },
+                { code: "10-36", meaning: "Pedestrian Stop" }, { code: "10-37", meaning: "Illegally Parked Vehicle" },
+                { code: "10-38", meaning: "Suspicious Vehicle" }, { code: "10-41", meaning: "Beginning Tour of Duty" },
+                { code: "10-42", meaning: "Ending Tour of Duty" }, { code: "10-43", meaning: "Information" },
+                { code: "10-50", meaning: "Traffic Collision" }, { code: "10-52", meaning: "Roll EMS / Fire" },
+                { code: "10-55", meaning: "Vehicle Theft (GTA)" }, { code: "10-56", meaning: "Intoxicated Pedestrian" },
+                { code: "10-57", meaning: "Hit and Run" }, { code: "10-58", meaning: "Direct Traffic / Scene Control" },
+                { code: "10-59", meaning: "Escort (Emergency)" }, { code: "10-60", meaning: "Assist Motorist" },
+                { code: "10-68", meaning: "Dispatch Info" }, { code: "10-70", meaning: "Foot Pursuit" },
+                { code: "10-73", meaning: "Injured Person" }, { code: "10-76", meaning: "En route" },
+                { code: "10-77", meaning: "ETA" }, { code: "10-78", meaning: "Detective Needed" },
+                { code: "10-79", meaning: "Dead Body On Scene" }, { code: "10-80", meaning: "Active Vehicle Pursuit" },
+                { code: "10-81", meaning: "Breathalyzer / DUI" }, { code: "10-90", meaning: "Potential Robbery/Burglary" },
+                { code: "10-91", meaning: "Reckless Driver" }, { code: "10-95", meaning: "Subject in Custody" },
+                { code: "10-96", meaning: "Mental Subject" }, { code: "10-98", meaning: "Prison/Jail Break" },
+                { code: "10-99", meaning: "Stolen Vehicle" }, { code: "Code Blue", meaning: "Disengage - Meet at VPD" },
+                { code: "Code 2", meaning: "Semi-Urgent (Lights, no sirens)" }, { code: "Code 3", meaning: "Urgent (Lights & sirens)" },
+                { code: "Code 0", meaning: "Headpop" }, { code: "Code 4", meaning: "Scene Clear" },
+                { code: "Code 5", meaning: "Felony Traffic Stop" }, { code: "Code 6", meaning: "Investigating" },
+                { code: "Signal 11", meaning: "Running Radar" }, { code: "Signal 100", meaning: "Active Scene - Hold RTO Traffic" },
+                { code: "Signal 2", meaning: "Dispatch Unavailable" }, { code: "Signal 3", meaning: "Supervisors Available" }
+            ];
+
+            function generateQuizQuestions(data) {
+                const allMeanings = data.map(item => item.meaning);
+                return data.map(item => {
+                    const correctAnswer = item.meaning;
+                    let options = [correctAnswer];
+                    while (options.length < 4 && options.length < allMeanings.length) {
+                        const randomMeaning = allMeanings[Math.floor(Math.random() * allMeanings.length)];
+                        if (!options.includes(randomMeaning)) {
+                            options.push(randomMeaning);
+                        }
+                    }
+                    for (let i = options.length - 1; i > 0; i--) {
+                        const j = Math.floor(Math.random() * (i + 1));
+                        [options[i], options[j]] = [options[j], options[i]];
+                    }
+                    return {
+                        question: `What is the meaning of code "${item.code}"?`,
+                        options: options,
+                        answer: correctAnswer,
+                        explanation: `"${item.code}" means "${item.meaning}".`
+                    };
+                });
+            }
+
+            const allQuestionsRaw = generateQuizQuestions(codesData);
+            
+            let allQuestions = [];
+            let currentQuestions = [];
+            let currentQuestionIndex = 0;
+            let currentView = 'all';
+
+            const PROGRESS_KEY = '10CodesQuizProgress';
+
+            function saveProgress() {
+                localStorage.setItem(PROGRESS_KEY, JSON.stringify(allQuestions));
+            }
+
+            function loadProgress() {
+                const savedProgress = localStorage.getItem(PROGRESS_KEY);
+                if (savedProgress) {
+                    allQuestions = JSON.parse(savedProgress);
+                } else {
+                    allQuestions = allQuestionsRaw.map((q, index) => ({ 
+                        ...q, 
+                        id: index, 
+                        favorited: false, 
+                        completed: false,
+                        isAnswered: false,
+                        userChoice: null,
+                        answeredCorrectly: null
+                    }));
+                }
+            }
+
+            // DOM Elements
+            const questionTextEl = document.getElementById('question-text');
+            const optionsContainer = document.getElementById('options-container');
+            const answerContainer = document.getElementById('answer-container');
+            const correctAnswerEl = document.getElementById('correct-answer');
+            const explanationEl = document.getElementById('explanation');
+            const questionNumberEl = document.getElementById('question-number');
+            const totalQuestionsEl = document.getElementById('total-questions');
+            const progressBar = document.getElementById('progress-bar');
+            const messageContainer = document.getElementById('message-container');
+            const questionArea = document.getElementById('question-area');
+            const questionHeader = document.getElementById('question-header');
+            const navigationButtons = document.querySelector('.mt-8');
+            const scorePercentageEl = document.getElementById('score-percentage');
+            const correctAnswersEl = document.getElementById('correct-answers');
+            const answeredQuestionsEl = document.getElementById('answered-questions');
+
+            // Buttons
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const shuffleBtn = document.getElementById('shuffle-btn');
+            const favoriteBtn = document.getElementById('favorite-btn');
+            const viewAllBtn = document.getElementById('view-all-btn');
+            const viewFavoritesBtn = document.getElementById('view-favorites-btn');
+            const viewIncorrectBtn = document.getElementById('view-incorrect-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const favoritesCountEl = document.getElementById('favorites-count');
+            const incorrectCountEl = document.getElementById('incorrect-count');
+
+            function updateCounters() {
+                const favCount = allQuestions.filter(q => q.favorited).length;
+                favoritesCountEl.textContent = favCount;
+                const incorrectCount = allQuestions.filter(q => q.isAnswered && !q.answeredCorrectly).length;
+                incorrectCountEl.textContent = incorrectCount;
+            }
+
+            function updateScoreDisplay() {
+                const answeredQuestions = allQuestions.filter(q => q.isAnswered);
+                const correctAnswers = answeredQuestions.filter(q => q.answeredCorrectly).length;
+                const totalAnswered = answeredQuestions.length;
+                const percentage = totalAnswered > 0 ? Math.round((correctAnswers / totalAnswered) * 100) : 0;
+                scorePercentageEl.textContent = percentage;
+                correctAnswersEl.textContent = correctAnswers;
+                answeredQuestionsEl.textContent = totalAnswered;
+            }
+
+            function toggleFavorite() {
+                const question = currentQuestions[currentQuestionIndex];
+                if (!question) return;
+                const originalQuestion = allQuestions.find(q => q.id === question.id);
+                originalQuestion.favorited = !originalQuestion.favorited;
+                updateCounters();
+                updateFavoriteButtonState();
+                 if (currentView === 'favorites' && !originalQuestion.favorited) {
+                    currentQuestions.splice(currentQuestionIndex, 1);
+                    if (currentQuestionIndex >= currentQuestions.length) {
+                        currentQuestionIndex = Math.max(0, currentQuestions.length - 1);
+                    }
+                    loadQuestion();
+                }
+                saveProgress();
+            }
+            
+            function updateFavoriteButtonState() {
+                const question = currentQuestions[currentQuestionIndex];
+                if (question) {
+                    const originalQuestion = allQuestions.find(q => q.id === question.id);
+                    favoriteBtn.classList.toggle('favorited', originalQuestion.favorited);
+                } else {
+                     favoriteBtn.classList.remove('favorited');
+                }
+            }
+
+            function displayMessage(message) {
+                messageContainer.textContent = message;
+                messageContainer.classList.remove('hidden');
+                questionArea.classList.add('hidden');
+                questionHeader.classList.add('hidden');
+                navigationButtons.style.display = 'none';
+                answerContainer.classList.add('hidden');
+            }
+
+            function showQuizArea() {
+                messageContainer.classList.add('hidden');
+                questionArea.classList.remove('hidden');
+                questionHeader.classList.remove('hidden');
+                navigationButtons.style.display = 'flex';
+            }
+
+            function handleOptionClick(event) {
+                const selectedButton = event.target.closest('button');
+                const question = currentQuestions[currentQuestionIndex];
+                if (!selectedButton || (originalQuestion && originalQuestion.isAnswered)) return;
+
+                const originalQuestion = allQuestions.find(q => q.id === question.id);
+                originalQuestion.isAnswered = true;
+                const selectedAnswer = selectedButton.textContent;
+                originalQuestion.userChoice = selectedAnswer;
+                originalQuestion.answeredCorrectly = selectedAnswer === question.answer;
+
+                showAnswerAndFeedback();
+                updateScoreDisplay();
+                updateCounters();
+                saveProgress();
+            }
+
+            function showAnswerAndFeedback() {
+                const question = currentQuestions[currentQuestionIndex];
+                const originalQuestion = allQuestions.find(q => q.id === question.id);
+                if (!originalQuestion) return;
+
+                correctAnswerEl.textContent = question.answer;
+                explanationEl.innerHTML = question.explanation;
+                answerContainer.classList.remove('hidden');
+
+                const optionButtons = optionsContainer.querySelectorAll('.option-btn');
+                optionButtons.forEach(button => {
+                    button.disabled = true;
+                    const optionText = button.textContent;
+                    if (optionText === question.answer) {
+                        button.classList.add('correct-answer');
+                    }
+                    if (optionText === originalQuestion.userChoice && !originalQuestion.answeredCorrectly) {
+                        button.classList.add('incorrect-answer');
+                    }
+                });
+            }
+
+            function loadQuestion() {
+                if (currentQuestions.length === 0 || currentQuestionIndex >= currentQuestions.length) {
+                     if (currentView === 'favorites') displayMessage("You haven't favorited any questions yet.");
+                     else if (currentView === 'incorrect') displayMessage("You have no incorrect answers to review. Great job!");
+                     else if (currentView === 'unseen' && allQuestions.every(q => q.completed)) displayMessage("You have completed all questions! Reset to start over.");
+                     else displayMessage("No questions available in this view.");
+                    return;
+                }
+                showQuizArea();
+                answerContainer.classList.add('hidden');
+
+                const question = currentQuestions[currentQuestionIndex];
+                const originalQuestion = allQuestions.find(q => q.id === question.id);
+
+                if(originalQuestion) originalQuestion.completed = true;
+
+                questionTextEl.textContent = question.question;
+                optionsContainer.innerHTML = '';
+                
+                question.options.forEach(option => {
+                    const button = document.createElement('button');
+                    button.textContent = option;
+                    button.classList.add('w-full', 'text-left', 'p-4', 'bg-gray-100', 'hover:bg-gray-200', 'rounded-lg', 'transition', 'option-btn');
+                    button.addEventListener('click', handleOptionClick);
+                    optionsContainer.appendChild(button);
+                });
+                
+                if (originalQuestion && originalQuestion.isAnswered) {
+                    showAnswerAndFeedback();
+                }
+
+                questionNumberEl.textContent = currentQuestionIndex + 1;
+                totalQuestionsEl.textContent = currentQuestions.length;
+                progressBar.style.width = currentQuestions.length > 0 ? `${((currentQuestionIndex + 1) / currentQuestions.length) * 100}%` : '0%';
+
+                prevBtn.disabled = currentQuestionIndex === 0;
+                nextBtn.disabled = currentQuestionIndex === currentQuestions.length - 1;
+                prevBtn.classList.toggle('opacity-50', prevBtn.disabled);
+                nextBtn.classList.toggle('opacity-50', nextBtn.disabled);
+                
+                updateFavoriteButtonState();
+                saveProgress(); 
+            }
+
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+            }
+
+            // Event Listeners for controls
+            prevBtn.addEventListener('click', () => { if (currentQuestionIndex > 0) { currentQuestionIndex--; loadQuestion(); } });
+            nextBtn.addEventListener('click', () => { if (currentQuestionIndex < currentQuestions.length - 1) { currentQuestionIndex++; loadQuestion(); } });
+            favoriteBtn.addEventListener('click', toggleFavorite);
+            
+            resetBtn.addEventListener('click', () => {
+                localStorage.removeItem(PROGRESS_KEY);
+                location.reload();
+            });
+
+            shuffleBtn.addEventListener('click', () => {
+                currentView = 'unseen';
+                let unseenQuestions = allQuestions.filter(q => !q.completed);
+                if (unseenQuestions.length === 0) {
+                     displayMessage("You have viewed all questions! Use the 'Reset Progress' button to start over.");
+                     return;
+                }
+                shuffleArray(unseenQuestions);
+                currentQuestions = unseenQuestions;
+                currentQuestionIndex = 0;
+                loadQuestion();
+            });
+
+            viewAllBtn.addEventListener('click', () => {
+                currentView = 'all';
+                currentQuestions = [...allQuestions];
+                currentQuestionIndex = 0;
+                loadQuestion();
+            });
+
+            viewFavoritesBtn.addEventListener('click', () => {
+                currentView = 'favorites';
+                currentQuestions = allQuestions.filter(q => q.favorited);
+                currentQuestionIndex = 0;
+                loadQuestion();
+            });
+
+            viewIncorrectBtn.addEventListener('click', () => {
+                currentView = 'incorrect';
+                currentQuestions = allQuestions.filter(q => q.isAnswered && !q.answeredCorrectly);
+                currentQuestionIndex = 0;
+                loadQuestion();
+            });
+            
+            // Initial load
+            loadProgress();
+            currentQuestions = [...allQuestions];
+            totalQuestionsEl.textContent = allQuestions.length;
+            updateScoreDisplay();
+            updateCounters();
+            loadQuestion();
+        });
+    </script>
+</body>
+</html>
