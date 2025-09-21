@@ -10,7 +10,7 @@
             background-color: transparent;
             color: #ffffff;
             font-family: 'Segoe UI', Roboto, Arial, sans-serif; /* Modern, clean font */
-            font-size: 26px; /* Optimized font size for 3840x2160 resolution */
+            font-size: 20px; /* Set a single base font size for all codes */
             text-shadow: 2px 2px 4px #000000, -2px -2px 4px #000000, 2px -2px 4px #000000, -2px 2px 4px #000000;
             margin: 0;
             padding: 0;
@@ -20,7 +20,7 @@
         /* Main container that holds all the code lists. It's fixed to the top of the viewport. */
         .overlay-container {
             position: fixed;
-            top: 10px; /* Moved up slightly to accommodate more lines */
+            top: 10px;
             left: 0;
             width: 100%;
             padding: 0 15px; /* Reduced padding to widen the content area */
@@ -37,14 +37,8 @@
             flex-wrap: wrap; /* Allows items to wrap if the screen is narrow */
             justify-content: center;
             align-items: center;
-            gap: 12px 25px; /* Adjusted vertical and horizontal gap between codes */
-            width: 100%;
-        }
-
-        /* Styling for the less-common codes with a smaller font */
-        .codes-line.less-common {
-            font-size: 20px; /* Smaller font size */
             gap: 10px 20px; /* Tighter gap for smaller text */
+            width: 100%;
         }
 
         /* Styling for an individual code and its meaning */
@@ -69,8 +63,20 @@
 
     <div class="overlay-container">
         
-        <!-- Lines for all other codes, with a smaller font -->
-        <div class="codes-line less-common">
+        <!-- All codes are now in a single paragraph/line container -->
+        <div class="codes-line">
+            <!-- Essential Codes (Bolded) -->
+            <div class="code-item essential"><span class="code">10-4</span>Ack</div>
+            <div class="code-item essential"><span class="code">10-7</span>Out of Service</div>
+            <div class="code-item essential"><span class="code">10-8</span>In Service</div>
+            <div class="code-item essential"><span class="code">10-20</span>Location</div>
+            <div class="code-item essential"><span class="code">10-23</span>On Scene</div>
+            <div class="code-item essential"><span class="code">10-76</span>En Route</div>
+            <div class="code-item essential"><span class="code">10-80</span>Pursuit</div>
+            <div class="code-item essential"><span class="code">Code 3</span>Urgent</div>
+            <div class="code-item essential"><span class="code">Code 4</span>Scene Clear</div>
+            <div class="code-item essential"><span class="code">Code 5</span>Felony Stop</div>
+            <!-- Other Codes -->
             <div class="code-item"><span class="code">10-2</span>Radio Check</div>
             <div class="code-item"><span class="code">10-6</span>Busy</div>
             <div class="code-item"><span class="code">10-16</span>Passive Resist</div>
@@ -104,24 +110,6 @@
             <div class="code-item"><span class="code">Code 0</span>Headpop</div>
             <div class="code-item"><span class="code">Code 6</span>Investigating</div>
             <div class="code-item"><span class="code">Code Blue</span>Disengage</div>
-        </div>
-
-        <!-- Line 1: The most essential codes for quick reference. These are bolded. -->
-        <div class="codes-line">
-            <div class="code-item essential"><span class="code">10-4</span>Ack</div>
-            <div class="code-item essential"><span class="code">10-7</span>Out of Service</div>
-            <div class="code-item essential"><span class="code">10-8</span>In Service</div>
-            <div class="code-item essential"><span class="code">10-20</span>Location</div>
-            <div class="code-item essential"><span class="code">10-23</span>On Scene</div>
-            <div class="code-item essential"><span class="code">10-76</span>En Route</div>
-            <div class="code-item essential"><span class="code">10-80</span>Pursuit</div>
-            <div class="code-item essential"><span class="code">Code 3</span>Urgent</div>
-            <div class="code-item essential"><span class="code">Code 4</span>Scene Clear</div>
-            <div class="code-item essential"><span class="code">Code 5</span>Felony Stop</div>
-        </div>
-
-        <!-- Line 2: Other common and important codes -->
-        <div class="codes-line">
             <div class="code-item"><span class="code">10-9</span>Repeat</div>
             <div class="code-item"><span class="code">10-11</span>Traffic Stop</div>
             <div class="code-item"><span class="code">10-15</span>Uncooperative</div>
@@ -140,7 +128,6 @@
             <div class="code-item"><span class="code">10-99</span>Stolen Veh</div>
             <div class="code-item"><span class="code">Signal 100</span>Hold Radio</div>
         </div>
-
     </div>
 
 </body>
