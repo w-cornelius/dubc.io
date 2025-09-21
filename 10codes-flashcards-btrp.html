@@ -3,13 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>10 Codes Flashcards</title>
+    <title>10 Codes Flashcards - dubhub</title>
+    <meta name="keywords" content="dub, dubb, dubbb, dubbb_, dubc, dubhub, dubbb_c, social, links, gta rp, 10 codes, flashcards">
+    
+    <!-- Favicon Configuration -->
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="android-chrome-512x512.png">
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
+        /* General Body Styling & Font */
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #0a0a0a;
+            color: #e5e7eb; /* Default text color to gray-200 */
         }
+
+        /* --- Radiating Background Animation --- */
+        body::before {
+            content: '';
+            position: fixed;
+            z-index: -1;
+            top: 50%;
+            left: 50%;
+            width: 80vmax;
+            height: 80vmax;
+            border-radius: 50%;
+            background-color: rgba(120, 50, 220, 0.25);
+            animation: radiate 8s ease-in-out infinite;
+            filter: blur(100px);
+        }
+
+        @keyframes radiate {
+            0%, 100% {
+                transform: translate(-50%, -50%) scale(0.95);
+                opacity: 0.9;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.1);
+                opacity: 1;
+            }
+        }
+
+        /* --- Glassmorphism Effect --- */
+        .glassmorphic {
+            background: rgba(10, 10, 10, 0.5);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        /* --- Entrance Animations --- */
+        @keyframes fade-in {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        @keyframes fade-slide-up {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-in { animation: fade-in 0.8s ease-out forwards; }
+        .animate-fade-slide-up {
+            opacity: 0;
+            animation: fade-slide-up 0.6s ease-out forwards;
+        }
+        
+        /* --- Flashcard Specific Styles --- */
         .favorite-btn.favorited svg {
             fill: #facc15; /* yellow-400 */
             stroke: #facc15;
@@ -37,77 +109,98 @@
             align-items: center;
             padding: 2rem;
             border-radius: 1rem;
-            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
         }
         .flashcard-front {
-            background-color: white;
+            /* Using glassmorphic for the front */
         }
         .flashcard-back {
-            background-color: #e0f2fe; /* sky-100 */
+            /* Using a slightly different background for the back */
+            background: rgba(30, 30, 50, 0.6);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
             transform: rotateY(180deg);
         }
+        
+        /* Custom scrollbar for notepad */
+        textarea::-webkit-scrollbar { width: 8px; }
+        textarea::-webkit-scrollbar-track { background: #1a202c; }
+        textarea::-webkit-scrollbar-thumb { background-color: #4a5568; border-radius: 4px; border: 2px solid #1a202c; }
+        textarea::-webkit-scrollbar-thumb:hover { background: #718096; }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800">
+<body class="text-white antialiased">
 
-    <div class="grid grid-cols-1 lg:grid-cols-[1fr_2.5fr] gap-4 sm:gap-6 md:gap-8 p-4 sm:p-6 md:p-8 min-h-screen">
+    <div class="relative min-h-screen flex flex-col items-center p-4 sm:p-6 md:p-8">
         
-        <!-- Left Column: Notepad -->
-        <div id="notepad-container" class="bg-white p-4 rounded-2xl shadow-lg lg:sticky top-8 self-start h-[calc(100vh-4rem)] flex flex-col">
-            <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">Scratch Pad</h3>
-            <textarea id="notepad" class="w-full h-full flex-grow bg-yellow-50 border-yellow-200 border rounded-lg p-3 focus:ring-2 focus:ring-yellow-400 focus:outline-none" placeholder="Take your notes here..."></textarea>
-        </div>
-
-        <!-- Center Column: Main Flashcard Content -->
-        <div class="w-full max-w-4xl mx-auto">
-            <header class="text-center mb-8">
-                <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">10 Codes Flashcards</h1>
-                <p class="text-gray-600 mt-2">Test your knowledge of police 10 codes.</p>
+        <!-- Back Button -->
+        <a href="10-codes.html" class="absolute top-6 left-6 glassmorphic rounded-full p-3 hover:bg-white/10 transition-colors z-30 animate-fade-in">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+        </a>
+        
+        <div class="relative z-10 w-full max-w-7xl mx-auto pt-20 pb-24">
+            <header class="text-center mb-10 animate-fade-in">
+                <h1 class="text-3xl sm:text-4xl font-bold text-white tracking-tight">10 Codes Flashcards</h1>
+                <p class="text-gray-300 mt-2 text-lg">Test your knowledge of police 10 codes.</p>
             </header>
 
-            <div class="bg-white p-6 rounded-2xl shadow-lg mb-6">
-                <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
-                     <button id="shuffle-btn" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300">
-                        Shuffle Cards
-                    </button>
-                    <div class="flex flex-wrap gap-2 w-full sm:w-auto justify-center">
-                        <button id="view-all-btn" class="flex-1 sm:flex-none bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2.5 px-4 rounded-lg transition">View All</button>
-                        <button id="view-favorites-btn" class="flex-1 sm:flex-none bg-yellow-200 hover:bg-yellow-300 text-yellow-800 font-bold py-2.5 px-4 rounded-lg transition">Favorites (<span id="favorites-count">0</span>)</button>
-                    </div>
-                     <button id="reset-btn" class="w-full sm:w-auto bg-gray-700 hover:bg-gray-800 text-white font-bold py-2.5 px-6 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-300 mt-4 sm:mt-0">
-                        Reset Progress
-                    </button>
-                </div>
-            </div>
-
-            <div id="flashcard-ui-container">
-                <div class="flex justify-between items-center mb-4">
-                     <p class="text-lg font-semibold text-gray-900">Card <span id="card-number">1</span> of <span id="total-cards">66</span></p>
-                     <button id="favorite-btn" class="favorite-btn text-gray-400 hover:text-yellow-400 p-1 rounded-full transition-colors">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                    </button>
-                </div>
-
-                <div class="flashcard-container h-64 md:h-80 cursor-pointer">
-                    <div id="flashcard" class="flashcard">
-                        <div class="flashcard-face flashcard-front">
-                            <p id="flashcard-front-text" class="text-3xl md:text-4xl font-bold"></p>
-                        </div>
-                        <div class="flashcard-face flashcard-back">
-                            <p id="flashcard-back-text" class="text-2xl md:text-3xl text-center"></p>
+            <main class="grid grid-cols-1 lg:grid-cols-[2.5fr_1fr] gap-8">
+                
+                <!-- Center Column: Main Flashcard Content -->
+                <div class="flex flex-col gap-6">
+                    <div class="glassmorphic p-4 rounded-xl shadow-lg animate-fade-slide-up" style="animation-delay: 0.1s;">
+                        <div class="flex flex-wrap justify-center items-center gap-4">
+                            <button id="shuffle-btn" class="flex-1 sm:flex-none bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 px-6 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-teal-400/50">Shuffle</button>
+                            <button id="view-all-btn" class="flex-1 sm:flex-none bg-white/10 hover:bg-white/20 text-white font-bold py-2.5 px-4 rounded-lg transition">View All</button>
+                            <button id="view-favorites-btn" class="flex-1 sm:flex-none bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-300 font-bold py-2.5 px-4 rounded-lg transition">Favorites (<span id="favorites-count">0</span>)</button>
+                            <button id="reset-btn" class="flex-1 sm:flex-none bg-red-600/80 hover:bg-red-600 text-white font-bold py-2.5 px-6 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-red-400/50">Reset</button>
                         </div>
                     </div>
-                </div>
-                <p class="text-center text-gray-500 mt-2">Click card to flip</p>
 
-                <div id="message-container" class="hidden text-center text-gray-500 my-8"></div>
+                    <div id="flashcard-ui-container" class="animate-fade-slide-up" style="animation-delay: 0.2s;">
+                        <div class="flex justify-between items-center mb-4 px-2">
+                            <p class="text-lg font-semibold text-gray-200">Card <span id="card-number">1</span> of <span id="total-cards">66</span></p>
+                            <button id="favorite-btn" class="favorite-btn text-gray-400 hover:text-yellow-400 p-1 rounded-full transition-colors">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                            </button>
+                        </div>
 
-                <div class="mt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-                    <button id="prev-btn" class="w-full sm:w-auto bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-200">Previous</button>
-                    <button id="next-btn" class="w-full sm:w-auto bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-200">Next</button>
+                        <div class="flashcard-container h-64 md:h-80 cursor-pointer">
+                            <div id="flashcard" class="flashcard">
+                                <div class="flashcard-face flashcard-front glassmorphic">
+                                    <p id="flashcard-front-text" class="text-3xl md:text-5xl font-bold text-white"></p>
+                                </div>
+                                <div class="flashcard-face flashcard-back">
+                                    <p id="flashcard-back-text" class="text-2xl md:text-3xl text-center text-gray-200"></p>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="text-center text-gray-400 mt-2">Click card to flip</p>
+
+                        <div id="message-container" class="hidden text-center text-gray-400 my-8 glassmorphic p-8 rounded-xl"></div>
+
+                        <div class="mt-8 flex justify-between items-center gap-4">
+                            <button id="prev-btn" class="w-1/2 bg-white/10 hover:bg-white/20 text-white font-bold py-3 px-6 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-400/50">Previous</button>
+                            <button id="next-btn" class="w-1/2 bg-white/10 hover:bg-white/20 text-white font-bold py-3 px-6 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-400/50">Next</button>
+                        </div>
+                    </div>
                 </div>
-            </div>
+                
+                <!-- Right Column: Notepad -->
+                <div id="notepad-container" class="glassmorphic p-4 rounded-2xl shadow-lg lg:sticky top-24 self-start h-[calc(100vh-8rem)] flex-col hidden lg:flex animate-fade-slide-up" style="animation-delay: 0.3s;">
+                    <h3 class="text-xl font-bold text-white mb-4 text-center">Scratch Pad</h3>
+                    <textarea id="notepad" class="w-full h-full flex-grow bg-black/30 border-white/20 border rounded-lg p-3 focus:ring-2 focus:ring-teal-400 focus:outline-none text-gray-200" placeholder="Take your notes here..."></textarea>
+                </div>
+
+            </main>
         </div>
+        
+        <!-- Footer -->
+        <footer class="absolute bottom-6 w-full text-center text-gray-500 text-sm animate-fade-in z-20">
+            <p>&copy; 2025 dubbb_c. All Rights Reserved.</p>
+        </footer>
     </div>
 
     <script>
@@ -225,12 +318,12 @@
             function displayMessage(message) {
                 messageContainer.textContent = message;
                 messageContainer.classList.remove('hidden');
-                flashcardUiContainer.style.display = 'none';
+                document.getElementById('flashcard-ui-container').style.display = 'none';
             }
 
             function showFlashcardArea() {
                 messageContainer.classList.add('hidden');
-                flashcardUiContainer.style.display = 'block';
+                document.getElementById('flashcard-ui-container').style.display = 'block';
             }
 
             function loadCard() {
@@ -270,13 +363,15 @@
             flashcard.addEventListener('click', () => {
                 flashcard.classList.toggle('is-flipped');
             });
-            prevBtn.addEventListener('click', () => { if (currentCardIndex > 0) { currentCardIndex--; loadCard(); } });
-            nextBtn.addEventListener('click', () => { if (currentCardIndex < currentCards.length - 1) { currentCardIndex++; loadCard(); } });
+            prevBtn.addEventListener('click', () => { if (!prevBtn.disabled) { currentCardIndex--; loadCard(); } });
+            nextBtn.addEventListener('click', () => { if (!nextBtn.disabled) { currentCardIndex++; loadCard(); } });
             favoriteBtn.addEventListener('click', toggleFavorite);
             
             resetBtn.addEventListener('click', () => {
-                localStorage.removeItem(PROGRESS_KEY);
-                location.reload();
+                if(confirm('Are you sure you want to reset all progress? This will un-favorite all cards.')) {
+                    localStorage.removeItem(PROGRESS_KEY);
+                    location.reload();
+                }
             });
 
             shuffleBtn.addEventListener('click', () => {
