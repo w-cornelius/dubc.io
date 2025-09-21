@@ -23,12 +23,12 @@
             top: 10px; /* Moved up slightly to accommodate more lines */
             left: 0;
             width: 100%;
-            padding: 0 20px;
+            padding: 0 15px; /* Reduced padding to widen the content area */
             box-sizing: border-box; /* Ensures padding is included in the width */
             display: flex;
             flex-direction: column;
             align-items: center; /* Center the lines of codes horizontally */
-            gap: 12px; /* Space between each line of codes */
+            gap: 15px; /* Increased gap between lines for readability */
         }
 
         /* Styling for a single horizontal line of codes */
@@ -37,14 +37,14 @@
             flex-wrap: wrap; /* Allows items to wrap if the screen is narrow */
             justify-content: center;
             align-items: center;
-            gap: 15px 30px; /* Vertical and horizontal gap between codes */
+            gap: 12px 25px; /* Adjusted vertical and horizontal gap between codes */
             width: 100%;
         }
 
         /* Styling for the less-common codes with a smaller font */
         .codes-line.less-common {
             font-size: 20px; /* Smaller font size */
-            gap: 15px 25px; /* Slightly tighter gap */
+            gap: 10px 20px; /* Tighter gap for smaller text */
         }
 
         /* Styling for an individual code and its meaning */
@@ -82,25 +82,23 @@
             <div class="code-item"><span class="code">10-30</span>Unnec. Radio Use</div>
             <div class="code-item"><span class="code">10-31</span>Unit (C1)</div>
             <div class="code-item"><span class="code">10-32</span>Units (C2)</div>
-        </div>
-        <div class="codes-line less-common">
             <div class="code-item"><span class="code">10-35</span>Major Crime</div>
             <div class="code-item"><span class="code">10-36</span>Ped Stop</div>
             <div class="code-item"><span class="code">10-37</span>Illegal Park</div>
             <div class="code-item"><span class="code">10-41</span>Start of Duty</div>
-            <div class="code-item"><span class="code">10-42</span>End of Duty</div>
-            <div class="code-item"><span class="code">10-43</span>Information</div>
-            <div class="code-item"><span class="code">10-55</span>GTA</div>
-            <div class="code-item"><span class="code">10-56</span>Intox. Ped</div>
-            <div class="code-item"><span class="code">10-58</span>Traffic Control</div>
-            <div class="code-item"><span class="code">10-59</span>Escort</div>
-            <div class="code-item"><span class="code">10-60</span>Motorist Asst.</div>
         </div>
         <div class="codes-line less-common">
+            <div class="code-item"><span class="code">10-42</span>End of Duty</div>
+            <div class="code-item"><span class="code">10-43</span>Info</div>
+            <div class="code-item"><span class="code">10-55</span>GTA</div>
+            <div class="code-item"><span class="code">10-56</span>Intox. Ped</div>
+            <div class="code-item"><span class="code">10-58</span>Traffic Ctrl</div>
+            <div class="code-item"><span class="code">10-59</span>Escort</div>
+            <div class="code-item"><span class="code">10-60</span>Motorist Asst.</div>
             <div class="code-item"><span class="code">10-68</span>Dispatch Info</div>
             <div class="code-item"><span class="code">10-73</span>Injured Person</div>
             <div class="code-item"><span class="code">10-77</span>ETA</div>
-            <div class="code-item"><span class="code">10-78</span>Detective Needed</div>
+            <div class="code-item"><span class="code">10-78</span>Detective</div>
             <div class="code-item"><span class="code">10-79</span>DOA</div>
             <div class="code-item"><span class="code">10-81</span>DUI Test</div>
             <div class="code-item"><span class="code">10-90</span>Robbery/Burg.</div>
@@ -128,25 +126,21 @@
         <div class="codes-line">
             <div class="code-item"><span class="code">10-9</span>Repeat</div>
             <div class="code-item"><span class="code">10-11</span>Traffic Stop</div>
+            <div class="code-item"><span class="code">10-15</span>Uncooperative</div>
             <div class="code-item"><span class="code">10-22</span>Disregard</div>
+            <div class="code-item"><span class="code">10-26</span>Detaining</div>
             <div class="code-item"><span class="code">10-29</span>Check Wanted</div>
+            <div class="code-item"><span class="code">10-34</span>Riot</div>
+            <div class="code-item"><span class="code">10-38</span>Susp. Vehicle</div>
             <div class="code-item"><span class="code">10-50</span>Collision</div>
             <div class="code-item"><span class="code">10-52</span>EMS/Fire</div>
             <div class="code-item"><span class="code">10-57</span>Hit & Run</div>
             <div class="code-item"><span class="code">10-70</span>Foot Pursuit</div>
+            <div class="code-item"><span class="code">10-91</span>Reckless Driver</div>
             <div class="code-item"><span class="code">10-95</span>In Custody</div>
-            <div class="code-item"><span class="code">10-99</span>Stolen Vehicle</div>
-        </div>
-
-        <!-- Line 3: Informational and less frequent codes -->
-        <div class="codes-line">
-             <div class="code-item"><span class="code">10-15</span>Uncooperative</div>
-             <div class="code-item"><span class="code">10-26</span>Detaining</div>
-             <div class="code-item"><span class="code">10-34</span>Riot</div>
-             <div class="code-item"><span class="code">10-38</span>Suspicious Vehicle</div>
-             <div class="code-item"><span class="code">10-91</span>Reckless Driver</div>
-             <div class="code-item"><span class="code">10-96</span>Mental Subject</div>
-             <div class="code-item"><span class="code">Signal 100</span>Hold Radio Traffic</div>
+            <div class="code-item"><span class="code">10-96</span>Mental Subject</div>
+            <div class="code-item"><span class="code">10-99</span>Stolen Veh</div>
+            <div class="code-item"><span class="code">Signal 100</span>Hold Radio</div>
         </div>
 
     </div>
