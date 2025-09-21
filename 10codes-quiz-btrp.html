@@ -3,101 +3,163 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>10 Codes Quiz</title>
+    <title>10 Codes Quiz - dubhub</title>
+    <meta name="keywords" content="dub, dubb, dubbb, dubbb_, dubc, dubhub, dubbb_c, social, links, gta rp, 10 codes, quiz">
+    
+    <!-- Favicon Configuration -->
+    <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="android-chrome-192x192.png">
+    <link rel="icon" type="image/png" sizes="512x512" href="android-chrome-512x512.png">
+    <link rel="shortcut icon" href="favicon.ico">
+    
+    <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
+        /* General Body Styling & Font */
         body {
             font-family: 'Inter', sans-serif;
+            background-color: #0a0a0a;
+            color: #e5e7eb;
         }
-        .favorite-btn.favorited svg {
-            fill: #facc15; /* yellow-400 */
-            stroke: #facc15;
+
+        /* --- Radiating Background Animation --- */
+        body::before {
+            content: '';
+            position: fixed;
+            z-index: -1;
+            top: 50%;
+            left: 50%;
+            width: 80vmax;
+            height: 80vmax;
+            border-radius: 50%;
+            background-color: rgba(120, 50, 220, 0.25);
+            animation: radiate 8s ease-in-out infinite;
+            filter: blur(100px);
         }
-        .option-btn.correct-answer {
-            background-color: #d1fae5; /* green-100 */
-            border: 2px solid #10b981; /* green-500 */
-            color: #065f46; /* green-800 */
+
+        @keyframes radiate {
+            0%, 100% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.9; }
+            50% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
         }
-        .option-btn.incorrect-answer {
-            background-color: #fee2e2; /* red-100 */
-            border: 2px solid #ef4444; /* red-500 */
-            color: #991b1b; /* red-800 */
+
+        /* --- Glassmorphism Effect --- */
+        .glassmorphic {
+            background: rgba(10, 10, 10, 0.5);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
         }
-        .option-btn:disabled {
-            cursor: not-allowed;
-        }
+
+        /* --- Entrance Animations --- */
+        @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fade-slide-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in { animation: fade-in 0.8s ease-out forwards; }
+        .animate-fade-slide-up { opacity: 0; animation: fade-slide-up 0.6s ease-out forwards; }
+        
+        /* --- Quiz Specific Styles --- */
+        .favorite-btn.favorited svg { fill: #facc15; stroke: #facc15; }
+        .option-btn { background-color: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .option-btn:hover:not(:disabled) { background-color: rgba(255, 255, 255, 0.1); }
+        .option-btn.correct-answer { background-color: rgba(16, 185, 129, 0.3); border-color: #10b981; color: #d1fae5; }
+        .option-btn.incorrect-answer { background-color: rgba(239, 68, 68, 0.3); border-color: #ef4444; color: #fee2e2; }
+        .option-btn:disabled { cursor: not-allowed; opacity: 0.7; }
+
+        /* Custom scrollbar for notepad */
+        textarea::-webkit-scrollbar { width: 8px; }
+        textarea::-webkit-scrollbar-track { background: #1a202c; }
+        textarea::-webkit-scrollbar-thumb { background-color: #4a5568; border-radius: 4px; border: 2px solid #1a202c; }
+        textarea::-webkit-scrollbar-thumb:hover { background: #718096; }
     </style>
 </head>
-<body class="bg-gray-100 text-gray-800">
+<body class="text-white antialiased">
 
-    <div class="grid grid-cols-1 lg:grid-cols-[1fr_2.5fr] gap-4 sm:gap-6 md:gap-8 p-4 sm:p-6 md:p-8 min-h-screen">
+    <div class="relative min-h-screen flex flex-col items-center p-4 sm:p-6 md:p-8">
         
-        <!-- Left Column: Notepad -->
-        <div id="notepad-container" class="bg-white p-4 rounded-2xl shadow-lg lg:sticky top-8 self-start h-[calc(100vh-4rem)] flex flex-col">
-            <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">Scratch Pad</h3>
-            <textarea id="notepad" class="w-full h-full flex-grow bg-yellow-50 border-yellow-200 border rounded-lg p-3 focus:ring-2 focus:ring-yellow-400 focus:outline-none" placeholder="Take your notes here..."></textarea>
-        </div>
+        <!-- Back Button -->
+        <a href="10-codes.html" class="absolute top-6 left-6 glassmorphic rounded-full p-3 hover:bg-white/10 transition-colors z-30 animate-fade-in">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+        </a>
 
-        <!-- Center Column: Main Exam Content -->
-        <div class="w-full max-w-4xl mx-auto">
-            <header class="text-center mb-8">
-                <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">10 Codes Quiz</h1>
-                <p class="text-gray-600 mt-2">Test your knowledge of police 10 codes.</p>
+        <div class="relative z-10 w-full max-w-7xl mx-auto pt-20 pb-24">
+             <header class="text-center mb-10 animate-fade-in">
+                <h1 class="text-3xl sm:text-4xl font-bold text-white tracking-tight">10 Codes Quiz</h1>
+                <p class="text-gray-300 mt-2 text-lg">Test your knowledge of police 10 codes.</p>
             </header>
 
-            <div class="bg-white p-6 rounded-2xl shadow-lg mb-6">
-                 <div class="text-center mb-6">
-                    <h2 class="text-2xl font-bold">Score: <span id="score-percentage">0</span>%</h2>
-                    <p class="text-gray-600"><span id="correct-answers">0</span> correct out of <span id="answered-questions">0</span> answered</p>
-                </div>
-                <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
-                     <button id="shuffle-btn" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300">
-                        Shuffle Unseen Questions
-                    </button>
-                    <div class="flex flex-wrap gap-2 w-full sm:w-auto justify-center">
-                        <button id="view-all-btn" class="flex-1 sm:flex-none bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2.5 px-4 rounded-lg transition">View All</button>
-                        <button id="view-favorites-btn" class="flex-1 sm:flex-none bg-yellow-200 hover:bg-yellow-300 text-yellow-800 font-bold py-2.5 px-4 rounded-lg transition">Favorites (<span id="favorites-count">0</span>)</button>
-                        <button id="view-incorrect-btn" class="flex-1 sm:flex-none bg-red-200 hover:bg-red-300 text-red-800 font-bold py-2.5 px-4 rounded-lg transition">Incorrect (<span id="incorrect-count">0</span>)</button>
-                    </div>
-                     <button id="reset-btn" class="w-full sm:w-auto bg-gray-700 hover:bg-gray-800 text-white font-bold py-2.5 px-6 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-300 mt-4 sm:mt-0">
-                        Reset Progress
-                    </button>
-                </div>
-            </div>
-
-            <div id="quiz-container" class="bg-white p-6 sm:p-8 rounded-2xl shadow-lg">
-                <div id="question-header" class="mb-6">
-                     <div class="flex justify-between items-center mb-2">
-                        <p class="text-lg font-semibold text-gray-900">Question <span id="question-number">1</span> of <span id="total-questions">66</span></p>
-                        <button id="favorite-btn" class="favorite-btn text-gray-400 hover:text-yellow-400 p-1 rounded-full transition-colors">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
-                        </button>
-                    </div>
-                    <div class="w-full bg-gray-200 rounded-full h-2.5">
-                        <div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0.5%"></div>
-                    </div>
-                </div>
+            <main class="grid grid-cols-1 lg:grid-cols-[2.5fr_1fr] gap-8">
                 
-                <div id="question-area">
-                    <div id="question-text" class="text-lg text-gray-800 mb-6"></div>
-                    <div id="options-container" class="space-y-4 mb-6"></div>
-                </div>
-                <div id="message-container" class="hidden text-center text-gray-500 my-8"></div>
-                
-                <div id="answer-container" class="hidden p-4 bg-blue-50 border-l-4 border-blue-500 rounded-r-lg mt-6">
-                    <p class="font-bold text-blue-800">Correct Answer:</p>
-                    <p id="correct-answer" class="text-blue-700"></p>
-                    <p class="font-bold mt-4 text-blue-800">Explanation:</p>
-                    <p id="explanation" class="text-blue-700"></p>
+                <!-- Center Column: Main Quiz Content -->
+                <div class="flex flex-col gap-6">
+                    <div class="glassmorphic p-4 rounded-xl shadow-lg animate-fade-slide-up" style="animation-delay: 0.1s;">
+                         <div class="text-center mb-4">
+                            <h2 class="text-2xl font-bold">Score: <span id="score-percentage">0</span>%</h2>
+                            <p class="text-gray-400"><span id="correct-answers">0</span> correct out of <span id="answered-questions">0</span> answered</p>
+                        </div>
+                        <div class="flex flex-wrap justify-center items-center gap-4">
+                            <button id="shuffle-btn" class="flex-1 sm:flex-none bg-teal-600 hover:bg-teal-700 text-white font-bold py-2.5 px-6 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-teal-400/50">Unseen</button>
+                            <button id="view-all-btn" class="flex-1 sm:flex-none bg-white/10 hover:bg-white/20 text-white font-bold py-2.5 px-4 rounded-lg transition">All</button>
+                            <button id="view-favorites-btn" class="flex-1 sm:flex-none bg-yellow-500/20 hover:bg-yellow-500/30 text-yellow-300 font-bold py-2.5 px-4 rounded-lg transition">Favorites (<span id="favorites-count">0</span>)</button>
+                             <button id="view-incorrect-btn" class="flex-1 sm:flex-none bg-red-500/20 hover:bg-red-500/30 text-red-300 font-bold py-2.5 px-4 rounded-lg transition">Incorrect (<span id="incorrect-count">0</span>)</button>
+                            <button id="reset-btn" class="flex-1 sm:flex-none bg-red-600/80 hover:bg-red-600 text-white font-bold py-2.5 px-6 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-red-400/50">Reset</button>
+                        </div>
+                    </div>
+
+                    <div id="quiz-container" class="glassmorphic p-6 sm:p-8 rounded-xl shadow-lg animate-fade-slide-up" style="animation-delay: 0.2s;">
+                        <div id="question-header" class="mb-6">
+                            <div class="flex justify-between items-center mb-2">
+                                <p class="text-lg font-semibold text-gray-200">Question <span id="question-number">1</span> of <span id="total-questions">66</span></p>
+                                <button id="favorite-btn" class="favorite-btn text-gray-400 hover:text-yellow-400 p-1 rounded-full transition-colors">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                                </button>
+                            </div>
+                            <div class="w-full bg-black/30 rounded-full h-2.5">
+                                <div id="progress-bar" class="bg-gradient-to-r from-teal-400 to-purple-500 h-2.5 rounded-full transition-all duration-300" style="width: 0.5%"></div>
+                            </div>
+                        </div>
+                        
+                        <div id="question-area">
+                            <div id="question-text" class="text-xl text-white mb-6"></div>
+                            <div id="options-container" class="space-y-3 mb-6"></div>
+                        </div>
+                        <div id="message-container" class="hidden text-center text-gray-400 my-8 p-8"></div>
+                        
+                        <div id="answer-container" class="hidden p-4 bg-black/20 border-l-4 border-teal-500 rounded-r-lg mt-6">
+                            <p class="font-bold text-teal-300">Correct Answer:</p>
+                            <p id="correct-answer" class="text-gray-200"></p>
+                            <p class="font-bold mt-4 text-teal-300">Explanation:</p>
+                            <p id="explanation" class="text-gray-200"></p>
+                        </div>
+
+                        <div class="mt-8 flex justify-between items-center gap-4">
+                            <button id="prev-btn" class="w-1/2 bg-white/10 hover:bg-white/20 text-white font-bold py-3 px-6 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-400/50">Previous</button>
+                            <button id="next-btn" class="w-1/2 bg-white/10 hover:bg-white/20 text-white font-bold py-3 px-6 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-400/50">Next</button>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="mt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
-                    <button id="prev-btn" class="w-full sm:w-auto bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-200">Previous</button>
-                    <button id="next-btn" class="w-full sm:w-auto bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-200">Next</button>
+                <!-- Right Column: Notepad -->
+                <div id="notepad-container" class="glassmorphic p-4 rounded-2xl shadow-lg lg:sticky top-24 self-start h-[calc(100vh-8rem)] flex-col hidden lg:flex animate-fade-slide-up" style="animation-delay: 0.3s;">
+                    <h3 class="text-xl font-bold text-white mb-4 text-center">Scratch Pad</h3>
+                    <textarea id="notepad" class="w-full h-full flex-grow bg-black/30 border-white/20 border rounded-lg p-3 focus:ring-2 focus:ring-teal-400 focus:outline-none text-gray-200" placeholder="Take your notes here..."></textarea>
                 </div>
-            </div>
+            </main>
         </div>
+        
+        <!-- Footer -->
+        <footer class="absolute bottom-6 w-full text-center text-gray-500 text-sm animate-fade-in z-20">
+            <p>&copy; 2025 dubbb_c. All Rights Reserved.</p>
+        </footer>
     </div>
 
     <script>
@@ -153,10 +215,10 @@
                         [options[i], options[j]] = [options[j], options[i]];
                     }
                     return {
-                        question: `What is the meaning of code "${item.code}"?`,
+                        question: `What is the meaning of code <strong>"${item.code}"</strong>?`,
                         options: options,
                         answer: correctAnswer,
-                        explanation: `"${item.code}" means "${item.meaning}".`
+                        explanation: `<strong>"${item.code}"</strong> means <strong>"${item.meaning}"</strong>.`
                     };
                 });
             }
@@ -183,7 +245,6 @@
                         ...q, 
                         id: index, 
                         favorited: false, 
-                        completed: false,
                         isAnswered: false,
                         userChoice: null,
                         answeredCorrectly: null
@@ -265,7 +326,7 @@
             }
 
             function displayMessage(message) {
-                messageContainer.textContent = message;
+                messageContainer.innerHTML = `<p class="text-xl">${message}</p>`;
                 messageContainer.classList.remove('hidden');
                 questionArea.classList.add('hidden');
                 questionHeader.classList.add('hidden');
@@ -283,9 +344,11 @@
             function handleOptionClick(event) {
                 const selectedButton = event.target.closest('button');
                 const question = currentQuestions[currentQuestionIndex];
-                if (!selectedButton || (originalQuestion && originalQuestion.isAnswered)) return;
+                if (!selectedButton) return;
 
                 const originalQuestion = allQuestions.find(q => q.id === question.id);
+                 if (originalQuestion && originalQuestion.isAnswered) return;
+
                 originalQuestion.isAnswered = true;
                 const selectedAnswer = selectedButton.textContent;
                 originalQuestion.userChoice = selectedAnswer;
@@ -302,7 +365,7 @@
                 const originalQuestion = allQuestions.find(q => q.id === question.id);
                 if (!originalQuestion) return;
 
-                correctAnswerEl.textContent = question.answer;
+                correctAnswerEl.innerHTML = question.answer;
                 explanationEl.innerHTML = question.explanation;
                 answerContainer.classList.remove('hidden');
 
@@ -323,7 +386,7 @@
                 if (currentQuestions.length === 0 || currentQuestionIndex >= currentQuestions.length) {
                      if (currentView === 'favorites') displayMessage("You haven't favorited any questions yet.");
                      else if (currentView === 'incorrect') displayMessage("You have no incorrect answers to review. Great job!");
-                     else if (currentView === 'unseen' && allQuestions.every(q => q.completed)) displayMessage("You have completed all questions! Reset to start over.");
+                     else if (currentView === 'unseen' && allQuestions.every(q => q.isAnswered)) displayMessage("You have answered all questions! Reset to start over.");
                      else displayMessage("No questions available in this view.");
                     return;
                 }
@@ -333,15 +396,13 @@
                 const question = currentQuestions[currentQuestionIndex];
                 const originalQuestion = allQuestions.find(q => q.id === question.id);
 
-                if(originalQuestion) originalQuestion.completed = true;
-
-                questionTextEl.textContent = question.question;
+                questionTextEl.innerHTML = question.question;
                 optionsContainer.innerHTML = '';
                 
                 question.options.forEach(option => {
                     const button = document.createElement('button');
                     button.textContent = option;
-                    button.classList.add('w-full', 'text-left', 'p-4', 'bg-gray-100', 'hover:bg-gray-200', 'rounded-lg', 'transition', 'option-btn');
+                    button.classList.add('w-full', 'text-left', 'p-4', 'rounded-lg', 'transition', 'duration-200', 'option-btn');
                     button.addEventListener('click', handleOptionClick);
                     optionsContainer.appendChild(button);
                 });
@@ -371,20 +432,22 @@
             }
 
             // Event Listeners for controls
-            prevBtn.addEventListener('click', () => { if (currentQuestionIndex > 0) { currentQuestionIndex--; loadQuestion(); } });
-            nextBtn.addEventListener('click', () => { if (currentQuestionIndex < currentQuestions.length - 1) { currentQuestionIndex++; loadQuestion(); } });
+            prevBtn.addEventListener('click', () => { if (!prevBtn.disabled) { currentQuestionIndex--; loadQuestion(); } });
+            nextBtn.addEventListener('click', () => { if (!nextBtn.disabled) { currentQuestionIndex++; loadQuestion(); } });
             favoriteBtn.addEventListener('click', toggleFavorite);
             
             resetBtn.addEventListener('click', () => {
-                localStorage.removeItem(PROGRESS_KEY);
-                location.reload();
+                 if(confirm('Are you sure you want to reset all progress? This will clear your answers and un-favorite all questions.')) {
+                    localStorage.removeItem(PROGRESS_KEY);
+                    location.reload();
+                }
             });
 
             shuffleBtn.addEventListener('click', () => {
                 currentView = 'unseen';
-                let unseenQuestions = allQuestions.filter(q => !q.completed);
+                let unseenQuestions = allQuestions.filter(q => !q.isAnswered);
                 if (unseenQuestions.length === 0) {
-                     displayMessage("You have viewed all questions! Use the 'Reset Progress' button to start over.");
+                     displayMessage("You have answered all questions! Use the 'Reset Progress' button to start over.");
                      return;
                 }
                 shuffleArray(unseenQuestions);
@@ -425,3 +488,4 @@
     </script>
 </body>
 </html>
+
