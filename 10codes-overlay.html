@@ -28,11 +28,11 @@
             display: flex;
             flex-direction: column;
             align-items: center; /* Center the lines of codes horizontally */
-            gap: 15px; /* Increased gap between lines for readability */
+            gap: 15px; /* Space between the lines */
         }
 
-        /* Styling for a single horizontal line of codes */
-        .codes-line {
+        /* Styling for a single horizontal line of content */
+        .content-line {
             display: flex;
             flex-wrap: wrap; /* Allows items to wrap if the screen is narrow */
             justify-content: center;
@@ -57,6 +57,12 @@
             margin-right: 8px;
         }
 
+        /* Styling for the Miranda Rights text */
+        .miranda-rights {
+            text-align: center; /* Center the long text */
+            padding: 0 2%; /* Add some padding so it doesn't touch the edges */
+        }
+
     </style>
 </head>
 <body>
@@ -64,7 +70,7 @@
     <div class="overlay-container">
         
         <!-- All codes are now in a single paragraph/line container -->
-        <div class="codes-line">
+        <div class="content-line">
             <!-- Essential Codes (Bolded) -->
             <div class="code-item essential"><span class="code">10-4</span>Ack</div>
             <div class="code-item essential"><span class="code">10-7</span>Out of Service</div>
@@ -127,6 +133,13 @@
             <div class="code-item"><span class="code">10-96</span>Mental Subject</div>
             <div class="code-item"><span class="code">10-99</span>Stolen Veh</div>
             <div class="code-item"><span class="code">Signal 100</span>Hold Radio</div>
+        </div>
+
+        <!-- Miranda Rights Line -->
+        <div class="content-line">
+            <div class="miranda-rights">
+                “You have the right to remain silent. Anything you say or do can be used against you in a court of law. You have the right to an attorney, if you can not afford an attorney, one will be appointed to you by the state if available. Do you understand the rights I just read to you? After being read these rights do you still wish to speak to me?”
+            </div>
         </div>
     </div>
 
