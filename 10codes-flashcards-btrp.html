@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>10 Codes Flashcards</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .favorite-btn.favorited svg {
+            fill: #facc15; /* yellow-400 */
+            stroke: #facc15;
+        }
+        .flashcard-container {
+            perspective: 1000px;
+        }
+        .flashcard {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .flashcard.is-flipped {
+            transform: rotateY(180deg);
+        }
+        .flashcard-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .flashcard-front {
+            background-color: white;
+        }
+        .flashcard-back {
+            background-color: #e0f2fe; /* sky-100 */
+            transform: rotateY(180deg);
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_2.5fr] gap-4 sm:gap-6 md:gap-8 p-4 sm:p-6 md:p-8 min-h-screen">
+        
+        <!-- Left Column: Notepad -->
+        <div id="notepad-container" class="bg-white p-4 rounded-2xl shadow-lg lg:sticky top-8 self-start h-[calc(100vh-4rem)] flex flex-col">
+            <h3 class="text-xl font-bold text-gray-800 mb-4 text-center">Scratch Pad</h3>
+            <textarea id="notepad" class="w-full h-full flex-grow bg-yellow-50 border-yellow-200 border rounded-lg p-3 focus:ring-2 focus:ring-yellow-400 focus:outline-none" placeholder="Take your notes here..."></textarea>
+        </div>
+
+        <!-- Center Column: Main Flashcard Content -->
+        <div class="w-full max-w-4xl mx-auto">
+            <header class="text-center mb-8">
+                <h1 class="text-3xl sm:text-4xl font-bold text-gray-900">10 Codes Flashcards</h1>
+                <p class="text-gray-600 mt-2">Test your knowledge of police 10 codes.</p>
+            </header>
+
+            <div class="bg-white p-6 rounded-2xl shadow-lg mb-6">
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+                     <button id="shuffle-btn" class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-6 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-blue-300">
+                        Shuffle Cards
+                    </button>
+                    <div class="flex flex-wrap gap-2 w-full sm:w-auto justify-center">
+                        <button id="view-all-btn" class="flex-1 sm:flex-none bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2.5 px-4 rounded-lg transition">View All</button>
+                        <button id="view-favorites-btn" class="flex-1 sm:flex-none bg-yellow-200 hover:bg-yellow-300 text-yellow-800 font-bold py-2.5 px-4 rounded-lg transition">Favorites (<span id="favorites-count">0</span>)</button>
+                    </div>
+                     <button id="reset-btn" class="w-full sm:w-auto bg-gray-700 hover:bg-gray-800 text-white font-bold py-2.5 px-6 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-300 mt-4 sm:mt-0">
+                        Reset Progress
+                    </button>
+                </div>
+            </div>
+
+            <div id="flashcard-ui-container">
+                <div class="flex justify-between items-center mb-4">
+                     <p class="text-lg font-semibold text-gray-900">Card <span id="card-number">1</span> of <span id="total-cards">66</span></p>
+                     <button id="favorite-btn" class="favorite-btn text-gray-400 hover:text-yellow-400 p-1 rounded-full transition-colors">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    </button>
+                </div>
+
+                <div class="flashcard-container h-64 md:h-80 cursor-pointer">
+                    <div id="flashcard" class="flashcard">
+                        <div class="flashcard-face flashcard-front">
+                            <p id="flashcard-front-text" class="text-3xl md:text-4xl font-bold"></p>
+                        </div>
+                        <div class="flashcard-face flashcard-back">
+                            <p id="flashcard-back-text" class="text-2xl md:text-3xl text-center"></p>
+                        </div>
+                    </div>
+                </div>
+                <p class="text-center text-gray-500 mt-2">Click card to flip</p>
+
+                <div id="message-container" class="hidden text-center text-gray-500 my-8"></div>
+
+                <div class="mt-8 flex flex-col sm:flex-row justify-between items-center gap-4">
+                    <button id="prev-btn" class="w-full sm:w-auto bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-200">Previous</button>
+                    <button id="next-btn" class="w-full sm:w-auto bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-6 rounded-lg transition-transform transform hover:scale-105 focus:outline-none focus:ring-4 focus:ring-gray-200">Next</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const codesData = [
+                { code: "10-2", meaning: "Radio Check" }, { code: "10-4", meaning: "Acknowledgement" },
+                { code: "10-6", meaning: "Busy" }, { code: "10-7", meaning: "Out Of Service" },
+                { code: "10-8", meaning: "In Service" }, { code: "10-9", meaning: "Repeat Most Recent" },
+                { code: "10-11", meaning: "Traffic Stop" }, { code: "10-15", meaning: "Uncooperative Subject" },
+                { code: "10-16", meaning: "Passively Resistant" }, { code: "10-17", meaning: "Suspicion Of Drugs / Guns" },
+                { code: "10-19", meaning: "Requesting Transport" }, { code: "10-20", meaning: "Location" },
+                { code: "10-22", meaning: "Disregard" }, { code: "10-23", meaning: "Arrived On Scene" },
+                { code: "10-25", meaning: "Report in Person (Meet Up)" }, { code: "10-26", meaning: "Detaining Subject, Expedite" },
+                { code: "10-27", meaning: "Drivers License Information" }, { code: "10-28", meaning: "Vehicle Registration Information" },
+                { code: "10-29", meaning: "Check for Wanted Person" }, { code: "10-30", meaning: "Unnecessary Use of Radio" },
+                { code: "10-31", meaning: "Additional Unit - Code 1" }, { code: "10-32", meaning: "Additional Units - Code 2" },
+                { code: "10-34", meaning: "Riot" }, { code: "10-35", meaning: "Major Crime Alert /MCI" },
+                { code: "10-36", meaning: "Pedestrian Stop" }, { code: "10-37", meaning: "Illegally Parked Vehicle" },
+                { code: "10-38", meaning: "Suspicious Vehicle" }, { code: "10-41", meaning: "Beginning Tour of Duty" },
+                { code: "10-42", meaning: "Ending Tour of Duty" }, { code: "10-43", meaning: "Information" },
+                { code: "10-50", meaning: "Traffic Collision" }, { code: "10-52", meaning: "Roll EMS / Fire" },
+                { code: "10-55", meaning: "Vehicle Theft (GTA)" }, { code: "10-56", meaning: "Intoxicated Pedestrian" },
+                { code: "10-57", meaning: "Hit and Run" }, { code: "10-58", meaning: "Direct Traffic / Scene Control" },
+                { code: "10-59", meaning: "Escort (Emergency)" }, { code: "10-60", meaning: "Assist Motorist" },
+                { code: "10-68", meaning: "Dispatch Info" }, { code: "10-70", meaning: "Foot Pursuit" },
+                { code: "10-73", meaning: "Injured Person" }, { code: "10-76", meaning: "En route" },
+                { code: "10-77", meaning: "ETA" }, { code: "10-78", meaning: "Detective Needed" },
+                { code: "10-79", meaning: "Dead Body On Scene" }, { code: "10-80", meaning: "Active Vehicle Pursuit" },
+                { code: "10-81", meaning: "Breathalyzer / DUI" }, { code: "10-90", meaning: "Potential Robbery/Burglary" },
+                { code: "10-91", meaning: "Reckless Driver" }, { code: "10-95", meaning: "Subject in Custody" },
+                { code: "10-96", meaning: "Mental Subject" }, { code: "10-98", meaning: "Prison/Jail Break" },
+                { code: "10-99", meaning: "Stolen Vehicle" }, { code: "Code Blue", meaning: "Disengage - Meet at VPD" },
+                { code: "Code 2", meaning: "Semi-Urgent (Lights, no sirens)" }, { code: "Code 3", meaning: "Urgent (Lights & sirens)" },
+                { code: "Code 0", meaning: "Headpop" }, { code: "Code 4", meaning: "Scene Clear" },
+                { code: "Code 5", meaning: "Felony Traffic Stop" }, { code: "Code 6", meaning: "Investigating" },
+                { code: "Signal 11", meaning: "Running Radar" }, { code: "Signal 100", meaning: "Active Scene - Hold RTO Traffic" },
+                { code: "Signal 2", meaning: "Dispatch Unavailable" }, { code: "Signal 3", meaning: "Supervisors Available" }
+            ];
+
+            let allCards = [];
+            let currentCards = [];
+            let currentCardIndex = 0;
+            let currentView = 'all';
+
+            const PROGRESS_KEY = '10CodesFlashcardProgress';
+
+            function saveProgress() {
+                localStorage.setItem(PROGRESS_KEY, JSON.stringify(allCards));
+            }
+
+            function loadProgress() {
+                const savedProgress = localStorage.getItem(PROGRESS_KEY);
+                if (savedProgress) {
+                    allCards = JSON.parse(savedProgress);
+                } else {
+                    allCards = codesData.map((c, index) => ({ 
+                        ...c, 
+                        id: index, 
+                        favorited: false
+                    }));
+                }
+            }
+
+            // DOM Elements
+            const flashcard = document.getElementById('flashcard');
+            const flashcardFrontText = document.getElementById('flashcard-front-text');
+            const flashcardBackText = document.getElementById('flashcard-back-text');
+            const cardNumberEl = document.getElementById('card-number');
+            const totalCardsEl = document.getElementById('total-cards');
+            const messageContainer = document.getElementById('message-container');
+            const flashcardUiContainer = document.getElementById('flashcard-ui-container');
+
+            // Buttons
+            const prevBtn = document.getElementById('prev-btn');
+            const nextBtn = document.getElementById('next-btn');
+            const shuffleBtn = document.getElementById('shuffle-btn');
+            const favoriteBtn = document.getElementById('favorite-btn');
+            const viewAllBtn = document.getElementById('view-all-btn');
+            const viewFavoritesBtn = document.getElementById('view-favorites-btn');
+            const resetBtn = document.getElementById('reset-btn');
+            const favoritesCountEl = document.getElementById('favorites-count');
+
+            function updateCounters() {
+                const favCount = allCards.filter(c => c.favorited).length;
+                favoritesCountEl.textContent = favCount;
+            }
+
+            function toggleFavorite() {
+                const card = currentCards[currentCardIndex];
+                if (!card) return;
+                const originalCard = allCards.find(c => c.id === card.id);
+                originalCard.favorited = !originalCard.favorited;
+                updateCounters();
+                updateFavoriteButtonState();
+                 if (currentView === 'favorites' && !originalCard.favorited) {
+                    currentCards.splice(currentCardIndex, 1);
+                    if (currentCardIndex >= currentCards.length) {
+                        currentCardIndex = Math.max(0, currentCards.length - 1);
+                    }
+                    loadCard();
+                }
+                saveProgress();
+            }
+            
+            function updateFavoriteButtonState() {
+                const card = currentCards[currentCardIndex];
+                if (card) {
+                    const originalCard = allCards.find(c => c.id === card.id);
+                    favoriteBtn.classList.toggle('favorited', originalCard.favorited);
+                } else {
+                     favoriteBtn.classList.remove('favorited');
+                }
+            }
+
+            function displayMessage(message) {
+                messageContainer.textContent = message;
+                messageContainer.classList.remove('hidden');
+                flashcardUiContainer.style.display = 'none';
+            }
+
+            function showFlashcardArea() {
+                messageContainer.classList.add('hidden');
+                flashcardUiContainer.style.display = 'block';
+            }
+
+            function loadCard() {
+                if (currentCards.length === 0 || currentCardIndex >= currentCards.length) {
+                     if (currentView === 'favorites') displayMessage("You haven't favorited any cards yet.");
+                     else displayMessage("No cards available in this view.");
+                    return;
+                }
+                showFlashcardArea();
+                flashcard.classList.remove('is-flipped');
+
+                const card = currentCards[currentCardIndex];
+                
+                flashcardFrontText.textContent = card.code;
+                flashcardBackText.textContent = card.meaning;
+                
+                cardNumberEl.textContent = currentCardIndex + 1;
+                totalCardsEl.textContent = currentCards.length;
+                
+                prevBtn.disabled = currentCardIndex === 0;
+                nextBtn.disabled = currentCardIndex === currentCards.length - 1;
+                prevBtn.classList.toggle('opacity-50', prevBtn.disabled);
+                nextBtn.classList.toggle('opacity-50', nextBtn.disabled);
+                
+                updateFavoriteButtonState();
+                saveProgress(); 
+            }
+
+            function shuffleArray(array) {
+                for (let i = array.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [array[i], array[j]] = [array[j], array[i]];
+                }
+            }
+
+            // Event Listeners for controls
+            flashcard.addEventListener('click', () => {
+                flashcard.classList.toggle('is-flipped');
+            });
+            prevBtn.addEventListener('click', () => { if (currentCardIndex > 0) { currentCardIndex--; loadCard(); } });
+            nextBtn.addEventListener('click', () => { if (currentCardIndex < currentCards.length - 1) { currentCardIndex++; loadCard(); } });
+            favoriteBtn.addEventListener('click', toggleFavorite);
+            
+            resetBtn.addEventListener('click', () => {
+                localStorage.removeItem(PROGRESS_KEY);
+                location.reload();
+            });
+
+            shuffleBtn.addEventListener('click', () => {
+                shuffleArray(currentCards);
+                currentCardIndex = 0;
+                loadCard();
+            });
+
+            viewAllBtn.addEventListener('click', () => {
+                currentView = 'all';
+                currentCards = [...allCards];
+                currentCardIndex = 0;
+                loadCard();
+            });
+
+            viewFavoritesBtn.addEventListener('click', () => {
+                currentView = 'favorites';
+                currentCards = allCards.filter(c => c.favorited);
+                currentCardIndex = 0;
+                loadCard();
+            });
+            
+            // Initial load
+            loadProgress();
+            currentCards = [...allCards];
+            totalCardsEl.textContent = allCards.length;
+            updateCounters();
+            loadCard();
+        });
+    </script>
+</body>
+</html>
+
