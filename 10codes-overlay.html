@@ -10,40 +10,34 @@
             background-color: transparent;
             color: #ffffff;
             font-family: 'Segoe UI', Roboto, Arial, sans-serif; /* Modern, clean font */
-            font-size: 20px; /* Set a single base font size for all codes */
+            font-size: 18px; /* Reduced font size for compactness */
             text-shadow: 2px 2px 4px #000000, -2px -2px 4px #000000, 2px -2px 4px #000000, -2px 2px 4px #000000;
             margin: 0;
             padding: 0;
             overflow: hidden; /* Prevents scrollbars from appearing */
         }
 
-        /* Main container that holds all the code lists. It's fixed to the top of the viewport. */
+        /* Main container that holds all the code lists. It's fixed to the top-left of the viewport. */
         .overlay-container {
             position: fixed;
             top: 10px;
-            left: 0;
-            width: 100%;
-            padding: 0 15px; /* Reduced padding to widen the content area */
-            box-sizing: border-box; /* Ensures padding is included in the width */
+            left: 10px; /* Positioned on the left */
             display: flex;
             flex-direction: column;
-            align-items: center; /* Center the lines of codes horizontally */
-            gap: 15px; /* Space between the lines */
+            gap: 20px; /* Adds space between the top and bottom code blocks */
         }
 
-        /* Styling for a single horizontal line of content */
-        .content-line {
-            display: flex;
-            flex-wrap: wrap; /* Allows items to wrap if the screen is narrow */
-            justify-content: center;
-            align-items: center;
-            gap: 10px 20px; /* Tighter gap for smaller text */
-            width: 100%;
+        /* Styling for the list of codes, now using a two-column layout */
+        .codes-list {
+            column-count: 2; /* Arrange codes into 2 columns */
+            column-gap: 30px; /* Space between columns */
         }
 
         /* Styling for an individual code and its meaning */
         .code-item {
             white-space: nowrap; /* Keeps the code and its meaning on one line */
+            padding-bottom: 10px; /* Vertical spacing between items */
+            break-inside: avoid-column; /* Prevents items from splitting across columns */
         }
 
         /* The 'Essential' codes are bolded to make them stand out */
@@ -57,20 +51,14 @@
             margin-right: 8px;
         }
 
-        /* Styling for the Miranda Rights text */
-        .miranda-rights {
-            text-align: center; /* Center the long text */
-            padding: 0 2%; /* Add some padding so it doesn't touch the edges */
-        }
-
     </style>
 </head>
 <body>
 
     <div class="overlay-container">
         
-        <!-- All codes are now in a single paragraph/line container -->
-        <div class="content-line">
+        <!-- Top two columns -->
+        <div class="codes-list">
             <!-- Essential Codes (Bolded) -->
             <div class="code-item essential"><span class="code">10-4</span>Ack</div>
             <div class="code-item essential"><span class="code">10-7</span>Out of Service</div>
@@ -85,62 +73,60 @@
             <!-- Other Codes -->
             <div class="code-item"><span class="code">10-2</span>Radio Check</div>
             <div class="code-item"><span class="code">10-6</span>Busy</div>
+            <div class="code-item"><span class="code">10-9</span>Repeat</div>
+            <div class="code-item"><span class="code">10-11</span>Traffic Stop</div>
+            <div class="code-item"><span class="code">10-15</span>Uncooperative</div>
             <div class="code-item"><span class="code">10-16</span>Passive Resist</div>
             <div class="code-item"><span class="code">10-17</span>Drugs/Guns Susp.</div>
             <div class="code-item"><span class="code">10-19</span>Transport</div>
+            <div class="code-item"><span class="code">10-22</span>Disregard</div>
             <div class="code-item"><span class="code">10-25</span>Meet Up</div>
+            <div class="code-item"><span class="code">10-26</span>Detaining</div>
             <div class="code-item"><span class="code">10-27</span>DL Info</div>
             <div class="code-item"><span class="code">10-28</span>Veh. Reg Info</div>
+            <div class="code-item"><span class="code">10-29</span>Check Wanted</div>
             <div class="code-item"><span class="code">10-30</span>Unnec. Radio Use</div>
             <div class="code-item"><span class="code">10-31</span>Unit (C1)</div>
             <div class="code-item"><span class="code">10-32</span>Units (C2)</div>
+            <div class="code-item"><span class="code">10-34</span>Riot</div>
             <div class="code-item"><span class="code">10-35</span>Major Crime</div>
             <div class="code-item"><span class="code">10-36</span>Ped Stop</div>
+        </div>
+
+        <!-- Bottom two columns -->
+        <div class="codes-list">
             <div class="code-item"><span class="code">10-37</span>Illegal Park</div>
+            <div class="code-item"><span class="code">10-38</span>Susp. Vehicle</div>
             <div class="code-item"><span class="code">10-41</span>Start of Duty</div>
             <div class="code-item"><span class="code">10-42</span>End of Duty</div>
             <div class="code-item"><span class="code">10-43</span>Info</div>
+            <div class="code-item"><span class="code">10-50</span>Collision</div>
+            <div class="code-item"><span class="code">10-52</span>EMS/Fire</div>
             <div class="code-item"><span class="code">10-55</span>GTA</div>
             <div class="code-item"><span class="code">10-56</span>Intox. Ped</div>
+            <div class="code-item"><span class="code">10-57</span>Hit & Run</div>
             <div class="code-item"><span class="code">10-58</span>Traffic Ctrl</div>
             <div class="code-item"><span class="code">10-59</span>Escort</div>
             <div class="code-item"><span class="code">10-60</span>Motorist Asst.</div>
             <div class="code-item"><span class="code">10-68</span>Dispatch Info</div>
+            <div class="code-item"><span class="code">10-70</span>Foot Pursuit</div>
             <div class="code-item"><span class="code">10-73</span>Injured Person</div>
             <div class="code-item"><span class="code">10-77</span>ETA</div>
             <div class="code-item"><span class="code">10-78</span>Detective</div>
             <div class="code-item"><span class="code">10-79</span>DOA</div>
             <div class="code-item"><span class="code">10-81</span>DUI Test</div>
             <div class="code-item"><span class="code">10-90</span>Robbery/Burg.</div>
-            <div class="code-item"><span class="code">10-98</span>Jail Break</div>
-            <div class="code-item"><span class="code">Code 0</span>Headpop</div>
-            <div class="code-item"><span class="code">Code 6</span>Investigating</div>
-            <div class="code-item"><span class="code">Code Blue</span>Disengage</div>
-            <div class="code-item"><span class="code">10-9</span>Repeat</div>
-            <div class="code-item"><span class="code">10-11</span>Traffic Stop</div>
-            <div class="code-item"><span class="code">10-15</span>Uncooperative</div>
-            <div class="code-item"><span class="code">10-22</span>Disregard</div>
-            <div class="code-item"><span class="code">10-26</span>Detaining</div>
-            <div class="code-item"><span class="code">10-29</span>Check Wanted</div>
-            <div class="code-item"><span class="code">10-34</span>Riot</div>
-            <div class="code-item"><span class="code">10-38</span>Susp. Vehicle</div>
-            <div class="code-item"><span class="code">10-50</span>Collision</div>
-            <div class="code-item"><span class="code">10-52</span>EMS/Fire</div>
-            <div class="code-item"><span class="code">10-57</span>Hit & Run</div>
-            <div class="code-item"><span class="code">10-70</span>Foot Pursuit</div>
             <div class="code-item"><span class="code">10-91</span>Reckless Driver</div>
             <div class="code-item"><span class="code">10-95</span>In Custody</div>
             <div class="code-item"><span class="code">10-96</span>Mental Subject</div>
+            <div class="code-item"><span class="code">10-98</span>Jail Break</div>
             <div class="code-item"><span class="code">10-99</span>Stolen Veh</div>
+            <div class="code-item"><span class="code">Code 0</span>Headpop</div>
+            <div class="code-item"><span class="code">Code 6</span>Investigating</div>
+            <div class="code-item"><span class="code">Code Blue</span>Disengage</div>
             <div class="code-item"><span class="code">Signal 100</span>Hold Radio</div>
         </div>
 
-        <!-- Miranda Rights Line -->
-        <div class="content-line">
-            <div class="miranda-rights">
-                “You have the right to remain silent. Anything you say or do can be used against you in a court of law. You have the right to an attorney, if you can not afford an attorney, one will be appointed to you by the state if available. Do you understand the rights I just read to you? After being read these rights do you still wish to speak to me?”
-            </div>
-        </div>
     </div>
 
 </body>
