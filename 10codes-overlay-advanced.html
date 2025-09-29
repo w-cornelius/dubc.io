@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>10 Codes Overlay</title>
+    <style>
+        /* The body is made transparent for overlay use. Text is white with a strong black shadow for maximum visibility on any background. */
+        body {
+            background-color: transparent;
+            color: #ffffff;
+            font-family: 'Segoe UI', Roboto, Arial, sans-serif; /* Modern, clean font */
+            font-size: 16px; /* Reduced font size for compactness */
+            text-shadow: 2px 2px 4px #000000, -2px -2px 4px #000000, 2px -2px 4px #000000, -2px 2px 4px #000000;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Prevents scrollbars from appearing */
+        }
+
+        /* Main container that holds all the code lists. It's fixed to the top-left of the viewport. */
+        .overlay-container {
+            position: fixed;
+            top: 50px;
+            left: 10px;
+            display: flex;
+            flex-direction: column; /* Arrange content vertically */
+            align-items: flex-start; /* Align columns to the top */
+            gap: 15px; /* Space between the main sections */
+            max-height: 90vh; /* Set a max height */
+            overflow-y: auto; /* Allow vertical scrolling if content overflows */
+        }
+
+        /* Custom scrollbar for better aesthetics */
+        .overlay-container::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .overlay-container::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.2);
+            border-radius: 4px;
+        }
+
+        .overlay-container::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.4);
+            border-radius: 4px;
+        }
+
+        .overlay-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.6);
+        }
+
+        .codes-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        /* Styling for the list of codes, now using a two-column layout */
+        .codes-list {
+            column-count: 2; /* Arrange codes into 2 columns */
+            column-gap: 30px; /* Space between columns */
+        }
+
+        /* Styling for an individual code item */
+        .code-item, .phonetic-item, .channel-item {
+            white-space: nowrap;
+            padding-bottom: 8px; /* Vertical spacing between items */
+            break-inside: avoid-column;
+        }
+
+        /* The 'Essential' codes are bolded to make them stand out */
+        .code-item.essential {
+            font-weight: 700; /* Bold font weight */
+        }
+        
+        /* The code number/name is colored to distinguish it from its meaning */
+        .code, .phonetic-letter, .channel-name {
+            color: #f0a500; /* A distinct amber color for the code */
+            margin-right: 8px;
+            font-weight: bold;
+        }
+        
+        .phonetic-list {
+            column-count: 2;
+            column-gap: 30px;
+        }
+
+        /* --- Styles for Collapsible Sections --- */
+        details {
+            width: 100%;
+        }
+
+        summary {
+            cursor: pointer;
+            font-weight: bold;
+            color: #f0a500;
+            list-style: none; /* Remove default marker in Firefox */
+        }
+
+        summary::-webkit-details-marker {
+            display: none; /* Remove default marker in Chrome/Safari */
+        }
+
+        summary:before {
+            content: '▶ '; /* Collapsed state icon */
+            color: #ffffff;
+            margin-right: 5px;
+        }
+
+        details[open] > summary:before {
+            content: '▼ '; /* Expanded state icon */
+        }
+
+        .collapsible-content {
+            padding-left: 25px; /* Indent the content slightly */
+            margin-top: 10px;
+        }
+
+        .miranda-rights, .force-policy, .impound-policy {
+            line-height: 1.5;
+            max-width: 550px; /* Increased max width */
+        }
+
+        .force-policy ul, .impound-policy .category-details {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .force-policy li {
+            padding-bottom: 10px;
+        }
+
+        .impound-policy .category {
+            margin-bottom: 15px;
+        }
+
+        .impound-policy .category-title {
+            font-weight: bold;
+            color: #f0d800; /* Slightly different color for category titles */
+        }
+        
+        .impound-policy .category-details li {
+            padding-left: 15px;
+        }
+        .impound-policy .category-details strong {
+            color: #f0a500;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="overlay-container">
+        
+        <details>
+            <summary>10 Codes</summary>
+            <div class="collapsible-content">
+                <div class="codes-column">
+                    <!-- Top two columns of 10-Codes -->
+                    <div class="codes-list">
+                        <div class="code-item essential"><span class="code">10-4</span>Ack</div>
+                        <div class="code-item"><span class="code">10-6</span>Busy</div>
+                        <div class="code-item"><span class="code">10-29</span>Check Wanted</div>
+                        <div class="code-item"><span class="code">10-26</span>Detaining</div>
+                        <div class="code-item"><span class="code">10-22</span>Disregard</div>
+                        <div class="code-item"><span class="code">10-27</span>DL Info</div>
+                        <div class="code-item"><span class="code">10-17</span>Drugs/Guns Susp.</div>
+                        <div class="code-item essential"><span class="code">10-76</span>En Route</div>
+                        <div class="code-item essential"><span class="code">Code 5</span>Felony Stop</div>
+                        <div class="code-item"><span class="code">10-37</span>Illegal Park</div>
+                        <div class="code-item essential"><span class="code">10-8</span>In Service</div>
+                        <div class="code-item essential"><span class="code">10-20</span>Location</div>
+                        <div class="code-item"><span class="code">10-35</span>Major Crime</div>
+                        <div class="code-item"><span class="code">10-25</span>Meet Up</div>
+                        <div class="code-item essential"><span class="code">10-23</span>On Scene</div>
+                        <div class="code-item essential"><span class="code">10-7</span>Out of Service</div>
+                    </div>
+            
+                    <!-- Bottom two columns of 10-Codes -->
+                    <div class="codes-list">
+                        <div class="code-item"><span class="code">10-16</span>Passive Resist</div>
+                        <div class="code-item"><span class="code">10-36</span>Ped Stop</div>
+                        <div class="code-item essential"><span class="code">10-80</span>Pursuit</div>
+                        <div class="code-item"><span class="code">10-2</span>Radio Check</div>
+                        <div class="code-item"><span class="code">10-9</span>Repeat</div>
+                        <div class="code-item"><span class="code">10-34</span>Riot</div>
+                        <div class="code-item essential"><span class="code">Code 4</span>Scene Clear</div>
+                        <div class="code-item"><span class="code">10-11</span>Traffic Stop</div>
+                        <div class="code-item"><span class="code">10-19</span>Transport</div>
+                        <div class="code-item"><span class="code">10-15</span>Uncooperative</div>
+                        <div class="code-item"><span class="code">10-30</span>Unnec. Radio Use</div>
+                        <div class="code-item"><span class="code">10-31</span>Unit (C1)</div>
+                        <div class="code-item"><span class="code">10-32</span>Units (C2)</div>
+                        <div class="code-item essential"><span class="code">Code 3</span>Urgent</div>
+                        <div class="code-item"><span class="code">10-28</span>Veh. Reg Info</div>
+                    </div>
+                </div>
+            </div>
+        </details>
+        
+        <!-- Collapsible Miranda Rights -->
+        <details>
+            <summary>Miranda Rights</summary>
+            <div class="collapsible-content miranda-rights">
+                You have the right to remain silent.<br>
+                Anything you say can be used against you in a court of law.<br>
+                You have the right to an attorney. If you cannot afford one, one will be appointed to you.<br>
+                Do you understand the rights I have just read to you?<br>
+                With these rights in mind, do you wish to speak to me?
+            </div>
+        </details>
+
+        <!-- Collapsible Phonetic Alphabet -->
+        <details>
+            <summary>Phonetic Alphabet</summary>
+            <div class="collapsible-content phonetic-list">
+                <div class="phonetic-item"><span class="phonetic-letter">A</span> Alpha</div>
+                <div class="phonetic-item"><span class="phonetic-letter">B</span> Bravo</div>
+                <div class="phonetic-item"><span class="phonetic-letter">C</span> Charlie</div>
+                <div class="phonetic-item"><span class="phonetic-letter">D</span> Delta</div>
+                <div class="phonetic-item"><span class="phonetic-letter">E</span> Echo</div>
+                <div class="phonetic-item"><span class="phonetic-letter">F</span> Foxtrot</div>
+                <div class="phonetic-item"><span class="phonetic-letter">G</span> Golf</div>
+                <div class="phonetic-item"><span class="phonetic-letter">H</span> Hotel</div>
+                <div class="phonetic-item"><span class="phonetic-letter">I</span> India</div>
+                <div class="phonetic-item"><span class="phonetic-letter">J</span> Juliet</div>
+                <div class="phonetic-item"><span class="phonetic-letter">K</span> Kilo</div>
+                <div class="phonetic-item"><span class="phonetic-letter">L</span> Lima</div>
+                <div class="phonetic-item"><span class="phonetic-letter">M</span> Mike</div>
+                <div class="phonetic-item"><span class="phonetic-letter">N</span> November</div>
+                <div class="phonetic-item"><span class="phonetic-letter">O</span> Oscar</div>
+                <div class="phonetic-item"><span class="phonetic-letter">P</span> Papa</div>
+                <div class="phonetic-item"><span class="phonetic-letter">Q</span> Quebec</div>
+                <div class="phonetic-item"><span class="phonetic-letter">R</span> Romeo</div>
+                <div class="phonetic-item"><span class="phonetic-letter">S</span> Sierra</div>
+                <div class="phonetic-item"><span class="phonetic-letter">T</span> Tango</div>
+                <div class="phonetic-item"><span class="phonetic-letter">U</span> Uniform</div>
+                <div class="phonetic-item"><span class="phonetic-letter">V</span> Victor</div>
+                <div class="phonetic-item"><span class="phonetic-letter">W</span> Whiskey</div>
+                <div class="phonetic-item"><span class="phonetic-letter">X</span> X-ray</div>
+                <div class="phonetic-item"><span class="phonetic-letter">Y</span> Yankee</div>
+                <div class="phonetic-item"><span class="phonetic-letter">Z</span> Zulu</div>
+            </div>
+        </details>
+
+        <!-- Collapsible RTO Channels -->
+        <details>
+            <summary>RTO Channels</summary>
+            <div class="collapsible-content channels-list">
+                <div class="channel-item"><span class="channel-name">Ch 1</span> Normal Traffic</div>
+                <div class="channel-item"><span class="channel-name">Ch 1.1-1.4</span> Robbery/Misc.</div>
+                <div class="channel-item"><span class="channel-name">Ch 4</span> EMS</div>
+                <div class="channel-item"><span class="channel-name">Ch 26.26</span> DOJ</div>
+                <div class="channel-item"><span class="channel-name">Ch 400</span> SADOT</div>
+            </div>
+        </details>
+
+        <!-- Collapsible Code Red -->
+        <details>
+            <summary>Code Red</summary>
+            <div class="collapsible-content force-policy">
+                A Code Red situation is where the suspect is putting the officer's or civilian's life in danger at which time lethal force may be used.
+            </div>
+        </details>
+        
+        <!-- Collapsible Code Amber -->
+        <details>
+            <summary>Code Amber</summary>
+            <div class="collapsible-content force-policy">
+                A Code Amber situation is where the suspect is armed or dangerous but lethal force is not required. In this case, non-lethal force can be used.
+                <ul>
+                    <li>If the suspect is using a pistol, Police officers can use their pistol.</li>
+                    <li>If the suspect has a shotgun, then you can use their pistol.</li>
+                    <li>If the suspect is using an MP5, Police can use their MP5.</li>
+                    <li>If a police vehicle has been stolen then it is automatically code red to disable that vehicle only.</li>
+                    <li>If a vehicle actively opens up fire on officers, again this is code red and you are to disable the vehicle.</li>
+                    <li>If a suspect has NO hostage and is pointing a gun at multiple officers they are code amber, you are to warn them 3-4 times to drop the weapon and if they don't comply the highest-ranking officer can make the call to code red, and put the suspect down. (IF THE SUSPECT HAS A HOSTAGE YOU ARE TO NEVER GO CODE RED)</li>
+                    <li>If you are solo and pursuing a suspect on foot and they have a gun in hand and point it towards you, you can instant code RED and open fire.</li>
+                </ul>
+            </div>
+        </details>
+        
+        <!-- Collapsible Impound Categories -->
+        <details>
+            <summary>Impound Categories and Fines</summary>
+            <div class="collapsible-content impound-policy">
+                <div class="category">
+                    <p class="category-title">Normal Impound (Traffic or Parking Violations)</p>
+                    <ul class="category-details">
+                        <li><strong>Fine / Time:</strong> $500 / Retrieval By Owner</li>
+                        <li><strong>Procedure:</strong> Issue a citation if applicable. Notify the driver (if present) and provide them with impoundment details. Notify SADOT or Impound the Vehicle if SADOT is not available.</li>
+                    </ul>
+                </div>
+                <div class="category">
+                    <p class="category-title">Evading Arrest or Pursuit</p>
+                    <ul class="category-details">
+                        <li><strong>Fine / Time:</strong> $2,500 / 1 Hour</li>
+                        <li><strong>Procedure:</strong> Ensure the pursuit is logged in the system, including timestamps. Clearly document the evasion in the report and link it to the impoundment record. Notify SADOT or Impound the Vehicle if SADOT is not available, following the apprehension of the driver or abandonment of the vehicle.</li>
+                    </ul>
+                </div>
+                <div class="category">
+                    <p class="category-title">Criminal Activity (Robberies or Heists)</p>
+                    <ul class="category-details">
+                        <li><strong>Fine / Time:</strong> $5,000 / 4 Hours</li>
+                        <li><strong>Procedure:</strong> Confirm the vehicle's involvement in the criminal act through evidence or witness statements. Include crime scene evidence and photos in the impound report. Add Pictures of the Vehicle to the Case report in the MDT.</li>
+                    </ul>
+                </div>
+                <div class="category">
+                    <p class="category-title">Shootouts with LSPD</p>
+                    <ul class="category-details">
+                        <li><strong>Fine / Time:</strong> $10,000 / 6 Hours</li>
+                        <li><strong>Procedure:</strong> Ensure officer safety and secure the scene. Complete a critical incident report in addition to the impound record, Including Pictures. Notify SADOT or Impound the Vehicle if SADOT is not available.</li>
+                    </ul>
+                </div>
+            </div>
+        </details>
+
+    </div>
+
+</body>
+</html>
