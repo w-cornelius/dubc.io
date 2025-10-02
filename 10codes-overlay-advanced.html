@@ -75,7 +75,7 @@
         }
         
         .phonetic-list {
-            column-count: 2;
+            column-count: 3;
             column-gap: 30px;
         }
 
@@ -115,7 +115,7 @@
             max-width: 550px; /* Increased max width */
         }
 
-        .force-policy ul, .impound-policy .category-details {
+        .force-policy ul {
             list-style-type: none;
             padding-left: 0;
         }
@@ -133,11 +133,29 @@
             color: #f0d800; /* Slightly different color for category titles */
         }
         
-        .impound-policy .category-details li {
+        .impound-policy .category-details {
             padding-left: 15px;
         }
+
         .impound-policy .category-details strong {
             color: #f0a500;
+        }
+
+        .impound-policy .category-details details {
+            margin-top: 8px;
+        }
+
+        .impound-policy .category-details summary {
+            font-weight: bold;
+            color: #ffffff;
+        }
+
+        .impound-policy .category-details summary::before {
+            color: #ffffff;
+        }
+
+        .impound-policy .category-details .collapsible-content {
+            padding-left: 20px;
         }
 
     </style>
@@ -294,32 +312,48 @@
             <summary>Impound Categories and Fines</summary>
             <div class="collapsible-content impound-policy">
                 <div class="category">
-                    <p class="category-title">Normal Impound (Traffic or Parking Violations)</p>
-                    <ul class="category-details">
-                        <li><strong>Fine / Time:</strong> $500 / Retrieval By Owner</li>
-                        <li><strong>Procedure:</strong> Issue a citation if applicable. Notify the driver (if present) and provide them with impoundment details. Notify SADOT or Impound the Vehicle if SADOT is not available.</li>
-                    </ul>
+                    <p class="category-title">Normal Impound (Traffic or Parking Violations) - $500 / Retrieval By Owner</p>
+                    <div class="category-details">
+                        <details>
+                            <summary>Procedure</summary>
+                            <div class="collapsible-content">
+                                Issue a citation if applicable. Notify the driver (if present) and provide them with impoundment details. Notify SADOT or Impound the Vehicle if SADOT is not available.
+                            </div>
+                        </details>
+                    </div>
                 </div>
                 <div class="category">
-                    <p class="category-title">Evading Arrest or Pursuit</p>
-                    <ul class="category-details">
-                        <li><strong>Fine / Time:</strong> $2,500 / 1 Hour</li>
-                        <li><strong>Procedure:</strong> Ensure the pursuit is logged in the system, including timestamps. Clearly document the evasion in the report and link it to the impoundment record. Notify SADOT or Impound the Vehicle if SADOT is not available, following the apprehension of the driver or abandonment of the vehicle.</li>
-                    </ul>
+                    <p class="category-title">Evading Arrest or Pursuit - $2,500 / 1 Hour</p>
+                    <div class="category-details">
+                        <details>
+                            <summary>Procedure</summary>
+                            <div class="collapsible-content">
+                                Ensure the pursuit is logged in the system, including timestamps. Clearly document the evasion in the report and link it to the impoundment record. Notify SADOT or Impound the Vehicle if SADOT is not available, following the apprehension of the driver or abandonment of the vehicle.
+                            </div>
+                        </details>
+                    </div>
                 </div>
                 <div class="category">
-                    <p class="category-title">Criminal Activity (Robberies or Heists)</p>
-                    <ul class="category-details">
-                        <li><strong>Fine / Time:</strong> $5,000 / 4 Hours</li>
-                        <li><strong>Procedure:</strong> Confirm the vehicle's involvement in the criminal act through evidence or witness statements. Include crime scene evidence and photos in the impound report. Add Pictures of the Vehicle to the Case report in the MDT.</li>
-                    </ul>
+                    <p class="category-title">Criminal Activity (Robberies or Heists) - $5,000 / 4 Hours</p>
+                    <div class="category-details">
+                        <details>
+                            <summary>Procedure</summary>
+                            <div class="collapsible-content">
+                                Confirm the vehicle's involvement in the criminal act through evidence or witness statements. Include crime scene evidence and photos in the impound report. Add Pictures of the Vehicle to the Case report in the MDT.
+                            </div>
+                        </details>
+                    </div>
                 </div>
                 <div class="category">
-                    <p class="category-title">Shootouts with LSPD</p>
-                    <ul class="category-details">
-                        <li><strong>Fine / Time:</strong> $10,000 / 6 Hours</li>
-                        <li><strong>Procedure:</strong> Ensure officer safety and secure the scene. Complete a critical incident report in addition to the impound record, Including Pictures. Notify SADOT or Impound the Vehicle if SADOT is not available.</li>
-                    </ul>
+                    <p class="category-title">Shootouts with LSPD - $10,000 / 6 Hours</p>
+                    <div class="category-details">
+                        <details>
+                            <summary>Procedure</summary>
+                            <div class="collapsible-content">
+                                Ensure officer safety and secure the scene. Complete a critical incident report in addition to the impound record, Including Pictures. Notify SADOT or Impound the Vehicle if SADOT is not available.
+                            </div>
+                        </details>
+                    </div>
                 </div>
             </div>
         </details>
