@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Good Day Golf - Donate with Bits</title>
+    <style>
+        /* Import Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Oswald:wght@700&display=swap');
+        
+        /* Basic styles for the page */
+        body {
+            background-color: #0a0a0a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 1rem;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .container {
+            background-color: #121212;
+            border: 1px solid #39FF14;
+            color: #FFFFFF;
+            padding: 2rem;
+            border-radius: 10px;
+            max-width: 700px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 0 20px rgba(57, 255, 20, 0.2);
+        }
+
+        h1 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 2.5rem;
+            color: #39FF14;
+            text-transform: uppercase;
+            margin-bottom: 0.5rem;
+            letter-spacing: 1.5px;
+        }
+
+        h2 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.5rem;
+            color: #FFFFFF;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+        }
+
+        h3 {
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.5rem;
+            color: #39FF14;
+            text-align: left;
+            border-bottom: 2px solid #39FF14;
+            padding-bottom: 0.5rem;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        p {
+            font-family: 'Roboto', sans-serif;
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .incentives-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+            margin-top: 1rem;
+            text-align: left;
+        }
+
+        @media (min-width: 600px) {
+            .incentives-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .incentive-item {
+            font-size: 1rem;
+            background: #1e1e1e;
+            padding: 1rem;
+            border-radius: 5px;
+        }
+        
+        .incentive-item span {
+          color: #ffffff;
+        }
+
+        .bits-value {
+            color: #39FF14;
+            font-weight: bold;
+        }
+
+        .purple-bits-value {
+            color: #9400D3;
+            font-weight: bold;
+        }
+
+        .button-container {
+            margin: 3rem 0 2rem 0;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem;
+            font-family: 'Oswald', sans-serif;
+            font-size: 1.25rem;
+            text-transform: uppercase;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+            width: 80%;
+            max-width: 300px;
+            box-sizing: border-box;
+        }
+
+        .btn-primary {
+            background-color: #39FF14;
+            color: #121212;
+            font-weight: bold;
+        }
+
+        .btn-primary:hover {
+            background-color: #FFFFFF;
+        }
+
+        .btn-secondary {
+            background-color: #9400D3;
+            color: #FFFFFF;
+        }
+
+        .btn-secondary:hover {
+            background-color: #b14eff;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 1rem;
+            font-size: 1rem;
+            color: #39FF14;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Donate with Twitch Bits</h1>
+    <h2>An alternative way to support the stream</h2>
+    <p>
+        If you can't use Cash App, you can contribute to the charity by donating Bits directly on Twitch! 
+        Every <strong>100 Bits</strong> is equivalent to a <strong>$1</strong> donation.
+    </p>
+
+    <div class="button-container">
+        <a href="https://twitch.tv/bits" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">Purchase Bits Here</a>
+        <a href="https://twitch.tv/dubbb_c" target="_blank" rel="noopener noreferrer" class="btn btn-primary">Donate to the Channel</a>
+    </div>
+
+    <div class="incentives-grid">
+        <div>
+            <h3>Incentives (Bits)</h3>
+            <div class="incentive-item"><span class="bits-value">100 Bits -</span> Add Song to Queue</div>
+            <div class="incentive-item"><span class="bits-value">200 Bits -</span> Play Song Next</div>
+            <div class="incentive-item"><span class="bits-value">500 Bits -</span> Choose Someone to drink</div>
+            <div class="incentive-item"><span class="bits-value">2000 Bits -</span> Group Drinks</div>
+        </div>
+        <div>
+            <h3>Donation Pool (Bits)</h3>
+            <div class="incentive-item"><span class="purple-bits-value">2,500 Bits -</span> One Club Challenge</div>
+            <div class="incentive-item"><span class="purple-bits-value">5,000 Bits -</span> Shot Roulette</div>
+            <div class="incentive-item"><span class="purple-bits-value">7,500 Bits -</span> Flamingo and Putt</div>
+            <div class="incentive-item"><span class="purple-bits-value">10,000 Bits -</span> Mullet Time!</div>
+        </div>
+    </div>
+
+    <a href="index.html" class="back-link">← Back to Cash App Donations</a>
+</div>
+
+</body>
+</html>
+
+
