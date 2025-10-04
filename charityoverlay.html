@@ -9,22 +9,58 @@
         body {
             overflow: hidden; /* Prevents scrollbars on the main page */
         }
+        #iframe-wrapper {
+            position: relative;
+        }
         #content-frame {
+            position: absolute;
+            top: 0;
+            left: 0;
+            border: 0;
+            transform-origin: top left;
             transition: opacity 0.5s ease-in-out;
         }
     </style>
 </head>
 <body class="bg-transparent">
-    <!-- Main container fills the viewport -->
-    <div class="h-screen w-screen">
-        <iframe id="content-frame" class="w-full h-full bg-white" style="opacity: 0;" scrolling="no"></iframe>
+    <!-- Main container fills the viewport and hides overflow -->
+    <div id="iframe-wrapper" class="h-screen w-screen overflow-hidden">
+        <iframe id="content-frame" class="bg-white" style="opacity: 0;"></iframe>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            const wrapper = document.getElementById('iframe-wrapper');
             const frame = document.getElementById('content-frame');
 
-            if (frame) {
+            if (frame && wrapper) {
+                // --- Scaling Logic ---
+                const contentWidth = 1280; // Base width of the content to be scaled
+                const contentHeight = 720; // Base height of the content
+
+                frame.width = contentWidth;
+                frame.height = contentHeight;
+
+                function scaleFrame() {
+                    const wrapperWidth = wrapper.offsetWidth;
+                    const wrapperHeight = wrapper.offsetHeight;
+
+                    const scaleX = wrapperWidth / contentWidth;
+                    const scaleY = wrapperHeight / contentHeight;
+
+                    // Use the smaller scale factor to fit the content entirely
+                    const scale = Math.min(scaleX, scaleY);
+
+                    frame.style.transform = `scale(${scale})`;
+
+                    // Center the scaled iframe within the wrapper
+                    const left = (wrapperWidth - (contentWidth * scale)) / 2;
+                    const top = (wrapperHeight - (contentHeight * scale)) / 2;
+                    frame.style.left = `${left}px`;
+                    frame.style.top = `${top}px`;
+                }
+                
+                // --- URL Cycling Logic ---
                 const urls = [
                     'https://www.dubc.io/gdgcharity',
                     'https://www.dubc.io/bits'
@@ -32,30 +68,26 @@
                 let currentIndex = 0;
 
                 const changeContent = () => {
-                    // Fade out the iframe
                     frame.style.opacity = '0';
-                    
-                    // After fade out, change the source and fade it back in
                     setTimeout(() => {
                         currentIndex = (currentIndex + 1) % urls.length;
-                        const newUrl = urls[currentIndex];
-                        frame.src = newUrl;
-                    }, 500); // This must match the CSS transition duration
+                        frame.src = urls[currentIndex];
+                    }, 500); // Match CSS transition
                 };
 
-                // When the iframe content has loaded, fade it in
                 frame.addEventListener('load', () => {
                     frame.style.opacity = '1';
                 });
 
-                // Initial setup
-                const initialUrl = urls[currentIndex];
-                frame.src = initialUrl;
-
-                // Start the loop to change content every 15 seconds
+                // --- Initial Setup ---
+                scaleFrame(); // Scale on initial load
+                window.addEventListener('resize', scaleFrame); // Rescale when window size changes
+                
+                frame.src = urls[currentIndex];
                 setInterval(changeContent, 15000); 
             }
         });
     </script>
 </body>
 </html>
+
