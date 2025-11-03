@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dubhub | Other</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* Using the same styles from index.html for consistency */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a0a0a;
+        }
+        body::before {
+            content: '';
+            position: fixed;
+            z-index: -1;
+            top: 50%;
+            left: 50%;
+            width: 80vmax;
+            height: 80vmax;
+            border-radius: 50%;
+            background-color: rgba(120, 50, 220, 0.25);
+            animation: radiate 8s ease-in-out infinite;
+            filter: blur(100px);
+        }
+        @keyframes radiate {
+            0%, 100% { transform: translate(-50%, -50%) scale(0.95); opacity: 0.9; }
+            50% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+        }
+        .glassmorphic {
+            background: rgba(10, 10, 10, 0.5);
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+        @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fade-slide-up { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-in { animation: fade-in 0.8s ease-out forwards; }
+        .animate-fade-slide-up { opacity: 0; animation: fade-slide-up 0.6s ease-out forwards; }
+        .social-link {
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .social-link:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 0 25px rgba(255, 255, 255, 0.1);
+        }
+        .social-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -150%;
+            width: 75%;
+            height: 100%;
+            background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.2) 50%, rgba(255, 255, 255, 0) 100%);
+            transform: skewX(-25deg);
+            transition: left 0.6s ease;
+        }
+        .social-link:hover::before { left: 150%; }
+    </style>
+</head>
+<body class="text-white antialiased">
+
+    <!-- Main Container -->
+    <div class="relative min-h-screen flex flex-col items-center justify-center p-4">
+        
+        <div class="relative z-10 w-full max-w-lg mx-auto pt-10 pb-24">
+            
+            <!-- Page Header -->
+            <header class="text-center mb-10 animate-fade-in">
+                <img 
+                    src="other.png" 
+                    alt="Other Icon" 
+                    class="w-32 h-32 rounded-full mx-auto mb-5 border-4 border-white/20 shadow-2xl animate-fade-in" 
+                    style="animation-delay: 0.1s;"
+                    onerror="this.onerror=null;this.src='https://placehold.co/128x128/1a202c/9ca3af?text=Other';">
+                
+                <h1 class="text-4xl font-bold text-white tracking-tight">Other</h1>
+                <p class="text-gray-300 mt-2 text-lg">Podcasts, resources, and more.</p>
+            </header>
+
+            <!-- Links Section -->
+            <main class="space-y-4">
+                
+                 <!-- GTA RP Resources -->
+                 <a href="gta-rp-resources.html" class="social-link group flex items-center p-4 glassmorphic rounded-xl w-full animate-fade-slide-up" style="animation-delay: 0.2s;">
+                    <svg class="w-6 h-6 mr-4 text-sky-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9.776c.112-.017.227-.026.344-.026h15.812c.117 0 .232.009.344.026m-16.5 0a2.25 2.25 0 00-1.883 2.542l.857 6a2.25 2.25 0 002.227 1.932H19.05l.857-6a2.25 2.25 0 00-2.227-1.932m-16.5 0-2.223-1.574a2.25 2.25 0 01-1.267-2.062V4.5a2.25 2.25 0 012.25-2.25h15a2.25 2.25 0 012.25 2.25v1.636a2.25 2.25 0 01-1.267 2.062L19.5 9.776" />
+                    </svg>
+                    <span class="font-semibold text-lg flex-grow text-left">GTA RP Resources</span>
+                </a>
+
+                 <!-- Instagram -->
+                 <a href="https://www.instagram.com/callmemikey_/" target="_blank" rel="noopener noreferrer" class="social-link group flex items-center p-4 glassmorphic rounded-xl w-full animate-fade-slide-up" style="animation-delay: 0.3s;">
+                     <svg class="w-6 h-6 mr-4 text-pink-500" role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><title>Instagram</title><path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.784.305-1.455.717-2.126 1.387C1.333 2.705.92 3.377.612 4.14c-.3.765-.5 1.635-.56 2.913-.058 1.28-.072 1.687-.072 4.947s.015 3.667.072 4.947c.06 1.278.26 2.148.56 2.913.305.784.717 1.455 1.387 2.126.67.67 1.342 1.082 2.126 1.387.765.3 1.635.5 2.913.56 1.28.058 1.687.072 4.947.072s3.667-.015 4.947-.072c1.278-.06 2.148-.26 2.913-.56.784-.305 1.455-.717 2.126-1.387.67-.67 1.082-1.342 1.387-2.126.3-.765.5-1.635.56-2.913.058-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.278-.26-2.148-.56-2.913-.305-.784-.717-1.455-1.387-2.126C21.314 1.333 20.643.92 19.86.612c-.765-.3-1.635-.5-2.913-.56C15.667.015 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.07 1.17.055 1.805.248 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.168.422.36 1.057.413 2.227.056 1.265.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.056 1.17-.245 1.805-.413 2.227-.217.562-.477.96-.896 1.382-.42.419-.82.679-1.38.896-.423.168-1.057.36-2.227.413-1.265.056-1.646.07-4.85.07s-3.585-.015-4.85-.07c-1.17-.056-1.805-.245-2.227-.413-.562-.217-.96-.477-1.382-.896-.419-.42-.679-.82-1.381-.896-.168-.423-.36-1.057-.413-2.227-.056-1.265-.07-1.646-.07-4.85s.015-3.585.07-4.85c.055-1.17.248-1.805.415-2.227.217-.562.477.96.896-1.382.42-.419.819-.679 1.381-.896.422-.168 1.057.36 2.227.413C8.415 2.176 8.797 2.16 12 2.16zm0 5.48c-3.405 0-6.162 2.757-6.162 6.162s2.757 6.162 6.162 6.162 6.162-2.757 6.162-6.162-2.757-6.162-6.162-6.162zM12 16c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4zm6.406-11.845c-.796 0-1.44.645-1.44 1.44s.645 1.44 1.44 1.44c.795 0 1.44-.645 1.44-1.44s-.645-1.44-1.44-1.44z" fill="currentColor"/></svg>
+                     <span class="font-semibold text-lg flex-grow text-left">Instagram</span>
+                 </a>
+
+                 <!-- Back to Home -->
+                 <a href="index.html" class="social-link group flex items-center p-4 glassmorphic rounded-xl w-full animate-fade-slide-up" style="animation-delay: 0.5s;">
+                    <svg class="w-6 h-6 mr-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+                    </svg>
+                    <span class="font-semibold text-lg flex-grow text-left">Back to Home</span>
+                 </a>
+                
+            </main>
+        </div>
+        
+        <!-- Footer -->
+        <footer class="absolute bottom-6 w-full text-center text-gray-500 text-sm animate-fade-in z-20" style="animation-delay: 0.6s;">
+            <p>&copy; 2025 dubbb_c. All Rights Reserved.</p>
+        </footer>
+    </div>
+</body>
+</html>
