@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gmail Signature Setup Guide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Helvetica', 'Arial', sans-serif; background-color: #f8fafc; color: #334155; }
+        .step-number {
+            background: #1e3a8a;
+            color: white;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        .code-block {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 16px;
+            border-radius: 8px;
+            white-space: pre-wrap;
+            word-break: break-all;
+            height: 300px;
+            overflow-y: scroll;
+        }
+    </style>
+</head>
+<body class="p-8 max-w-5xl mx-auto">
+
+    <h1 class="text-3xl font-extrabold text-slate-800 mb-2">Gmail Signature Setup Guide</h1>
+    <p class="text-slate-600 mb-8 text-lg">Follow these three steps to get your professional signature live.</p>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        
+        <!-- COLUMN 1: HOSTING -->
+        <div class="space-y-8">
+            
+            <!-- STEP 1 -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="step-number">1</div>
+                    <h2 class="text-xl font-bold text-slate-800">Host Your Images</h2>
+                </div>
+                <div class="space-y-3 text-sm text-slate-600">
+                    <p>You need a permanent place on the web for your PNGs to live.</p>
+                    <ol class="list-decimal pl-5 space-y-2 marker:text-blue-800 marker:font-bold">
+                        <li>Go to <strong>GitHub</strong> and create a new Public Repository (e.g., named <code>email-assets</code>).</li>
+                        <li><strong>Upload</strong> the 7 PNG files you downloaded from the Asset Manager.</li>
+                        <li>Go to <strong>Settings > Pages</strong>.</li>
+                        <li>Under <strong>Build and deployment</strong>, change "Source" to <strong>Deploy from a branch</strong>.</li>
+                        <li>Select <strong>main</strong> (or master) and <strong>/ (root)</strong>, then click <strong>Save</strong>.</li>
+                        <li>Wait about 1-2 minutes. Your images are now hosted!</li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- STEP 3 -->
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                <div class="flex items-center gap-3 mb-4">
+                    <div class="step-number">3</div>
+                    <h2 class="text-xl font-bold text-slate-800">Install in Gmail</h2>
+                </div>
+                <div class="space-y-3 text-sm text-slate-600">
+                    <p>Gmail's normal editor breaks complex HTML. Use this trick:</p>
+                    <ol class="list-decimal pl-5 space-y-2 marker:text-blue-800 marker:font-bold">
+                        <li>Go to Gmail <strong>Settings > See all settings</strong>.</li>
+                        <li>Scroll down to the <strong>Signature</strong> section.</li>
+                        <li>Type a placeholder word like "HERE" in the signature box.</li>
+                        <li><strong>Right-click</strong> "HERE" and select <strong>Inspect</strong> (or Inspect Element).</li>
+                        <li>A developer panel will open highlighting a line of code. Right-click that highlighted line and select <strong>Edit as HTML</strong>.</li>
+                        <li><strong>Paste</strong> the code generated in Step 2.</li>
+                        <li>Click anywhere outside the box to apply changes. You should see your signature appear!</li>
+                        <li>Scroll to the bottom of Gmail and click <strong>Save Changes</strong>.</li>
+                    </ol>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- COLUMN 2: CODE GENERATOR -->
+        <div class="bg-white p-6 rounded-xl shadow-lg border border-blue-100 h-fit sticky top-6">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="step-number">2</div>
+                <h2 class="text-xl font-bold text-slate-800">Generate Your Code</h2>
+            </div>
+            
+            <p class="text-sm text-slate-500 mb-4">Enter your GitHub details below to update the code automatically.</p>
+
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">GitHub Username</label>
+                    <input type="text" id="gh-user" placeholder="e.g. jdoe" class="w-full p-2 border border-slate-300 rounded text-sm focus:ring-2 focus:ring-blue-500 outline-none" oninput="updateCode()">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Repo Name</label>
+                    <input type="text" id="gh-repo" placeholder="e.g. email-assets" class="w-full p-2 border border-slate-300 rounded text-sm focus:ring-2 focus:ring-blue-500 outline-none" oninput="updateCode()">
+                </div>
+            </div>
+
+            <div class="relative">
+                <textarea id="final-code" class="code-block w-full outline-none" readonly></textarea>
+                <button onclick="copyCode()" class="absolute top-2 right-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-1 px-3 rounded shadow transition">
+                    Copy Code
+                </button>
+            </div>
+            <p id="copy-msg" class="text-xs text-green-600 font-bold mt-2 text-right opacity-0 transition">Copied to clipboard!</p>
+        </div>
+
+    </div>
+
+    <script>
+        // The Template
+        const template = `<div style="font-family: 'Helvetica', 'Arial', sans-serif; background-color: #f8fafc; padding: 40px;">
+  <!-- VERSION 4.0: HOSTED IMAGES -->
+  <div style="background: white; margin-bottom: 50px; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); max-width: 700px; border: 1px solid #e2e8f0;">
+    
+    <div style="font-size: 11px; color: #64748b; margin-bottom: 20px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; border-bottom: 1px solid #e2e8f0; padding-bottom: 5px;">
+      v3.3 #ONEOFUS Moved to Text Block
+    </div>
+
+    <!-- MAIN FLEX CONTAINER -->
+    <div style="display: flex; align-items: center;">
+      
+      <!-- LEFT COLUMN: Logos -->
+      <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 185px; flex-shrink: 0;">
+        
+        <!-- Main HGE Logo -->
+        <a href="https://homegeniusexteriors.com/locations/columbia-sc/" style="display: block; width: 100%; text-decoration: none; border: none; margin-bottom: 8px; margin-top: 25px;">
+          <img src="{{BASE_URL}}/hge-logo.png" alt="Home Genius Exteriors" width="184" style="display: block; width: 100%; height: auto; border: 0;">
+        </a>
+
+        <!-- Cares Logo -->
+        <a href="https://homegeniusexteriors.com/home-genius-cares/" style="display: block; width: 100%; text-decoration: none; border: none; width: 150px; height: auto; margin-top: 0px;">
+          <img src="{{BASE_URL}}/hge-cares.png" alt="Home Genius Cares" width="150" style="display: block; width: 100%; height: auto; border: 0;">
+        </a>
+      </div>
+
+      <!-- DIVIDER -->
+      <div style="width: 1px; height: 210px; background: #cbd5e1; margin: 0 25px;"></div>
+
+      <!-- RIGHT COLUMN: Contact Info -->
+      <div style="text-align: left;">
+        <p style="font-size: 24px; font-weight: 900; color: #1e3a8a; margin: 0; line-height: 1; letter-spacing: -0.5px;">William Cornelius</p>
+        <p style="font-size: 11px; color: #06b6d4; margin: 6px 0 0 0; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px;">Home Remodeling Expert</p>
+        <p style="font-size: 10px; color: #94a3b8; font-weight: bold; margin-top: 2px;">SC #RBS-66286</p>
+        
+        <div style="font-size: 12px; color: #475569; line-height: 1.4; margin-top: 15px;">
+          <span style="font-weight: 800; color: #1e3a8a; font-size: 14px; text-transform: uppercase; display: block; margin-bottom: 4px;">Home Genius Exteriors</span>
+          <strong>Mobile:</strong> 803.767.8062 &bull; <a href="mailto:wcornelius@homegeniusexteriors.com" style="color: #06b6d4; text-decoration: none; font-weight: 600;">wcornelius@homegeniusexteriors.com</a><br>
+          <strong>Office:</strong> 803.715.3714 &bull; <a href="https://homegeniusexteriors.com" style="color: #06b6d4; text-decoration: none; font-weight: 600;">homegeniusexteriors.com</a>
+          
+          <div style="font-size: 11px; color: #64748b; margin-top: 8px; border-top: 1px solid #f1f5f9; padding-top: 8px;">
+            <strong>COLUMBIA, SC:</strong> 140 Stoneridge Dr, Suite 240, Columbia, SC 29210<br>
+            <span style="color: #06b6d4; font-weight: bold;">By Appointment Only:</span> Monday thru Sunday 8 AM - 9 PM<br>
+            <span style="font-size: 11px; font-weight: 900; color: #1e3a8a; letter-spacing: 1.5px; margin-top: 6px; display: block;">#ONEOFUS</span>
+          </div>
+
+          <!-- Social Media Row -->
+          <div style="display: flex; gap: 12px; margin-top: 15px; align-items: center;">
+            <a href="https://www.facebook.com/homegeniusexteriors" style="text-decoration: none;">
+               <img src="{{BASE_URL}}/fb-icon.png" alt="FB" width="20" height="20" style="display: block; border: 0;">
+            </a>
+            <a href="https://www.instagram.com/homegeniusexteriors" style="text-decoration: none;">
+               <img src="{{BASE_URL}}/ig-icon.png" alt="IG" width="20" height="20" style="display: block; border: 0;">
+            </a>
+            <a href="https://www.linkedin.com/company/homegeniusexteriors" style="text-decoration: none;">
+               <img src="{{BASE_URL}}/li-icon.png" alt="LI" width="20" height="20" style="display: block; border: 0;">
+            </a>
+            <a href="https://www.tiktok.com/@homegeniusexteriors" style="text-decoration: none;">
+               <img src="{{BASE_URL}}/tiktok-icon.png" alt="TT" width="20" height="20" style="display: block; border: 0;">
+            </a>
+            <a href="https://www.youtube.com/@homegeniusexteriors4988" style="text-decoration: none;">
+               <img src="{{BASE_URL}}/yt-icon.png" alt="YT" width="20" height="20" style="display: block; border: 0;">
+            </a>
+          </div>
+          
+        </div>
+      </div>
+    </div>
+  </div>
+</div>`;
+
+        function updateCode() {
+            const user = document.getElementById('gh-user').value.trim() || 'YOUR_USERNAME';
+            const repo = document.getElementById('gh-repo').value.trim() || 'YOUR_REPO';
+            
+            // Construct Base URL
+            // If user types full URL, respect it. Otherwise build github.io structure.
+            let baseUrl = `https://${user}.github.io/${repo}`;
+            
+            const finalCode = template.replaceAll('{{BASE_URL}}', baseUrl);
+            document.getElementById('final-code').value = finalCode;
+        }
+
+        function copyCode() {
+            const copyText = document.getElementById("final-code");
+            copyText.select();
+            copyText.setSelectionRange(0, 99999); 
+            navigator.clipboard.writeText(copyText.value);
+            
+            const msg = document.getElementById('copy-msg');
+            msg.style.opacity = '1';
+            setTimeout(() => { msg.style.opacity = '0'; }, 2000);
+        }
+
+        // Initialize
+        updateCode();
+    </script>
+</body>
+</html>
