@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Signature Asset Manager</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Helvetica', 'Arial', sans-serif; background-color: #f1f5f9; padding: 40px; }
+        .asset-card {
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            border: 1px solid #e2e8f0;
+        }
+        .preview-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-color: #ffffff; /* Transparent bg check */
+            background-image: linear-gradient(45deg, #f0f0f0 25%, transparent 25%), linear-gradient(-45deg, #f0f0f0 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #f0f0f0 75%), linear-gradient(-45deg, transparent 75%, #f0f0f0 75%);
+            background-size: 20px 20px;
+            background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+            border-radius: 8px;
+            width: 100%;
+            min-height: 120px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="max-w-4xl mx-auto">
+        <div class="mb-8 text-center">
+            <h1 class="text-3xl font-bold text-slate-800 mb-2">Signature Asset Manager</h1>
+            <p class="text-slate-600">Preview your assets below. Click "Download PNG" to get the image file for your GitHub repo.</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <!-- MAIN LOGO -->
+            <div class="asset-card col-span-1 md:col-span-2">
+                <div class="w-full flex justify-between items-center border-b border-slate-100 pb-2 mb-2">
+                    <span class="font-bold text-slate-700">Main Logo (hge-logo.png)</span>
+                    <span class="text-xs text-slate-400">Dimensions: ~600px wide</span>
+                </div>
+                <div class="preview-box">
+                    <svg id="svg-main" xmlns="http://www.w3.org/2000/svg" width="183.921" height="55.246" viewBox="0 0 183.921 55.246">
+                        <g>
+                            <path d="M312.478,60.56a5.207,5.207,0,0,1-5.214-5.2V43.476a5.205,5.205,0,1,1,10.411,0v2.486h-3.406V43.406a1.9,1.9,0,0,0-1.895-1.895,1.8,1.8,0,0,0-1.33.556,1.842,1.842,0,0,0-.548,1.339V55.329a1.87,1.87,0,0,0,1.877,1.877,1.845,1.845,0,0,0,1.338-.546,1.79,1.79,0,0,0,.556-1.326V51.053h-1.825v-3.3h5.231v7.613a5.192,5.192,0,0,1-5.2,5.2" transform="translate(-200.762 -25)" fill="#06b6d4"/>
+                            <path d="M345.521,60.708V38.915h9.35v3.3h-6.065V48.16h4.432v3.3h-4.432v5.944h6.065v3.3Z" transform="translate(-225.758 -25.426)" fill="#06b6d4"/>
+                            <path d="M382.7,38.915l4.359,14.647V38.915h3.285V60.708h-3.528L382.3,46.753V60.708h-3.285V38.915Z" transform="translate(-247.642 -25.427)" fill="#06b6d4"/>
+                            <rect width="3.285" height="21.776" transform="translate(145.64 13.505)" fill="#06b6d4"/>
+                            <path d="M443.274,60.983a5.162,5.162,0,0,1-5.2-5.179V38.963h3.215V55.769a1.794,1.794,0,0,0,.557,1.33,1.837,1.837,0,0,0,1.338.548,1.87,1.87,0,0,0,1.877-1.877V38.963h3.423V55.8a4.951,4.951,0,0,1-1.529,3.684,5.082,5.082,0,0,1-3.685,1.494" transform="translate(-286.234 -25.458)" fill="#06b6d4"/>
+                            <path d="M486.8,54.794a6.132,6.132,0,0,1-1.182,3.893,4.256,4.256,0,0,1-2.259,1.547,6.148,6.148,0,0,1-1.825.243,5.164,5.164,0,0,1-3.2-.956,5.348,5.348,0,0,1-1.678-2.129,8.6,8.6,0,0,1-.721-3.085l3.129-.226a4.759,4.759,0,0,0,1.008,2.76,1.679,1.679,0,0,0,1.355.611,2.035,2.035,0,0,0,1.721-1.061,2.634,2.634,0,0,0,.331-1.443,4.009,4.009,0,0,0-1.234-2.7l-2.92-2.766a12.477,12.477,0,0,1-2.312-2.836,6.558,6.558,0,0,1-.729-3.061,5.324,5.324,0,0,1,2-4.506,4.967,4.967,0,0,1,3.059-.922,5.56,5.56,0,0,1,3.007.782,4.514,4.514,0,0,1,1.573,1.7,6.31,6.31,0,0,1,.722,2.52l-3.146.574a3.8,3.8,0,0,0-.765-2.085,1.606,1.606,0,0,0-1.3-.539,1.5,1.5,0,0,0-1.373.8,3.083,3.083,0,0,0-.382,1.6,4.792,4.792,0,0,0,1.286,3.041,10.8,10.8,0,0,0,1.459,1.39q1.148.957,1.513,1.339a11.175,11.175,0,0,1,1.877,2.4,9.208,9.208,0,0,1,.5,1.026,5.973,5.973,0,0,1,.487,2.085" transform="translate(-310.969 -24.935)" fill="#06b6d4"/>
+                            <path d="M140.979,51.512V60.74h-3.285V38.964h3.285v9.246h3.962V38.964h3.285V60.74h-3.285V51.512Z" transform="translate(-89.967 -25.458)" fill="#1e3a8a"/>
+                            <path fill-rule="evenodd" d="M181.648,38.161a5.208,5.208,0,0,1,5.214,5.214V55.263a5.205,5.205,0,1,1-10.411,0V43.375a5.207,5.207,0,0,1,5.2-5.214m1.791,5.144a1.87,1.87,0,0,0-1.877-1.877,1.838,1.838,0,0,0-1.338.548,1.794,1.794,0,0,0-.557,1.329V55.228a1.8,1.8,0,0,0,.557,1.33,1.837,1.837,0,0,0,1.338.548,1.87,1.87,0,0,0,1.877-1.877Z" transform="translate(-115.291 -24.934)" fill="#1e3a8a"/>
+                            <path d="M218.093,60.708h-3.285V38.915h4.714l3.061,15.655,2.938-15.655h4.529V60.708h-3.285v-13.7l-2.85,13.7h-2.642l-3.181-13.66Z" transform="translate(-140.353 -25.426)" fill="#1e3a8a"/>
+                            <path d="M267.255,60.708V38.915h9.35v3.3H270.54V48.16h4.432v3.3H270.54v5.944h6.065v3.3Z" transform="translate(-174.621 -25.426)" fill="#1e3a8a"/>
+                            <path d="M57.046,33.623H60.59V2.5H57.046v22.21H42.135V0H38.591V42.174h3.544V28.256H57.046Z" transform="translate(-25.215 0)" fill="#06b6d4"/>
+                            <path d="M22.76,40.767l-2.668,2.44h0V62.246h3.544V44.769l2.454-2.224v-4.8l-3.329,3.026Z" transform="translate(-13.128 -24.659)" fill="#1e3a8a"/>
+                            <path d="M64.083,18.375v-4.8L58.6,8.56,57.186,7.265,55.769,8.56l-5.738,5.254v4.8l7.155-6.552Z" transform="translate(-32.689 -4.747)" fill="#1e3a8a"/>
+                            <path d="M77.3,40.365h0l-3.543-3.239v4.8l2.668,2.44V58.3H58.075v3.544h21.9V42.806h0Z" transform="translate(-37.945 -24.258)" fill="#1e3a8a"/>
+                            <path d="M10.3,50.86H3.942V16.045H10.3V12.1H0V54.8H28.751V50.86H10.3Z" transform="translate(0 -7.909)" fill="#1e3a8a"/>
+                            <path d="M390.343,126.2a2.188,2.188,0,0,0-1.47-.415h-2.181v3.166h2.049a2.552,2.552,0,0,0,1.59-.39,1.435,1.435,0,0,0,.486-1.19,1.476,1.476,0,0,0-.472-1.171" transform="translate(-252.659 -82.184)" fill="#ffffff"/>
+                            <path d="M322.359,126.2a2.188,2.188,0,0,0-1.47-.415h-2.181v3.166h2.049a2.551,2.551,0,0,0,1.59-.39,1.435,1.435,0,0,0,.486-1.19,1.476,1.476,0,0,0-.472-1.171" transform="translate(-208.239 -82.184)" fill="#ffffff"/>
+                            <path d="M359.8,125.515a2.271,2.271,0,0,0-1.814.789,2.99,2.99,0,0,0-.677,2.02v1.608a3.008,3.008,0,0,0,.677,2.032,2.271,2.271,0,0,0,1.814.789,2.461,2.461,0,0,0,1.92-.785,2.917,2.917,0,0,0,.711-2.035v-1.608a2.9,2.9,0,0,0-.714-2.02,2.458,2.458,0,0,0-1.917-.789" transform="translate(-233.463 -82.01)" fill="#ffffff"/>
+                            <path d="M430.649,119.689a1.025,1.025,0,1,0,1.022,1.022,1.02,1.02,0,0,0-1.022-1.022m.324,1.7-.352-.536h-.245v.536H430.2v-1.357h.552a.409.409,0,0,1,.43.413.4.4,0,0,1-.346.4l.363.541Z" transform="translate(-280.709 -78.203)" fill="#ffffff"/>
+                            <path d="M432.416,121.4a.244.244,0,0,0-.246-.257H431.8v.5h.374a.241.241,0,0,0,.246-.246" transform="translate(-282.129 -79.151)" fill="#ffffff"/>
+                        </g>
+                    </svg>
+                </div>
+                <button onclick="downloadSVG('svg-main', 'hge-logo', 3)" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition">
+                    Download PNG
+                </button>
+            </div>
+
+            <!-- CARES LOGO -->
+            <div class="asset-card">
+                 <div class="w-full flex justify-between items-center border-b border-slate-100 pb-2 mb-2">
+                    <span class="font-bold text-slate-700">Cares Logo</span>
+                    <span class="text-xs text-slate-400">hge-cares.png</span>
+                </div>
+                <div class="preview-box">
+                    <svg id="svg-cares" viewBox="0 0 800 600" xmlns="http://www.w3.org/2000/svg" style="width: 150px; height: auto;">
+                        <g fill="#06b6d4">
+                            <rect x="448" y="175" width="22" height="340" />
+                            <rect x="330" y="325" width="140" height="22" />
+                        </g>
+                        <path d="M400,235 C360,185 270,180 270,285 C270,380 340,430 400,495 C460,430 530,380 530,285 C530,180 440,185 400,235 Z" fill="none" stroke="#E92C64" stroke-width="28" stroke-linecap="round" stroke-linejoin="round" />
+                        <rect x="330" y="140" width="22" height="340" fill="#06b6d4" />
+                    </svg>
+                </div>
+                <button onclick="downloadSVG('svg-cares', 'hge-cares', 0.5)" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition">
+                    Download PNG
+                </button>
+            </div>
+
+            <!-- FACEBOOK -->
+            <div class="asset-card">
+                 <div class="w-full flex justify-between items-center border-b border-slate-100 pb-2 mb-2">
+                    <span class="font-bold text-slate-700">Facebook</span>
+                    <span class="text-xs text-slate-400">fb-icon.png</span>
+                </div>
+                <div class="preview-box">
+                    <svg id="svg-fb" viewBox="0 0 24 24" width="64" height="64" fill="#1e3a8a"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+                </div>
+                <button onclick="downloadSVG('svg-fb', 'fb-icon', 10)" class="w-full bg-slate-700 hover:bg-slate-800 text-white font-bold py-2 px-4 rounded transition">
+                    Download PNG
+                </button>
+            </div>
+
+            <!-- INSTAGRAM -->
+            <div class="asset-card">
+                 <div class="w-full flex justify-between items-center border-b border-slate-100 pb-2 mb-2">
+                    <span class="font-bold text-slate-700">Instagram</span>
+                    <span class="text-xs text-slate-400">ig-icon.png</span>
+                </div>
+                <div class="preview-box">
+                    <svg id="svg-ig" viewBox="0 0 24 24" width="64" height="64" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke="#1e3a8a"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+                </div>
+                <button onclick="downloadSVG('svg-ig', 'ig-icon', 10)" class="w-full bg-slate-700 hover:bg-slate-800 text-white font-bold py-2 px-4 rounded transition">
+                    Download PNG
+                </button>
+            </div>
+
+            <!-- LINKEDIN -->
+            <div class="asset-card">
+                 <div class="w-full flex justify-between items-center border-b border-slate-100 pb-2 mb-2">
+                    <span class="font-bold text-slate-700">LinkedIn</span>
+                    <span class="text-xs text-slate-400">li-icon.png</span>
+                </div>
+                <div class="preview-box">
+                    <svg id="svg-li" viewBox="0 0 24 24" width="64" height="64" fill="#1e3a8a"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+                </div>
+                <button onclick="downloadSVG('svg-li', 'li-icon', 10)" class="w-full bg-slate-700 hover:bg-slate-800 text-white font-bold py-2 px-4 rounded transition">
+                    Download PNG
+                </button>
+            </div>
+
+            <!-- TIKTOK -->
+            <div class="asset-card">
+                 <div class="w-full flex justify-between items-center border-b border-slate-100 pb-2 mb-2">
+                    <span class="font-bold text-slate-700">TikTok</span>
+                    <span class="text-xs text-slate-400">tiktok-icon.png</span>
+                </div>
+                <div class="preview-box">
+                    <svg id="svg-tiktok" viewBox="0 0 24 24" width="64" height="64" fill="#1e3a8a"><path d="M12.53.02C13.84 0 15.14.01 16.44 0c.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.17-2.89-.6-4.13-1.47V15.5c0 1.93-.78 3.81-2.23 5.1-1.46 1.3-3.5 1.97-5.46 1.83-1.95-.14-3.79-1.16-4.99-2.7-1.21-1.53-1.63-3.61-1.15-5.5.48-1.89 1.86-3.48 3.66-4.22 1.05-.43 2.19-.61 3.32-.54V13.5c-.75-.05-1.52.07-2.21.39-.7.32-1.28.89-1.57 1.59-.28.7-.26 1.51.06 2.19.33.68.94 1.2 1.66 1.44.72.24 1.54.19 2.22-.13.68-.32 1.18-.89 1.4-1.6.09-.3.12-.61.12-.92V.02z"/></svg>
+                </div>
+                <button onclick="downloadSVG('svg-tiktok', 'tiktok-icon', 10)" class="w-full bg-slate-700 hover:bg-slate-800 text-white font-bold py-2 px-4 rounded transition">
+                    Download PNG
+                </button>
+            </div>
+
+            <!-- YOUTUBE -->
+            <div class="asset-card">
+                 <div class="w-full flex justify-between items-center border-b border-slate-100 pb-2 mb-2">
+                    <span class="font-bold text-slate-700">YouTube</span>
+                    <span class="text-xs text-slate-400">yt-icon.png</span>
+                </div>
+                <div class="preview-box">
+                    <svg id="svg-yt" viewBox="0 0 24 24" width="64" height="64" fill="#1e3a8a"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.33 29 29 0 0 0-.46-5.33zM9.75 15.02V8.48L15.45 11.75l-5.7 3.27z"/></svg>
+                </div>
+                <button onclick="downloadSVG('svg-yt', 'yt-icon', 10)" class="w-full bg-slate-700 hover:bg-slate-800 text-white font-bold py-2 px-4 rounded transition">
+                    Download PNG
+                </button>
+            </div>
+
+        </div>
+
+        <canvas id="canvas" style="display:none;"></canvas>
+    </div>
+
+    <script>
+        function downloadSVG(svgId, filename, scaleFactor = 1) {
+            const svg = document.getElementById(svgId);
+            const canvas = document.getElementById('canvas');
+            const ctx = canvas.getContext('2d');
+            
+            // Get SVG data
+            const serializer = new XMLSerializer();
+            let source = serializer.serializeToString(svg);
+
+            // Add namespaces if missing (prevents some render errors)
+            if(!source.match(/^<svg[^>]+xmlns="http\:\/\/www\.w3\.org\/2000\/svg"/)){
+                source = source.replace(/^<svg/, '<svg xmlns="http://www.w3.org/2000/svg"');
+            }
+            if(!source.match(/^<svg[^>]+"http\:\/\/www\.w3\.org\/1999\/xlink"/)){
+                source = source.replace(/^<svg/, '<svg xmlns:xlink="http://www.w3.org/1999/xlink"');
+            }
+
+            // Get dimensions
+            const bbox = svg.getBoundingClientRect(); // Use client rect for rendered size reference
+            // Or use explicit attributes if available
+            let width = svg.getAttribute("width") ? parseFloat(svg.getAttribute("width")) : bbox.width;
+            let height = svg.getAttribute("height") ? parseFloat(svg.getAttribute("height")) : bbox.height;
+
+            // Handle viewBox scaling if width/height are missing or small
+            if (svg.viewBox.baseVal && svg.viewBox.baseVal.width) {
+                 // For the main logo, preserve aspect ratio but scale up
+                 if(scaleFactor > 1) {
+                    width = svg.viewBox.baseVal.width * scaleFactor;
+                    height = svg.viewBox.baseVal.height * scaleFactor;
+                 } else {
+                    width = svg.viewBox.baseVal.width * scaleFactor;
+                    height = svg.viewBox.baseVal.height * scaleFactor;
+                 }
+            }
+
+            canvas.width = width;
+            canvas.height = height;
+
+            const img = new Image();
+            img.src = "data:image/svg+xml;charset=utf-8," + encodeURIComponent(source);
+
+            img.onload = function() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                const imgURI = canvas.toDataURL("image/png");
+                
+                // Trigger download
+                const evt = new MouseEvent("click", {
+                    view: window,
+                    bubbles: false,
+                    cancelable: true
+                });
+
+                const a = document.createElement("a");
+                a.setAttribute("download", filename + ".png");
+                a.setAttribute("href", imgURI);
+                a.setAttribute("target", "_blank");
+                a.dispatchEvent(evt);
+            };
+        }
+    </script>
+</body>
+</html>
