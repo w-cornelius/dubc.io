@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Roofing SalesPro Estimator</title>
+    
+    <!-- React & ReactDOM -->
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- PDF.js for parsing reports -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script>
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    </script>
+
+    <style>
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white; }
+            .report-container { box-shadow: none; border: none; padding: 0; }
+            /* Ensure single page width */
+            .page-break { page-break-inside: avoid; }
+        }
+        /* Mobile scroll behavior improvements */
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; overscroll-behavior-y: none; }
+        .ios-scroll { -webkit-overflow-scrolling: touch; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+        
+        // --- ICONS (Inline) ---
+        const Icon = ({ children, size = 24, className }) => (
+            <svg 
+                xmlns="http://www.w3.org/2000/svg" 
+                width={size} 
+                height={size} 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                className={className}
+            >
+                {children}
+            </svg>
+        );
+
+        const Upload = (props) => <Icon {...props}><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></Icon>;
+        const Printer = (props) => <Icon {...props}><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></Icon>;
+        const Calculator = (props) => <Icon {...props}><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="14"/><line x1="12" y1="14" x2="12" y2="14"/><line x1="8" y1="14" x2="8" y2="14"/><line x1="16" y1="18" x2="16" y2="18"/><line x1="12" y1="18" x2="12" y2="18"/><line x1="8" y1="18" x2="8" y2="18"/></Icon>;
+        const AlertCircle = (props) => <Icon {...props}><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></Icon>;
+        const ChevronDown = (props) => <Icon {...props}><polyline points="6 9 12 15 18 9"/></Icon>;
+        const ChevronUp = (props) => <Icon {...props}><polyline points="18 15 12 9 6 15"/></Icon>;
+        const Edit2 = (props) => <Icon {...props}><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></Icon>;
+        const FileText = (props) => <Icon {...props}><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></Icon>;
+
+
+        // --- COMPONENTS ---
+
+        const InputGroup = ({ title, children, isOpen, onToggle }) => (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-4 overflow-hidden">
+                <button 
+                    onClick={onToggle}
+                    className="w-full px-4 py-3 bg-gray-50 flex justify-between items-center text-left font-semibold text-gray-700 hover:bg-gray-100 transition-colors"
+                >
+                    {title}
+                    {isOpen ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                </button>
+                {isOpen && <div className="p-4 grid grid-cols-1 md:grid-cols-2 gap-4">{children}</div>}
+            </div>
+        );
+
+        const NumberInput = ({ label, value, onChange, placeholder, step = "1" }) => (
+            <div className="flex flex-col">
+                <label className="text-xs font-medium text-gray-500 mb-1 uppercase tracking-wide">{label}</label>
+                <input
+                    type="number"
+                    value={value || ''}
+                    onChange={(e) => onChange(parseFloat(e.target.value) || 0)}
+                    placeholder={placeholder || "0"}
+                    step={step}
+                    className="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                />
+            </div>
+        );
+
+        const CheckboxInput = ({ label, checked, onChange }) => (
+            <div className="flex items-center space-x-2 py-2">
+                <input
+                    type="checkbox"
+                    checked={checked}
+                    onChange={(e) => onChange(e.target.checked)}
+                    className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700">{label}</span>
+            </div>
+        );
+
+        const ReportRow = ({ item, quantity, unit, notes, isHeader }) => {
+            if (isHeader) {
+                return (
+                    <div className="grid grid-cols-12 gap-2 bg-gray-800 text-white p-2 text-xs font-bold uppercase tracking-wider print:bg-gray-200 print:text-black print:border-b-2 print:border-black rounded-t-md md:rounded-none">
+                        <div className="col-span-5">Product</div>
+                        <div className="col-span-2 text-center">Qty / UOM</div>
+                        <div className="col-span-5">Notes</div>
+                    </div>
+                );
+            }
+            return (
+                <div className="grid grid-cols-12 gap-2 border-b border-gray-100 p-3 md:p-2 text-sm hover:bg-gray-50 break-inside-avoid">
+                    <div className="col-span-5 font-medium text-gray-800 flex items-center">{item}</div>
+                    <div className="col-span-2 text-center font-mono text-blue-700 bg-blue-50 rounded px-1 flex flex-col md:flex-row items-center justify-center print:bg-transparent print:text-black">
+                        <span className="font-bold">{quantity}</span>
+                        <span className="text-[10px] md:text-xs text-gray-400 md:ml-1 leading-none mt-1 md:mt-0">{unit}</span>
+                    </div>
+                    <div className="col-span-5 text-gray-500 text-xs italic flex items-center leading-tight">{notes}</div>
+                </div>
+            );
+        };
+
+        const App = () => {
+            // UI State
+            const [mobileTab, setMobileTab] = useState('edit'); // 'edit' or 'report'
+            
+            // State for Address/Meta
+            const [meta, setMeta] = useState({
+                address: '',
+                date: new Date().toLocaleDateString(),
+                customerName: ''
+            });
+
+            // State for Inputs
+            const [inputs, setInputs] = useState({
+                totalSqFt: 0,
+                pitchFlat: 0, // < 2/12
+                pitchLow: 0, // 2/12 - 4/12
+                pitchSteep1: 0, // 7/12 - 9/12
+                pitchSteep2: 0, // 10/12 - 12/12
+                pitchSteep3: 0, // 13/12+
+                pitchMansard: 0, // 30/12+
+                
+                lftEaves: 0,
+                lftRakes: 0,
+                lftRidges: 0,
+                lftHips: 0,
+                lftValleys: 0,
+                lftWall: 0, // Roof-to-wall
+                lftStepFlashing: 0, // Additional step flashing needed
+                lftBrickWall: 0,
+                
+                countPipes: 0,
+                countVents: 0,
+                countChimneys: 0,
+                countSkylights: 0,
+                countSolar: 0,
+                countCones: 0,
+                
+                hasGutterGuards: false,
+                lftGutterGuards: 0,
+                hasMultipleLayers: false,
+                layersCount: 1,
+                chimneyCricketNeeded: false,
+                warmWallOver24: false, // Prompt says assume under 24, but logic exists for over
+            });
+
+            const [sectionsOpen, setSectionsOpen] = useState({
+                general: true,
+                pitch: true,
+                linear: true,
+                items: true
+            });
+
+            const [isParsing, setIsParsing] = useState(false);
+            const [parseError, setParseError] = useState(null);
+
+            // --- LOGIC ENGINE ---
+
+            const calculateReport = () => {
+                const {
+                    totalSqFt, pitchFlat, pitchLow, pitchSteep1, pitchSteep2, pitchSteep3, pitchMansard,
+                    lftEaves, lftRakes, lftRidges, lftHips, lftValleys, lftWall, lftBrickWall,
+                    countPipes, countVents, countChimneys, countSolar, countCones,
+                    lftGutterGuards, layersCount, chimneyCricketNeeded, warmWallOver24
+                } = inputs;
+
+                // Derived Totals
+                const totalSteep = pitchSteep1 + pitchSteep2 + pitchSteep3;
+                
+                // Shingles: Total - (Flat < 2/12)
+                const qtyShingles = Math.max(0, totalSqFt - pitchFlat);
+
+                // Full IWS (2/12 - 4/12)
+                const qtyFullIWS = pitchLow;
+
+                // Underlayment
+                // Logic: Shingle Sq Ft - (Full IWS areas) - (Flat areas already removed from shingle total)
+                const qtyUnderlayment = Math.max(0, qtyShingles - qtyFullIWS);
+
+                // Ice & Water Shield (Standard)
+                // Sum of Eaves, Valleys, Roof-Wall Intersections
+                // Prompt: "Double if warm wall over 24". (Default is under)
+                let baseIWSLft = lftEaves + lftValleys + lftWall;
+                if (warmWallOver24) baseIWSLft *= 2; 
+                const qtyIWS = baseIWSLft;
+
+                // Intake Vent
+                // Prompt: "Double the total sum of all ridge lft"
+                const qtyIntakeVent = lftRidges * 2;
+
+                // Starter Shingles & Drip Edge
+                // Sum of Eaves & Rakes
+                const perimeter = lftEaves + lftRakes;
+
+                // Wood Setup
+                let woodNote = "Standard Setup.";
+                if (totalSqFt < 1000) woodNote += " Min job charge applies (<10sq).";
+                
+                // Tearoff
+                // 1 layer included usually. If 2 layers -> 1 extra tearoff. If 3 -> 2 extra.
+                const tearoffLayers = Math.max(0, layersCount - 1);
+                const tearoffQty = tearoffLayers * totalSqFt;
+
+                const rows = [
+                    {
+                        item: "Wood & Job Setup",
+                        qty: 1,
+                        unit: "EA",
+                        notes: woodNote
+                    },
+                    {
+                        item: "Gutter Helmet Removal",
+                        qty: lftGutterGuards,
+                        unit: "LFT",
+                        notes: "LFT of Gutter Guards present"
+                    },
+                    {
+                        item: "Shingles",
+                        qty: Math.ceil(qtyShingles),
+                        unit: "Sq. Ft.",
+                        notes: "Entire sq footage minus slopes below 2/12"
+                    },
+                    {
+                        item: "Full IWS (2/12 - 4/12)",
+                        qty: Math.ceil(qtyFullIWS),
+                        unit: "Sq. Ft.",
+                        notes: "Areas with pitch 2/12 - 4/12"
+                    },
+                    {
+                        item: "Steep Slope (7/12 - 9/12)",
+                        qty: Math.ceil(pitchSteep1),
+                        unit: "Sq. Ft.",
+                        notes: "Slope Up-charge"
+                    },
+                    {
+                        item: "Steep Slope (10/12 - 12/12)",
+                        qty: Math.ceil(pitchSteep2),
+                        unit: "Sq. Ft.",
+                        notes: "Slope Up-charge"
+                    },
+                    {
+                        item: "Steep Slope (13/12+)",
+                        qty: Math.ceil(pitchSteep3),
+                        unit: "Sq. Ft.",
+                        notes: "Slope Up-charge"
+                    },
+                    {
+                        item: "Mansard (30/12+)",
+                        qty: Math.ceil(pitchMansard),
+                        unit: "Sq. Ft.",
+                        notes: "Mansard areas"
+                    },
+                    {
+                        item: "Cone Roof",
+                        qty: countCones,
+                        unit: "EA",
+                        notes: "# of conical sections"
+                    },
+                    {
+                        item: "Flat Roof (< 2/12)",
+                        qty: Math.ceil(pitchFlat),
+                        unit: "Sq. Ft.",
+                        notes: "Separate from SHINGLES"
+                    },
+                    {
+                        item: "Warranty",
+                        qty: Math.ceil(qtyShingles),
+                        unit: "Sq. Ft.",
+                        notes: "Platinum/Standard (Matches Shingle Sq Ft)"
+                    },
+                    {
+                        item: "Underlayment",
+                        qty: Math.ceil(qtyUnderlayment),
+                        unit: "Sq. Ft.",
+                        notes: "Shingles Sq Ft - Full IWS Sections"
+                    },
+                    {
+                        item: "Ice & Water Shield",
+                        qty: Math.ceil(qtyIWS),
+                        unit: "LFT",
+                        notes: "Sum of Eaves, Valleys, Walls. (Doubled if Warm Wall > 24\")"
+                    },
+                    {
+                        item: "Ridge Vent",
+                        qty: Math.ceil(lftRidges),
+                        unit: "LFT",
+                        notes: "Total Ridge Length"
+                    },
+                    {
+                        item: "Install Ridge Vent Incision",
+                        qty: Math.ceil(lftRidges),
+                        unit: "LFT",
+                        notes: "Verify proper incision during inspection"
+                    },
+                    {
+                        item: "Install Intake Vent",
+                        qty: Math.ceil(qtyIntakeVent),
+                        unit: "LFT",
+                        notes: "2x Total Ridge Length"
+                    },
+                    {
+                        item: "Coil Nails",
+                        qty: Math.ceil(qtyShingles),
+                        unit: "Sq. Ft.",
+                        notes: "Matches Shingles Sq Ft"
+                    },
+                    {
+                        item: "Hip & Ridge Shingles",
+                        qty: Math.ceil(lftRidges + lftHips),
+                        unit: "LFT",
+                        notes: "Sum of Hips and Ridges"
+                    },
+                    {
+                        item: "Starter Shingles",
+                        qty: Math.ceil(perimeter),
+                        unit: "LFT",
+                        notes: "Sum of Eaves and Rakes"
+                    },
+                    {
+                        item: "Staples",
+                        qty: Math.ceil(qtyShingles),
+                        unit: "Sq. Ft.",
+                        notes: "Matches Shingles Sq Ft"
+                    },
+                    {
+                        item: "Drip Edge",
+                        qty: Math.ceil(perimeter),
+                        unit: "LFT",
+                        notes: "Sum of Eaves and Rakes"
+                    },
+                    {
+                        item: "Pipe Boots",
+                        qty: countPipes > 0 ? countPipes : "Check",
+                        unit: "EA",
+                        notes: countPipes > 0 ? "# of Pipes from report" : "Verify count during inspection"
+                    },
+                    {
+                        item: "Vents",
+                        qty: countVents > 0 ? countVents : "Check",
+                        unit: "EA",
+                        notes: countVents > 0 ? "# of Vents from report" : "Verify count during inspection"
+                    },
+                    {
+                        item: "Step Flashing",
+                        qty: "Est.",
+                        unit: "LFT",
+                        notes: "Verify if needed beyond chimney at inspection"
+                    },
+                    {
+                        item: "Wall Flashing",
+                        qty: "Est.",
+                        unit: "LFT",
+                        notes: "Verify if needed beyond chimney at inspection"
+                    },
+                    {
+                        item: "Brick Wall Counter Flashing",
+                        qty: lftBrickWall,
+                        unit: "LFT",
+                        notes: "Brick Roof-Wall Intersection"
+                    },
+                    {
+                        item: "Chimney Cricket",
+                        qty: chimneyCricketNeeded ? (countChimneys || 1) : 0,
+                        unit: "EA",
+                        notes: "Needed if chimney > 30\" parallel to ridge"
+                    },
+                    {
+                        item: "Chimney Flashing",
+                        qty: countChimneys,
+                        unit: "EA",
+                        notes: "Total # of Chimneys"
+                    },
+                    {
+                        item: "Solar Panels",
+                        qty: countSolar,
+                        unit: "EA",
+                        notes: countSolar > 0 ? `${countSolar} Panels found` : "None reported"
+                    }
+                ];
+
+                // Add Tearoff if applicable
+                if (tearoffQty > 0) {
+                    rows.push({
+                        item: "Additional Tearoff",
+                        qty: Math.ceil(tearoffQty),
+                        unit: "Sq. Ft.",
+                        notes: `${tearoffLayers} extra layer(s) calculated`
+                    });
+                }
+
+                return rows;
+            };
+
+            // --- PDF PARSING LOGIC ---
+
+            const extractNumber = (text, regex) => {
+                const match = text.match(regex);
+                if (match && match[1]) {
+                    // Remove commas and convert to float
+                    return parseFloat(match[1].replace(/,/g, ''));
+                }
+                return 0;
+            };
+
+            const handleFileUpload = async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                
+                if (file.type !== 'application/pdf') {
+                    setParseError("Please upload a PDF file.");
+                    return;
+                }
+
+                setIsParsing(true);
+                setParseError(null);
+
+                try {
+                    const arrayBuffer = await file.arrayBuffer();
+                    const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+                    
+                    let fullText = "";
+                    
+                    // Limit pages to parse to avoid hanging on huge docs, usually summary is on page 1-3
+                    const maxPages = Math.min(pdf.numPages, 5);
+                    
+                    for (let i = 1; i <= maxPages; i++) {
+                        const page = await pdf.getPage(i);
+                        const textContent = await page.getTextContent();
+                        const pageText = textContent.items.map(item => item.str).join(' ');
+                        fullText += pageText + " ";
+                    }
+
+                    // Heuristics for Parsing common Roofing Reports
+                    const newData = { ...inputs };
+                    let foundData = false;
+
+                    const totalSqMatch = extractNumber(fullText, /(?:Total Area|Total Roof Area)[:\s]+([\d,]+)/i);
+                    if (totalSqMatch) { newData.totalSqFt = totalSqMatch; foundData = true; }
+
+                    const eavesMatch = extractNumber(fullText, /Eaves[:\s]+([\d,]+)/i);
+                    if (eavesMatch) newData.lftEaves = eavesMatch;
+
+                    const ridgesMatch = extractNumber(fullText, /Ridges[:\s]+([\d,]+)/i);
+                    if (ridgesMatch) newData.lftRidges = ridgesMatch;
+
+                    const hipsMatch = extractNumber(fullText, /Hips[:\s]+([\d,]+)/i);
+                    if (hipsMatch) newData.lftHips = hipsMatch;
+
+                    const valleysMatch = extractNumber(fullText, /Valleys[:\s]+([\d,]+)/i);
+                    if (valleysMatch) newData.lftValleys = valleysMatch;
+                    
+                    const rakesMatch = extractNumber(fullText, /Rakes[:\s]+([\d,]+)/i);
+                    if (rakesMatch) newData.lftRakes = rakesMatch;
+
+                    const addressMatch = fullText.match(/Address[:\s]+(.*?)(?:Date|Prepared)/i);
+                    if (addressMatch) setMeta(prev => ({ ...prev, address: addressMatch[1].trim() }));
+
+                    setInputs(newData);
+                    
+                    if (!foundData) {
+                        setParseError("Could not automatically extract data. Please enter values manually from your report.");
+                    } else {
+                        setParseError(null);
+                        // Auto-switch to report on success?
+                        // setMobileTab('report'); 
+                    }
+
+                } catch (err) {
+                    console.error(err);
+                    setParseError("Error reading PDF. File might be corrupted or password protected.");
+                } finally {
+                    setIsParsing(false);
+                }
+            };
+
+            const reportRows = calculateReport();
+
+            return (
+                <div className="h-screen flex flex-col md:flex-row bg-gray-50 overflow-hidden">
+                    
+                    {/* MOBILE NAV BAR (Bottom Sticky) - Only visible on small screens */}
+                    <div className="md:hidden fixed bottom-0 left-0 right-0 bg-white shadow-[0_-2px_10px_rgba(0,0,0,0.1)] z-50 flex border-t border-gray-200">
+                        <button 
+                            onClick={() => setMobileTab('edit')}
+                            className={`flex-1 py-3 flex flex-col items-center justify-center gap-1 ${mobileTab === 'edit' ? 'text-blue-600 bg-blue-50' : 'text-gray-500 hover:bg-gray-50'}`}
+                        >
+                            <Edit2 size={20} />
+                            <span className="text-[10px] font-bold uppercase tracking-wide">Edit Inputs</span>
+                        </button>
+                        <button 
+                            onClick={() => setMobileTab('report')}
+                            className={`flex-1 py-3 flex flex-col items-center justify-center gap-1 ${mobileTab === 'report' ? 'text-blue-600 bg-blue-50' : 'text-gray-500 hover:bg-gray-50'}`}
+                        >
+                            <FileText size={20} />
+                            <span className="text-[10px] font-bold uppercase tracking-wide">View Report</span>
+                        </button>
+                    </div>
+
+                    {/* LEFT SIDEBAR: CONTROLS */}
+                    <div className={`
+                        w-full md:w-1/3 lg:w-1/4 bg-white border-r border-gray-200 
+                        flex flex-col shadow-lg z-10 transition-all duration-300
+                        ${mobileTab === 'edit' ? 'h-[calc(100vh-60px)] md:h-screen block' : 'hidden md:block'}
+                    `}>
+                        <div className="p-4 md:p-6 border-b border-gray-200 bg-blue-600 text-white shrink-0">
+                            <h1 className="text-xl font-bold flex items-center gap-2">
+                                <Calculator size={24} />
+                                SalesPro Est.
+                            </h1>
+                            <p className="text-white font-semibold mt-1 text-base md:text-lg">William Cornelius</p>
+                            <p className="text-blue-100 text-xs">Roofr Report Processor</p>
+                        </div>
+
+                        <div className="p-4 space-y-4 overflow-y-auto ios-scroll flex-1 pb-20 md:pb-4">
+                            
+                            {/* File Upload */}
+                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-blue-300 border-dashed rounded-lg cursor-pointer bg-white hover:bg-blue-50 transition-colors">
+                                    <div className="flex flex-col items-center justify-center pt-5 pb-6">
+                                        <Upload className="w-6 h-6 text-blue-500 mb-2" />
+                                        <p className="text-xs text-gray-500 text-center">{isParsing ? "Parsing..." : "Upload Roofr PDF"}</p>
+                                    </div>
+                                    <input type="file" className="hidden" accept=".pdf" onChange={handleFileUpload} />
+                                </label>
+                                {parseError && (
+                                    <div className="mt-2 flex items-start gap-2 text-xs text-red-600 bg-red-50 p-2 rounded">
+                                        <AlertCircle size={14} className="mt-0.5 shrink-0" />
+                                        {parseError}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Meta Data */}
+                            <div className="space-y-2">
+                                <input 
+                                    type="text" 
+                                    placeholder="Property Address" 
+                                    className="w-full text-sm border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 p-2"
+                                    value={meta.address}
+                                    onChange={e => setMeta({...meta, address: e.target.value})}
+                                />
+                                <input 
+                                    type="date" 
+                                    className="w-full text-sm border-gray-300 rounded focus:ring-blue-500 focus:border-blue-500 p-2"
+                                    value={meta.date} 
+                                    onChange={e => setMeta({...meta, date: e.target.value})}
+                                />
+                            </div>
+
+                            {/* INPUT SECTIONS */}
+                            <InputGroup 
+                                title="Dimensions" 
+                                isOpen={sectionsOpen.general} 
+                                onToggle={() => setSectionsOpen(prev => ({...prev, general: !prev.general}))}
+                            >
+                                <div className="col-span-1 md:col-span-2">
+                                    <NumberInput label="Total Roof Sq Ft" value={inputs.totalSqFt} onChange={v => setInputs(p => ({...p, totalSqFt: v}))} placeholder="Total Area" />
+                                </div>
+                            </InputGroup>
+
+                            <InputGroup 
+                                title="Pitch Breakdown (Sq Ft)" 
+                                isOpen={sectionsOpen.pitch} 
+                                onToggle={() => setSectionsOpen(prev => ({...prev, pitch: !prev.pitch}))}
+                            >
+                                <NumberInput label="Flat (< 2/12)" value={inputs.pitchFlat} onChange={v => setInputs(p => ({...p, pitchFlat: v}))} />
+                                <NumberInput label="Low (2/12 - 4/12)" value={inputs.pitchLow} onChange={v => setInputs(p => ({...p, pitchLow: v}))} />
+                                <NumberInput label="Steep (7-9)" value={inputs.pitchSteep1} onChange={v => setInputs(p => ({...p, pitchSteep1: v}))} />
+                                <NumberInput label="Steep (10-12)" value={inputs.pitchSteep2} onChange={v => setInputs(p => ({...p, pitchSteep2: v}))} />
+                                <NumberInput label="Steep (13+)" value={inputs.pitchSteep3} onChange={v => setInputs(p => ({...p, pitchSteep3: v}))} />
+                                <NumberInput label="Mansard (30+)" value={inputs.pitchMansard} onChange={v => setInputs(p => ({...p, pitchMansard: v}))} />
+                            </InputGroup>
+
+                            <InputGroup 
+                                title="Linear Footage" 
+                                isOpen={sectionsOpen.linear} 
+                                onToggle={() => setSectionsOpen(prev => ({...prev, linear: !prev.linear}))}
+                            >
+                                <NumberInput label="Eaves" value={inputs.lftEaves} onChange={v => setInputs(p => ({...p, lftEaves: v}))} />
+                                <NumberInput label="Rakes" value={inputs.lftRakes} onChange={v => setInputs(p => ({...p, lftRakes: v}))} />
+                                <NumberInput label="Ridges" value={inputs.lftRidges} onChange={v => setInputs(p => ({...p, lftRidges: v}))} />
+                                <NumberInput label="Hips" value={inputs.lftHips} onChange={v => setInputs(p => ({...p, lftHips: v}))} />
+                                <NumberInput label="Valleys" value={inputs.lftValleys} onChange={v => setInputs(p => ({...p, lftValleys: v}))} />
+                                <NumberInput label="Wall Flashing" value={inputs.lftWall} onChange={v => setInputs(p => ({...p, lftWall: v}))} />
+                                <NumberInput label="Brick Wall" value={inputs.lftBrickWall} onChange={v => setInputs(p => ({...p, lftBrickWall: v}))} />
+                            </InputGroup>
+
+                            <InputGroup 
+                                title="Counts & Extras" 
+                                isOpen={sectionsOpen.items} 
+                                onToggle={() => setSectionsOpen(prev => ({...prev, items: !prev.items}))}
+                            >
+                                <NumberInput label="Pipes" value={inputs.countPipes} onChange={v => setInputs(p => ({...p, countPipes: v}))} />
+                                <NumberInput label="Vents" value={inputs.countVents} onChange={v => setInputs(p => ({...p, countVents: v}))} />
+                                <NumberInput label="Chimneys" value={inputs.countChimneys} onChange={v => setInputs(p => ({...p, countChimneys: v}))} />
+                                <NumberInput label="Solar Panels" value={inputs.countSolar} onChange={v => setInputs(p => ({...p, countSolar: v}))} />
+                                
+                                <div className="col-span-1 md:col-span-2 border-t pt-2 mt-2">
+                                    <CheckboxInput label="Gutter Guards Present?" checked={inputs.hasGutterGuards} onChange={v => setInputs(p => ({...p, hasGutterGuards: v}))} />
+                                    {inputs.hasGutterGuards && (
+                                        <NumberInput label="Gutter Guard LFT" value={inputs.lftGutterGuards} onChange={v => setInputs(p => ({...p, lftGutterGuards: v}))} />
+                                    )}
+                                    <CheckboxInput label="Chimney Cricket Needed?" checked={inputs.chimneyCricketNeeded} onChange={v => setInputs(p => ({...p, chimneyCricketNeeded: v}))} />
+                                    <CheckboxInput label="Warm Wall > 24 inches?" checked={inputs.warmWallOver24} onChange={v => setInputs(p => ({...p, warmWallOver24: v}))} />
+                                    <div className="mt-2">
+                                        <label className="text-xs font-medium text-gray-500 uppercase">Shingle Layers</label>
+                                        <select 
+                                            value={inputs.layersCount} 
+                                            onChange={e => setInputs(p => ({...p, layersCount: parseInt(e.target.value)}))}
+                                            className="w-full border border-gray-300 rounded px-2 py-1 text-sm bg-white"
+                                        >
+                                            <option value={1}>1 Layer (Standard)</option>
+                                            <option value={2}>2 Layers</option>
+                                            <option value={3}>3 Layers</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </InputGroup>
+
+                        </div>
+                    </div>
+
+                    {/* RIGHT: REPORT PREVIEW (Printable) */}
+                    <div className={`
+                        flex-1 bg-gray-100 overflow-y-auto ios-scroll print:p-0 print:h-auto print:overflow-visible
+                        ${mobileTab === 'report' ? 'h-[calc(100vh-60px)] md:h-screen block' : 'hidden md:block'}
+                    `}>
+                        <div className="p-4 md:p-8 max-w-4xl mx-auto pb-24 md:pb-8">
+                            {/* Action Bar */}
+                            <div className="flex justify-end mb-4 md:mb-6 no-print">
+                                <button 
+                                    onClick={() => window.print()}
+                                    className="bg-gray-800 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-black transition-colors shadow-sm text-sm md:text-base"
+                                >
+                                    <Printer size={18} />
+                                    Print Report
+                                </button>
+                            </div>
+
+                            {/* Report Sheet */}
+                            <div className="bg-white shadow-xl rounded-xl overflow-hidden report-container print:shadow-none print:rounded-none">
+                                {/* Header */}
+                                <div className="bg-gray-900 text-white p-6 md:p-8 print:bg-white print:text-black print:border-b-4 print:border-black print:p-0 print:pb-4 print:mb-4">
+                                    <div className="flex flex-col md:flex-row justify-between items-start gap-4 md:gap-0">
+                                        <div>
+                                            <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-2 uppercase">Material Report</h2>
+                                            <div className="text-gray-400 print:text-gray-600">
+                                                <p className="font-semibold text-white print:text-black">{meta.address || '1234 Default Address'}</p>
+                                                <p>{meta.date}</p>
+                                            </div>
+                                        </div>
+                                        <div className="text-left md:text-right">
+                                            <div className="text-xl md:text-2xl font-bold text-white print:text-black mb-1">William Cornelius</div>
+                                            <div className="text-sm font-mono text-gray-400 print:text-gray-600">SalesPro Auto-Est</div>
+                                            <div className="mt-2 inline-block px-3 py-1 bg-blue-600 rounded text-xs font-bold uppercase tracking-wider print:border print:border-black print:bg-transparent print:text-black">
+                                                Draft
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* Summary Grid */}
+                                <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4 p-4 md:p-8 border-b border-gray-100 bg-gray-50 print:bg-transparent print:border-b print:border-black print:p-0 print:pb-4 print:mb-4">
+                                    <div className="text-center p-3 md:p-4 bg-white rounded-lg shadow-sm border border-gray-100 print:border-0 print:shadow-none print:text-left print:p-0">
+                                        <div className="text-[10px] md:text-xs text-gray-500 uppercase tracking-wide truncate">Total Roof Area</div>
+                                        <div className="text-lg md:text-2xl font-bold text-gray-800">{inputs.totalSqFt.toLocaleString()} <span className="text-xs md:text-sm text-gray-400">sq ft</span></div>
+                                    </div>
+                                    <div className="text-center p-3 md:p-4 bg-white rounded-lg shadow-sm border border-gray-100 print:border-0 print:shadow-none print:text-left print:p-0">
+                                        <div className="text-[10px] md:text-xs text-gray-500 uppercase tracking-wide truncate">Steep Slope</div>
+                                        <div className="text-lg md:text-2xl font-bold text-gray-800">
+                                            {(inputs.pitchSteep1 + inputs.pitchSteep2 + inputs.pitchSteep3).toLocaleString()} <span className="text-xs md:text-sm text-gray-400">sq ft</span>
+                                        </div>
+                                    </div>
+                                    <div className="text-center p-3 md:p-4 bg-white rounded-lg shadow-sm border border-gray-100 print:border-0 print:shadow-none print:text-left print:p-0">
+                                        <div className="text-[10px] md:text-xs text-gray-500 uppercase tracking-wide truncate">Ridges</div>
+                                        <div className="text-lg md:text-2xl font-bold text-gray-800">{inputs.lftRidges} <span className="text-xs md:text-sm text-gray-400">ft</span></div>
+                                    </div>
+                                    <div className="text-center p-3 md:p-4 bg-white rounded-lg shadow-sm border border-gray-100 print:border-0 print:shadow-none print:text-left print:p-0">
+                                        <div className="text-[10px] md:text-xs text-gray-500 uppercase tracking-wide truncate">Eaves + Rakes</div>
+                                        <div className="text-lg md:text-2xl font-bold text-gray-800">{(inputs.lftEaves + inputs.lftRakes).toLocaleString()} <span className="text-xs md:text-sm text-gray-400">ft</span></div>
+                                    </div>
+                                </div>
+
+                                {/* Line Items */}
+                                <div className="p-4 md:p-8 print:p-0">
+                                    <ReportRow isHeader />
+                                    {reportRows.map((row, idx) => (
+                                        <ReportRow 
+                                            key={idx}
+                                            item={row.item}
+                                            quantity={row.qty}
+                                            unit={row.unit}
+                                            notes={row.notes}
+                                        />
+                                    ))}
+                                </div>
+
+                                {/* Footer */}
+                                <div className="bg-gray-50 p-6 md:p-8 text-center text-xs text-gray-400 print:bg-transparent print:text-black print:mt-8 page-break">
+                                    Generated by Roofing SalesPro Estimator. Please verify all measurements on site.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
